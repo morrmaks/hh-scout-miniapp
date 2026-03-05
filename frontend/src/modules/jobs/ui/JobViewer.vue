@@ -5,7 +5,7 @@ import Button from '@/common/ui/Button.vue';
 
 interface Props {
   job: Job | null;
-  position?: string;
+  position: string;
 }
 
 defineProps<Props>();
@@ -27,6 +27,7 @@ defineEmits<{
           {{ job.company }}
         </p>
       </div>
+
       <div class="position">
         {{ position }}
       </div>
@@ -89,7 +90,6 @@ defineEmits<{
 .title {
   font-size: 22px;
   font-weight: 600;
-  letter-spacing: -0.01em;
 }
 
 .company {
@@ -99,38 +99,18 @@ defineEmits<{
 
 .description {
   flex: 1;
-
   overflow-y: auto;
 
   font-size: 15px;
-  line-height: 1.65;
+  line-height: 1.6;
 
   background: var(--bg-soft);
-
-  padding: 16px 18px;
+  padding: 16px;
 
   border-radius: 10px;
-
-  color: var(--text);
 }
 
-.description::-webkit-scrollbar {
-  width: 6px;
-}
-
-.description::-webkit-scrollbar-thumb {
-  background: var(--scrollbar);
-  border-radius: 6px;
-}
-
-.description::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-hover);
-}
-
-/* кнопки всегда снизу */
 .nav {
-  flex-shrink: 0;
-
   display: flex;
   justify-content: center;
   gap: 12px;

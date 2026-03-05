@@ -6,10 +6,10 @@ import type { PrefetchJobsData } from '../../types.gen';
 
 import { instance } from '../../../../../app/http/client';
 
-export type PostJobsPrefetchRequestParams = FetchesRequestParams<PrefetchJobsData>;
+export type GetJobsPrefetchRequestParams = FetchesRequestParams<PrefetchJobsData>;
 
-export const postJobsPrefetch = ({ config, body }: PostJobsPrefetchRequestParams) =>
-  instance.call('POST', '/jobs/prefetch', {
-    body,
+export const getJobsPrefetch = ({ config, query }: GetJobsPrefetchRequestParams) =>
+  instance.call('GET', '/jobs/prefetch', {
+    query,
     ...config
   });

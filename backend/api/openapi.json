@@ -10,10 +10,7 @@
       "url": "http://localhost:3000"
     }
   ],
-  "tags": [
-    { "name": "Jobs" },
-    { "name": "Favorites" }
-  ],
+  "tags": [{ "name": "Jobs" }, { "name": "Favorites" }],
   "paths": {
     "/jobs": {
       "get": {
@@ -51,30 +48,28 @@
       "get": {
         "operationId": "prefetchJobs",
         "tags": ["Jobs"],
-        "summary": "Prefetch job descriptions",
+        "summary": "Prefetch next jobs",
         "parameters": [
-          {
-            "name": "q",
-            "in": "query",
-            "required": true,
-            "schema": { "type": "string" }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "required": true,
-            "schema": { "type": "number" }
-          },
-          {
-            "name": "index",
-            "in": "query",
-            "required": true,
-            "schema": { "type": "number" }
-          }
+          { "name": "q", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "required": true, "schema": { "type": "number" } },
+          { "name": "index", "in": "query", "required": true, "schema": { "type": "number" } }
         ],
         "responses": {
           "200": {
-            "description": "Prefetch completed"
+            "description": "Prefetched jobs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Job" }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -190,7 +185,6 @@
 
   "components": {
     "schemas": {
-
       "Job": {
         "type": "object",
         "required": ["id", "title", "company", "url", "description"],
@@ -242,7 +236,6 @@
           "perPage": { "type": "number" }
         }
       }
-
     }
   }
 }

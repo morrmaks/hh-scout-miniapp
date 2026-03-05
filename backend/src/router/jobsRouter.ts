@@ -14,13 +14,13 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/prefetch', async (req, res) => {
-  const q = String(req.query.q || '');
-  const page = Number(req.query.page || 1);
-  const index = Number(req.query.index || 0);
+  const q = String(req.query.q);
+  const page = Number(req.query.page);
+  const index = Number(req.query.index);
 
-  await prefetchVacancies(q, page, index);
+  const result = await prefetchVacancies(q, page, index);
 
-  res.json({ ok: true });
+  res.json(result);
 });
 
 router.get('/:id', async (req, res) => {

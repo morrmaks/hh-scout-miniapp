@@ -113,14 +113,15 @@ export async function prefetchVacancies(query: string, page: number, index: numb
   const normalized = normalizeQuery(query);
 
   const session = searchSessions.get(normalized);
-  if (!session) return;
+  if (!session) return { items: [] };
 
   const raw = session.pages[page];
-  if (!raw) return;
+  if (!raw) return { items: [] };
 
   const offset = Math.floor(index / PAGE_SIZE) * PAGE_SIZE + PAGE_SIZE;
+  const slice = raw.slice(offset, offset + PAGE_SIZE);
 
-  const ids = raw.slice(offset, offset + PAGE_SIZE).map((v) => v.id);
+  const jobs = await Promise.all(slice.map((v) => getVacancyById(v.id)));
 
-  await Promise.all(ids.map((id) => getVacancyById(id).catch(() => {})));
+  return { items: jobs };
 }
