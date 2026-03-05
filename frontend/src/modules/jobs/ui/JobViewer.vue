@@ -5,6 +5,7 @@ import Button from '@/common/ui/Button.vue';
 
 interface Props {
   job: Job | null;
+  position?: string;
 }
 
 defineProps<Props>();
@@ -18,12 +19,17 @@ defineEmits<{
 <template>
   <div v-if="job" class="viewer">
     <header class="header">
-      <h2 class="title">
-        {{ job.title }}
-      </h2>
-      <p class="company">
-        {{ job.company }}
-      </p>
+      <div class="title-block">
+        <h2 class="title">
+          {{ job.title }}
+        </h2>
+        <p class="company">
+          {{ job.company }}
+        </p>
+      </div>
+      <div class="position">
+        {{ position }}
+      </div>
     </header>
 
     <article class="description">
@@ -61,11 +67,23 @@ defineEmits<{
 }
 
 .header {
-  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
 
+.title-block {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.position {
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--bg-soft);
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .title {

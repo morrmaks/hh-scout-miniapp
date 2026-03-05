@@ -5,8 +5,6 @@ import type { Job } from '@/common/api/generated';
 
 import { getJobs } from '@/common/api/generated';
 
-import { prefetchJobs } from '../api/prefetchJobs';
-
 export const useJobsStore = defineStore('jobs', () => {
   const query = ref('');
   const page = ref(1);
@@ -14,6 +12,7 @@ export const useJobsStore = defineStore('jobs', () => {
 
   const items = ref<Job[]>([]);
   const pages = ref(0);
+  const found = ref(0);
 
   const loading = ref(false);
 
@@ -21,6 +20,12 @@ export const useJobsStore = defineStore('jobs', () => {
 
   const currentJob = computed(() => {
     return items.value[index.value] ?? null;
+  });
+
+  // позиция вакансии на странице
+  const pagePosition = computed(() => {
+    if (!items.value.length) return '0 / 0';
+    return `${index.value + 1} / ${items.value.length}`;
   });
 
   let requestId = 0;
@@ -44,8 +49,12 @@ export const useJobsStore = defineStore('jobs', () => {
 
       items.value = data.items ?? [];
       pages.value = data.pages ?? 0;
+      found.value = data.found ?? 0;
 
-      prefetchNext(data.items ?? []);
+      // если индекс выходит за границы
+      if (index.value >= items.value.length) {
+        index.value = 0;
+      }
     } finally {
       if (id === requestId) {
         loading.value = false;
@@ -75,7 +84,6 @@ export const useJobsStore = defineStore('jobs', () => {
   function nextJob() {
     if (index.value < items.value.length - 1) {
       index.value++;
-      maybePrefetch();
       return;
     }
 
@@ -99,33 +107,6 @@ export const useJobsStore = defineStore('jobs', () => {
         index.value = items.value.length - 1;
       });
     }
-  }
-
-  function maybePrefetch() {
-    const pos = index.value;
-
-    if (pos % 10 !== 7) return;
-
-    const start = pos + 1;
-    const end = start + 10;
-
-    const ids = items.value
-      .slice(start, end)
-      .map((j) => j.id)
-      .filter(Boolean) as string[];
-
-    if (!ids.length) return;
-
-    prefetchJobs(ids);
-  }
-
-  function prefetchNext(jobs: Job[]) {
-    const ids = jobs
-      .slice(0, 10)
-      .map((j) => j.id)
-      .filter(Boolean) as string[];
-
-    if (ids.length) prefetchJobs(ids);
   }
 
   function restore() {
@@ -158,7 +139,11 @@ export const useJobsStore = defineStore('jobs', () => {
     index,
 
     items,
+    found,
+
     currentJob,
+    pagePosition,
+
     loading,
     hasData,
 

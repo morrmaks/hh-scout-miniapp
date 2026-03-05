@@ -5,5 +5,5 @@ export interface SearchResultDTO {
   items: JobDTO[];
   page: number;
   pages: number;
-  pageSize: number;
+  perPage: number;
 }

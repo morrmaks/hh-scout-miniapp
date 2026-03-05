@@ -36,7 +36,12 @@ watch(
 
     <!-- Контент -->
     <div v-else class="content" :class="{ disabled: store.loading && store.hasData }">
-      <JobViewer :job="store.currentJob" @next="store.nextJob" @prev="store.prevJob" />
+      <JobViewer
+        :job="store.currentJob"
+        :position="store.pagePosition"
+        @next="store.nextJob"
+        @prev="store.prevJob"
+      />
 
       <JobsPagination :page="store.page" :pages="store.pages" @change="store.setPage" />
     </div>

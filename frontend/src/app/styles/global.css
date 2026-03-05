@@ -1,10 +1,14 @@
-@import "./theme.css";
+@import './theme.css';
 
 body {
   background: var(--bg);
   color: var(--text);
 
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

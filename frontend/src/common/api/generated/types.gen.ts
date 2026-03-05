@@ -17,13 +17,6 @@ export interface Favorite {
   userId?: number;
 }
 
-export interface Position {
-  index?: number;
-  page?: number;
-  query?: string;
-  userId?: number;
-}
-
 export interface SearchResult {
   found?: number;
   items?: Array<Job>;
@@ -50,6 +43,22 @@ export interface SearchJobsResponses {
 
 export type SearchJobsResponse = SearchJobsResponses[keyof SearchJobsResponses];
 
+export interface PrefetchJobsData {
+  body: {
+    ids: Array<string>;
+  };
+  path?: never;
+  query?: never;
+  url: '/jobs/prefetch';
+}
+
+export interface PrefetchJobsResponses {
+  /**
+   * Prefetch completed
+   */
+  200: unknown;
+}
+
 export interface GetJobByIdData {
   body?: never;
   path: {
@@ -67,22 +76,6 @@ export interface GetJobByIdResponses {
 }
 
 export type GetJobByIdResponse = GetJobByIdResponses[keyof GetJobByIdResponses];
-
-export interface PrefetchJobsData {
-  body: {
-    ids: Array<string>;
-  };
-  path?: never;
-  query?: never;
-  url: '/jobs/prefetch';
-}
-
-export interface PrefetchJobsResponses {
-  /**
-   * Prefetch completed
-   */
-  200: unknown;
-}
 
 export interface SaveFavoriteData {
   body: {
@@ -132,38 +125,6 @@ export interface DeleteFavoriteData {
 export interface DeleteFavoriteResponses {
   /**
    * Favorite removed
-   */
-  200: unknown;
-}
-
-export interface GetPositionData {
-  body?: never;
-  path: {
-    userId: number;
-  };
-  query?: never;
-  url: '/position/{userId}';
-}
-
-export interface GetPositionResponses {
-  /**
-   * Position
-   */
-  200: Position;
-}
-
-export type GetPositionResponse = GetPositionResponses[keyof GetPositionResponses];
-
-export interface SavePositionData {
-  body: Position;
-  path?: never;
-  query?: never;
-  url: '/position';
-}
-
-export interface SavePositionResponses {
-  /**
-   * Position saved
    */
   200: unknown;
 }

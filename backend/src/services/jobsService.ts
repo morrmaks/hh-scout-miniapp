@@ -13,22 +13,18 @@ export async function searchJobs(query: string, page: number): Promise<SearchRes
   const normalized = normalizeQuery(query);
 
   const session = searchSessions.get(normalized);
-
   if (session && session.pages[page]) {
     const raw = session.pages[page];
-
     const first10 = raw.slice(0, PAGE_SIZE);
 
     const jobs = await Promise.all(first10.map((v) => getVacancyById(v.id)));
-
-    prefetchVacancies(raw.slice(10, 20).map((v) => v.id));
 
     return {
       items: jobs,
       page,
       pages: session.pagesTotal,
       found: session.found,
-      pageSize: PAGE_SIZE
+      perPage: session.perPage
     };
   }
 
@@ -46,32 +42,33 @@ export async function searchJobs(query: string, page: number): Promise<SearchRes
       items: VacancyShort[];
       pages: number;
       found: number;
+      per_page: number;
     };
 
     const rawItems = data.items;
 
-    const newSession = session ?? {
-      pages: [],
-      pagesTotal: data.pages,
-      found: data.found
-    };
+    let newSession = session;
+
+    if (!newSession) {
+      newSession = {
+        pages: [],
+        pagesTotal: data.pages,
+        found: data.found,
+        perPage: data.per_page
+      };
+    }
 
     newSession.pages[page] = rawItems;
-
     searchSessions.set(normalized, newSession);
 
-    const first10 = rawItems.slice(0, PAGE_SIZE);
-
-    const jobs = await Promise.all(first10.map((v) => getVacancyById(v.id)));
-
-    prefetchVacancies(rawItems.slice(10, 20).map((v) => v.id));
+    const jobs = await Promise.all(rawItems.slice(0, PAGE_SIZE).map((v) => getVacancyById(v.id)));
 
     return {
       items: jobs,
       page,
-      pages: data.pages,
-      found: data.found,
-      pageSize: PAGE_SIZE
+      pages: newSession.pagesTotal,
+      found: newSession.found,
+      perPage: newSession.perPage
     };
   });
 
@@ -89,6 +86,7 @@ export async function getVacancyById(id: string) {
   if (cached) return toJobDTO(cached);
 
   const existing = inFlightVacancy.get(id);
+
   if (existing) {
     const full = await existing;
     return toJobDTO(full);
@@ -96,11 +94,8 @@ export async function getVacancyById(id: string) {
 
   const promise = enqueue(async () => {
     const res = await fetchRetry(`https://api.hh.ru/vacancies/${id}`);
-
     const data = await res.json();
-
     vacancyCache.set(id, data);
-
     return data;
   });
 
@@ -114,8 +109,18 @@ export async function getVacancyById(id: string) {
   }
 }
 
-export async function prefetchVacancies(ids: string[]) {
-  const safeIds = ids.slice(0, 10);
+export async function prefetchVacancies(query: string, page: number, index: number) {
+  const normalized = normalizeQuery(query);
 
-  await Promise.all(safeIds.map((id) => getVacancyById(id).catch(() => {})));
+  const session = searchSessions.get(normalized);
+  if (!session) return;
+
+  const raw = session.pages[page];
+  if (!raw) return;
+
+  const offset = Math.floor(index / PAGE_SIZE) * PAGE_SIZE + PAGE_SIZE;
+
+  const ids = raw.slice(offset, offset + PAGE_SIZE).map((v) => v.id);
+
+  await Promise.all(ids.map((id) => getVacancyById(id).catch(() => {})));
 }

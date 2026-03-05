@@ -21,4 +21,5 @@ export interface SearchSession {
   found: number;
   pages: VacancyShort[][];
   pagesTotal: number;
+  perPage: number;
 }

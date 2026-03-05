@@ -29,7 +29,7 @@
           {
             "name": "page",
             "in": "query",
-            "schema": { "type": "number" }
+            "schema": { "type": "number", "default": 1 }
           }
         ],
         "responses": {
@@ -46,28 +46,32 @@
         }
       }
     },
+
     "/jobs/prefetch": {
-      "post": {
+      "get": {
         "operationId": "prefetchJobs",
         "tags": ["Jobs"],
         "summary": "Prefetch job descriptions",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["ids"],
-                "properties": {
-                  "ids": {
-                    "type": "array",
-                    "items": { "type": "string" }
-                  }
-                }
-              }
-            }
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "index",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number" }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Prefetch completed"
@@ -75,6 +79,7 @@
         }
       }
     },
+
     "/jobs/{id}": {
       "get": {
         "operationId": "getJobById",
@@ -102,6 +107,7 @@
         }
       }
     },
+
     "/favorites": {
       "post": {
         "operationId": "saveFavorite",
@@ -112,14 +118,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "required": ["userId", "job"],
-                "properties": {
-                  "userId": { "type": "number" },
-                  "job": {
-                    "$ref": "#/components/schemas/Job"
-                  }
-                }
+                "$ref": "#/components/schemas/FavoriteCreate"
               }
             }
           }
@@ -131,6 +130,7 @@
         }
       }
     },
+
     "/favorites/{userId}": {
       "get": {
         "operationId": "getFavorites",
@@ -160,6 +160,7 @@
         }
       }
     },
+
     "/favorites/{userId}/{jobId}": {
       "delete": {
         "operationId": "deleteFavorite",
@@ -186,10 +187,13 @@
       }
     }
   },
+
   "components": {
     "schemas": {
+
       "Job": {
         "type": "object",
+        "required": ["id", "title", "company", "url", "description"],
         "properties": {
           "id": { "type": "string" },
           "title": { "type": "string" },
@@ -198,6 +202,7 @@
           "description": { "type": "string" }
         }
       },
+
       "Favorite": {
         "type": "object",
         "properties": {
@@ -209,18 +214,35 @@
           "url": { "type": "string" }
         }
       },
+
+      "FavoriteCreate": {
+        "type": "object",
+        "required": ["userId", "job"],
+        "properties": {
+          "userId": { "type": "number" },
+          "job": {
+            "$ref": "#/components/schemas/Job"
+          }
+        }
+      },
+
       "SearchResult": {
         "type": "object",
+        "required": ["items", "page", "pages", "found", "perPage"],
         "properties": {
           "items": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/Job" }
+            "items": {
+              "$ref": "#/components/schemas/Job"
+            }
           },
           "page": { "type": "number" },
           "pages": { "type": "number" },
-          "found": { "type": "number" }
+          "found": { "type": "number" },
+          "perPage": { "type": "number" }
         }
       }
+
     }
   }
 }

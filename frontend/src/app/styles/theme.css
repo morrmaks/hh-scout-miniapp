@@ -1,33 +1,31 @@
 :root {
-
   /* background */
-  
+
   --bg: #020617;
   --bg-soft: #020617;
   --card: #0f172a;
-  
+
   /* text */
-  
+
   --text: #f1f5f9;
   --text-muted: #64748b;
-  
+
   /* borders */
-  
+
   --border: #1e293b;
-  
+
   /* primary */
-  
+
   --primary: #3b82f6;
   --primary-hover: #2563eb;
-  
+
   /* buttons */
-  
+
   --button-bg: #0b1220;
   --button-hover: #1e293b;
-  
+
   /* scrollbar */
-  
+
   --scrollbar: #334155;
   --scrollbar-hover: #475569;
-  
-  }
+}
