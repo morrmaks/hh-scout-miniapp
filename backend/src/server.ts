@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 
-import { searchSessions, vacancyCache } from './cache/hhCache.js';
+import { searchSessions, vacancyCache } from './cache/jobsCache.js';
 import { errorMiddleware } from './middleware/errorMiddleware';
 import { router } from './router/index.js';
 

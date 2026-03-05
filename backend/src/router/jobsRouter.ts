@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { getVacancyById, prefetchVacancies, searchJobs } from '../services/hhService';
+import { getVacancyById, prefetchVacancies, searchJobs } from '../services/jobsService';
 
 const router = Router();
 

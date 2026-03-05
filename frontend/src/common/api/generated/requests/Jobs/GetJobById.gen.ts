@@ -4,11 +4,11 @@ import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
 import type { GetJobByIdData, GetJobByIdResponse } from '../../types.gen';
 
-import { instance } from '../../instance.gen';
+import { instance } from '../../../../../app/http/client';
 
 export type GetJobByIdRequestParams = FetchesRequestParams<GetJobByIdData>;
 
-export const GetJobById = ({ config, path }: GetJobByIdRequestParams) =>
+export const getJobById = ({ config, path }: GetJobByIdRequestParams) =>
   instance.call<GetJobByIdResponse>('GET', `/jobs/${path.id}`, {
     ...config
   });

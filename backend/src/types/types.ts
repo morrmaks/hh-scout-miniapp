@@ -1,5 +1,3 @@
-import type { JobDTO } from '../dto/jobDto';
-
 export interface VacancyShort {
   alternate_url: string;
   employer?: {
@@ -21,6 +19,6 @@ export interface VacancyFull {
 
 export interface SearchSession {
   found: number;
-  pages: JobDTO[][];
+  pages: VacancyShort[][];
   pagesTotal: number;
 }

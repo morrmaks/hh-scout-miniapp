@@ -4,11 +4,11 @@ import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
 import type { SaveFavoriteData } from '../../types.gen';
 
-import { instance } from '../../instance.gen';
+import { instance } from '../../../../../app/http/client';
 
-export type SaveFavoriteRequestParams = FetchesRequestParams<SaveFavoriteData>;
+export type PostFavoritesRequestParams = FetchesRequestParams<SaveFavoriteData>;
 
-export const SaveFavorite = ({ config, body }: SaveFavoriteRequestParams) =>
+export const postFavorites = ({ config, body }: PostFavoritesRequestParams) =>
   instance.call('POST', '/favorites', {
     body,
     ...config

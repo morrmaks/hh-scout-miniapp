@@ -12,8 +12,7 @@
   ],
   "tags": [
     { "name": "Jobs" },
-    { "name": "Favorites" },
-    { "name": "Position" }
+    { "name": "Favorites" }
   ],
   "paths": {
     "/jobs": {
@@ -25,13 +24,11 @@
           {
             "name": "q",
             "in": "query",
-            "required": false,
             "schema": { "type": "string" }
           },
           {
             "name": "page",
             "in": "query",
-            "required": false,
             "schema": { "type": "number" }
           }
         ],
@@ -42,33 +39,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SearchResult"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/jobs/{id}": {
-      "get": {
-        "operationId": "getJobById",
-        "tags": ["Jobs"],
-        "summary": "Get job by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Job",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Job"
                 }
               }
             }
@@ -101,6 +71,33 @@
         "responses": {
           "200": {
             "description": "Prefetch completed"
+          }
+        }
+      }
+    },
+    "/jobs/{id}": {
+      "get": {
+        "operationId": "getJobById",
+        "tags": ["Jobs"],
+        "summary": "Get job by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
           }
         }
       }
@@ -138,7 +135,6 @@
       "get": {
         "operationId": "getFavorites",
         "tags": ["Favorites"],
-        "summary": "Get favorite jobs",
         "parameters": [
           {
             "name": "userId",
@@ -168,7 +164,6 @@
       "delete": {
         "operationId": "deleteFavorite",
         "tags": ["Favorites"],
-        "summary": "Delete favorite job",
         "parameters": [
           {
             "name": "userId",
@@ -186,55 +181,6 @@
         "responses": {
           "200": {
             "description": "Favorite removed"
-          }
-        }
-      }
-    },
-    "/position/{userId}": {
-      "get": {
-        "operationId": "getPosition",
-        "tags": ["Position"],
-        "summary": "Get saved user position",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "number" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Position",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Position"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/position": {
-      "post": {
-        "operationId": "savePosition",
-        "tags": ["Position"],
-        "summary": "Save user position",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Position"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Position saved"
           }
         }
       }
@@ -263,23 +209,12 @@
           "url": { "type": "string" }
         }
       },
-      "Position": {
-        "type": "object",
-        "properties": {
-          "userId": { "type": "number" },
-          "page": { "type": "number" },
-          "index": { "type": "number" },
-          "query": { "type": "string" }
-        }
-      },
       "SearchResult": {
         "type": "object",
         "properties": {
           "items": {
             "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Job"
-            }
+            "items": { "$ref": "#/components/schemas/Job" }
           },
           "page": { "type": "number" },
           "pages": { "type": "number" },

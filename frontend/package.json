@@ -11,7 +11,7 @@
     "lint:fix": "eslint --fix",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
-    "api:generate": "npm run apicraft generate"
+    "api:generate": "apicraft generate"
   },
   "dependencies": {
     "@siberiacancode/fetches": "^1.14.1",

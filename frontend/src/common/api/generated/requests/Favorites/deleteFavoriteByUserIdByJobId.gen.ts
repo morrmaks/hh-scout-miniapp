@@ -4,11 +4,14 @@ import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
 import type { DeleteFavoriteData } from '../../types.gen';
 
-import { instance } from '../../instance.gen';
+import { instance } from '../../../../../app/http/client';
 
-export type DeleteFavoriteRequestParams = FetchesRequestParams<DeleteFavoriteData>;
+export type DeleteFavoriteByUserIdByJobIdRequestParams = FetchesRequestParams<DeleteFavoriteData>;
 
-export const DeleteFavorite = ({ config, path }: DeleteFavoriteRequestParams) =>
+export const deleteFavoriteByUserIdByJobId = ({
+  config,
+  path
+}: DeleteFavoriteByUserIdByJobIdRequestParams) =>
   instance.call('DELETE', `/favorites/${path.userId}/${path.jobId}`, {
     ...config
   });

@@ -4,11 +4,11 @@ import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
 import type { GetPositionData, GetPositionResponse } from '../../types.gen';
 
-import { instance } from '../../instance.gen';
+import { instance } from '../../../../../app/http/client';
 
-export type GetPositionRequestParams = FetchesRequestParams<GetPositionData>;
+export type GetPositionByUserIdRequestParams = FetchesRequestParams<GetPositionData>;
 
-export const GetPosition = ({ config, path }: GetPositionRequestParams) =>
+export const getPositionByUserId = ({ config, path }: GetPositionByUserIdRequestParams) =>
   instance.call<GetPositionResponse>('GET', `/position/${path.userId}`, {
     ...config
   });

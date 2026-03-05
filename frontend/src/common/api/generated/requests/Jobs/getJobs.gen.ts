@@ -4,11 +4,11 @@ import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
 import type { SearchJobsData, SearchJobsResponse } from '../../types.gen';
 
-import { instance } from '../../instance.gen';
+import { instance } from '../../../../../app/http/client';
 
-export type SearchJobsRequestParams = FetchesRequestParams<SearchJobsData>;
+export type GetJobsRequestParams = FetchesRequestParams<SearchJobsData>;
 
-export const SearchJobs = ({ config, query }: SearchJobsRequestParams = {}) =>
+export const getJobs = ({ config, query }: GetJobsRequestParams = {}) =>
   instance.call<SearchJobsResponse>('GET', '/jobs', {
     query,
     ...config

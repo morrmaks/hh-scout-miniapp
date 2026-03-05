@@ -4,11 +4,11 @@ import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
 import type { PrefetchJobsData } from '../../types.gen';
 
-import { instance } from '../../instance.gen';
+import { instance } from '../../../../../app/http/client';
 
-export type PrefetchJobsRequestParams = FetchesRequestParams<PrefetchJobsData>;
+export type PostJobsPrefetchRequestParams = FetchesRequestParams<PrefetchJobsData>;
 
-export const PrefetchJobs = ({ config, body }: PrefetchJobsRequestParams) =>
+export const postJobsPrefetch = ({ config, body }: PostJobsPrefetchRequestParams) =>
   instance.call('POST', '/jobs/prefetch', {
     body,
     ...config

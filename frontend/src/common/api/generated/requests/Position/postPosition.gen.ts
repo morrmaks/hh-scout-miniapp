@@ -4,11 +4,11 @@ import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
 import type { SavePositionData } from '../../types.gen';
 
-import { instance } from '../../instance.gen';
+import { instance } from '../../../../../app/http/client';
 
-export type SavePositionRequestParams = FetchesRequestParams<SavePositionData>;
+export type PostPositionRequestParams = FetchesRequestParams<SavePositionData>;
 
-export const SavePosition = ({ config, body }: SavePositionRequestParams) =>
+export const postPosition = ({ config, body }: PostPositionRequestParams) =>
   instance.call('POST', '/position', {
     body,
     ...config

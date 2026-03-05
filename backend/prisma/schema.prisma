@@ -17,11 +17,3 @@ model Favorite {
 
   @@unique([userId, jobId])
 }
-
-model Position {
-  id     Int @id @default(autoincrement())
-  userId Int @unique
-  query  String
-  page   Int
-  index  Int
-}

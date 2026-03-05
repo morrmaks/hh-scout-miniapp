@@ -3,11 +3,11 @@ import { apicraft } from '@siberiacancode/apicraft';
 export default apicraft([
   {
     input:
-      'https://raw.githubusercontent.com/morrmaks/hh-scout-miniapp/main/backend/api/openapi.yaml',
+      'https://raw.githubusercontent.com/morrmaks/hh-scout-miniapp/develop/backend/api/openapi.json',
     output: 'src/common/api/generated',
     instance: {
       name: 'fetches',
-      runtimeInstancePath: '@src/common/api/client/http'
+      runtimeInstancePath: 'src/app/http/client'
     },
     nameBy: 'path',
     groupBy: 'tags'

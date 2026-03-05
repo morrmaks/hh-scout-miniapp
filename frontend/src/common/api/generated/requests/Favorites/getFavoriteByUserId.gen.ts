@@ -4,11 +4,11 @@ import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
 import type { GetFavoritesData, GetFavoritesResponse } from '../../types.gen';
 
-import { instance } from '../../instance.gen';
+import { instance } from '../../../../../app/http/client';
 
-export type GetFavoritesRequestParams = FetchesRequestParams<GetFavoritesData>;
+export type GetFavoriteByUserIdRequestParams = FetchesRequestParams<GetFavoritesData>;
 
-export const GetFavorites = ({ config, path }: GetFavoritesRequestParams) =>
+export const getFavoriteByUserId = ({ config, path }: GetFavoriteByUserIdRequestParams) =>
   instance.call<GetFavoritesResponse>('GET', `/favorites/${path.userId}`, {
     ...config
   });

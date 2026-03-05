@@ -1,8 +1,8 @@
 import { createApp } from 'vue';
 
 import App from './App.vue';
-import { pinia } from './providers/pinia';
-import router from './router/router';
+import { setupProviders } from './providers';
+import { router } from './router';
 
 import './styles/reset.css';
 import './styles/global.css';
@@ -10,6 +10,6 @@ import './styles/global.css';
 const app = createApp(App);
 
 app.use(router);
-app.use(pinia);
+setupProviders(app);
 
 app.mount('#app');
