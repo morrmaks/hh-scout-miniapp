@@ -1,37 +1,37 @@
-const MAX_CONCURRENT = 3
+const MAX_CONCURRENT = 3;
 
-let active = 0
+let active = 0;
 
-const queue: Array<() => Promise<void>> = []
+const queue: Array<() => Promise<void>> = [];
 
 function process() {
-  if (active >= MAX_CONCURRENT) return
+  if (active >= MAX_CONCURRENT) return;
 
-  const task = queue.shift()
+  const task = queue.shift();
 
-  if (!task) return
+  if (!task) return;
 
-  active++
+  active++;
 
   task()
     .catch(() => {})
     .finally(() => {
-      active--
-      process()
-    })
+      active--;
+      process();
+    });
 }
 
 export function enqueue<T>(task: () => Promise<T>): Promise<T> {
   return new Promise((resolve, reject) => {
     queue.push(async () => {
       try {
-        const result = await task()
-        resolve(result)
+        const result = await task();
+        resolve(result);
       } catch (e) {
-        reject(e)
+        reject(e);
       }
-    })
+    });
 
-    process()
-  })
+    process();
+  });
 }

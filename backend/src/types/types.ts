@@ -1,26 +1,26 @@
-import { JobDTO } from "../dto/jobDto"
+import type { JobDTO } from '../dto/jobDto';
 
-export type VacancyShort = {
-  id: string
-  name: string
-  alternate_url: string
+export interface VacancyShort {
+  alternate_url: string;
   employer?: {
-    name: string
-  }
+    name: string;
+  };
+  id: string;
+  name: string;
 }
 
-export type VacancyFull = {
-  id: string
-  name: string
-  alternate_url: string
-  description: string
+export interface VacancyFull {
+  alternate_url: string;
+  description: string;
   employer?: {
-    name: string
-  }
+    name: string;
+  };
+  id: string;
+  name: string;
 }
 
-export type SearchSession = {
-  pages: JobDTO[][]
-  pagesTotal: number
-  found: number
+export interface SearchSession {
+  found: number;
+  pages: JobDTO[][];
+  pagesTotal: number;
 }

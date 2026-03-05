@@ -1,11 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response } from 'express';
 
-export const errorMiddleware = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const errorMiddleware = (err: Error, req: Request, res: Response) => {
   console.log(err);
-  res.status(500).json({ message: "Непредвиденная ошибка" });
+  res.status(500).json({ message: 'Непредвиденная ошибка' });
 };

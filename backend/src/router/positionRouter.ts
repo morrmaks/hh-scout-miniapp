@@ -1,26 +1,23 @@
-import { Router } from "express"
+import { Router } from 'express';
 
-import {
-  savePosition,
-  loadPosition
-} from "../services/positionService"
+import { loadPosition, savePosition } from '../services/positionService';
 
-const router = Router()
+const router = Router();
 
-router.get("/:userId", async (req, res) => {
-  const userId = Number(req.params.userId)
+router.get('/:userId', async (req, res) => {
+  const userId = Number(req.params.userId);
 
-  const pos = await loadPosition(userId)
+  const pos = await loadPosition(userId);
 
-  res.json(pos)
-})
+  res.json(pos);
+});
 
-router.post("/", async (req, res) => {
-  const { userId, page, index, query } = req.body
+router.post('/', async (req, res) => {
+  const { userId, page, index, query } = req.body;
 
-  await savePosition(userId, page, index, query)
+  await savePosition(userId, page, index, query);
 
-  res.json({ ok: true })
-})
+  res.json({ ok: true });
+});
 
-export default router
+export default router;

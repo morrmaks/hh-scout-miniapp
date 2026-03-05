@@ -1,3 +1,5 @@
-import { createPinia, type Pinia } from 'pinia'
+import type { Pinia } from 'pinia';
 
-export const pinia: Pinia = createPinia()
+import { createPinia } from 'pinia';
+
+export const pinia: Pinia = createPinia();

@@ -1,54 +1,51 @@
-import { Router } from "express"
+import { Router } from 'express';
 
 import {
-  loadFavorites,
-  saveFavorite,
   deleteFavorite,
-  exportExcel
-} from "../services/favoritesService"
+  exportExcel,
+  loadFavorites,
+  saveFavorite
+} from '../services/favoritesService';
 
-const router = Router()
+const router = Router();
 
-router.post("/", async (req, res) => {
-  const { userId, job } = req.body
+router.post('/', async (req, res) => {
+  const { userId, job } = req.body;
 
-  await saveFavorite(userId, job)
+  await saveFavorite(userId, job);
 
-  res.json({ ok: true })
-})
+  res.json({ ok: true });
+});
 
-router.get("/:userId", async (req, res) => {
-  const userId = Number(req.params.userId)
+router.get('/:userId', async (req, res) => {
+  const userId = Number(req.params.userId);
 
-  const list = await loadFavorites(userId)
+  const list = await loadFavorites(userId);
 
-  res.json(list)
-})
+  res.json(list);
+});
 
-router.get("/export/:userId", async (req, res) => {
-  const userId = Number(req.params.userId)
-  const buffer = await exportExcel(userId)
-
-  res.setHeader(
-    "Content-Type",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  )
+router.get('/export/:userId', async (req, res) => {
+  const userId = Number(req.params.userId);
+  const buffer = await exportExcel(userId);
 
   res.setHeader(
-    "Content-Disposition",
-    `attachment; filename=favorites_${userId}.xlsx`
-  )
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  );
 
-  res.send(buffer)
-})
+  res.setHeader('Content-Disposition', `attachment; filename=favorites_${userId}.xlsx`);
 
-router.delete("/:userId/:jobId", async (req, res) => {
-  const userId = Number(req.params.userId)
-  const jobId = req.params.jobId
+  res.send(buffer);
+});
 
-  await deleteFavorite(userId, jobId)
+router.delete('/:userId/:jobId', async (req, res) => {
+  const userId = Number(req.params.userId);
+  const jobId = req.params.jobId;
 
-  res.json({ ok: true })
-})
+  await deleteFavorite(userId, jobId);
 
-export default router
+  res.json({ ok: true });
+});
+
+export default router;

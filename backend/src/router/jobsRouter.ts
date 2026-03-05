@@ -1,35 +1,32 @@
-import { Router } from "express"
-import {
-  searchJobs,
-  getVacancyById,
-  prefetchVacancies
-} from "../services/hhService"
+import { Router } from 'express';
 
-const router = Router()
+import { getVacancyById, prefetchVacancies, searchJobs } from '../services/hhService';
 
-router.get("/", async (req, res) => {
-  const q = String(req.query.q || "")
-  const page = Number(req.query.page || 0)
+const router = Router();
 
-  const result = await searchJobs(q, page)
+router.get('/', async (req, res) => {
+  const q = String(req.query.q || '');
+  const page = Number(req.query.page || 0);
 
-  res.json(result)
-})
+  const result = await searchJobs(q, page);
 
-router.post("/prefetch", async (req, res) => {
-  const ids = req.body.ids as string[]
+  res.json(result);
+});
 
-  if (!Array.isArray(ids)) return res.status(400).json({ error: "ids required" })
+router.post('/prefetch', async (req, res) => {
+  const ids = req.body.ids as string[];
 
-  await prefetchVacancies(ids)
+  if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids required' });
 
-  res.json({ ok: true })
-})
+  await prefetchVacancies(ids);
 
-router.get("/:id", async (req, res) => {
-  const job = await getVacancyById(req.params.id)
+  res.json({ ok: true });
+});
 
-  res.json(job)
-})
+router.get('/:id', async (req, res) => {
+  const job = await getVacancyById(req.params.id);
 
-export default router
+  res.json(job);
+});
+
+export default router;

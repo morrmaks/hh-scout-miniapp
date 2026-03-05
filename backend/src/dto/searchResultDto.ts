@@ -1,8 +1,8 @@
-import { JobDTO } from "./jobDto"
+import type { JobDTO } from './jobDto';
 
-export type SearchResultDTO = {
-  items: JobDTO[]
-  page: number
-  pages: number
-  found: number
+export interface SearchResultDTO {
+  found: number;
+  items: JobDTO[];
+  page: number;
+  pages: number;
 }
