@@ -1,0 +1,248 @@
+openapi: 3.0.3
+
+info:
+  title: HH Scout API
+  version: 1.0.0
+  description: API for HH Scout Miniapp
+
+servers:
+  - url: http://localhost:3000
+
+tags:
+  - name: Jobs
+  - name: Favorites
+  - name: Position
+
+paths:
+
+  /jobs:
+    get:
+      operationId: searchJobs
+      tags:
+        - Jobs
+      summary: Search jobs
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Search result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResult"
+
+  /jobs/{id}:
+    get:
+      operationId: getJobById
+      tags:
+        - Jobs
+      summary: Get job by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+
+  /jobs/prefetch:
+    post:
+      operationId: prefetchJobs
+      tags:
+        - Jobs
+      summary: Prefetch job descriptions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Prefetch completed
+
+  /favorites:
+    post:
+      operationId: saveFavorite
+      tags:
+        - Favorites
+      summary: Save favorite job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - job
+              properties:
+                userId:
+                  type: number
+                job:
+                  $ref: "#/components/schemas/Job"
+      responses:
+        "200":
+          description: Favorite saved
+
+  /favorites/{userId}:
+    get:
+      operationId: getFavorites
+      tags:
+        - Favorites
+      summary: Get favorite jobs
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Favorite jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Favorite"
+
+  /favorites/{userId}/{jobId}:
+    delete:
+      operationId: deleteFavorite
+      tags:
+        - Favorites
+      summary: Delete favorite job
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Favorite removed
+
+  /position/{userId}:
+    get:
+      operationId: getPosition
+      tags:
+        - Position
+      summary: Get saved user position
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Position
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Position"
+
+  /position:
+    post:
+      operationId: savePosition
+      tags:
+        - Position
+      summary: Save user position
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Position"
+      responses:
+        "200":
+          description: Position saved
+
+
+components:
+
+  schemas:
+
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        company:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+
+    Favorite:
+      type: object
+      properties:
+        id:
+          type: number
+        userId:
+          type: number
+        jobId:
+          type: string
+        title:
+          type: string
+        company:
+          type: string
+        url:
+          type: string
+
+    Position:
+      type: object
+      properties:
+        userId:
+          type: number
+        page:
+          type: number
+        index:
+          type: number
+        query:
+          type: string
+
+    SearchResult:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Job"
+        page:
+          type: number
+        pages:
+          type: number
+        found:
+          type: number

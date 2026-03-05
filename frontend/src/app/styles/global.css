@@ -1,0 +1,10 @@
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #0f0f0f;
+  color: #ffffff;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
