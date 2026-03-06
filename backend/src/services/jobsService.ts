@@ -31,7 +31,8 @@ export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> 
       page,
       pages: session.pagesTotal,
       found: session.found,
-      perPage: session.perPage
+      perPage: session.perPage,
+      pageItems: raw.length
     };
   }
 
@@ -69,7 +70,8 @@ export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> 
 
     searchSessions.set(searchKey, newSession);
 
-    const first = data.items.slice(0, STEP);
+    const raw = data.items;
+    const first = raw.slice(0, STEP);
 
     const jobs = await Promise.all(first.map((v) => getVacancyById(v.id)));
 
@@ -78,7 +80,8 @@ export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> 
       page,
       pages: data.pages,
       found: data.found,
-      perPage: data.per_page
+      perPage: data.per_page,
+      pageItems: raw.length
     };
   });
 

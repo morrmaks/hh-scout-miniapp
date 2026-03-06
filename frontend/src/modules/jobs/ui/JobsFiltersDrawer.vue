@@ -6,6 +6,10 @@ import type { JobFilters } from '../types/jobsFilters';
 import { useJobsStore } from '../store/jobs.store';
 import JobsFilters from './JobsFilters.vue';
 
+interface Props {
+  open: boolean;
+}
+
 defineProps<Props>();
 
 const emit = defineEmits<{
@@ -13,10 +17,6 @@ const emit = defineEmits<{
 }>();
 
 const store = useJobsStore();
-
-interface Props {
-  open: boolean;
-}
 
 function apply(filters: JobFilters) {
   store.setFilters(filters);

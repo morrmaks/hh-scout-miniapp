@@ -25,6 +25,7 @@ function onInput(event: Event) {
 <template>
   <input
     class="input"
+    type="text"
     :value="modelValue"
     :placeholder="placeholder"
     :disabled="disabled"
@@ -34,7 +35,7 @@ function onInput(event: Event) {
 </template>
 
 <style scoped>
-input {
+.input {
   flex: 1;
   background: var(--bg-soft);
   border: 1px solid var(--border);
@@ -44,17 +45,17 @@ input {
   transition: all 0.15s ease;
 }
 
-input::placeholder {
+.input::placeholder {
   color: var(--text-muted);
 }
 
-input:focus {
+.input:focus {
   outline: none;
 
   border-color: var(--primary);
 
   box-shadow:
     0 0 0 1px var(--primary),
-    0 0 14px rgba(59, 130, 246, 0.25);
+    0 0 14px var(--primary-hover);
 }
 </style>

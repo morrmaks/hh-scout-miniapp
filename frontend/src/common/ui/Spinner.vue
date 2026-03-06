@@ -7,8 +7,8 @@
   width: 32px;
   height: 32px;
 
-  border: 4px solid #ddd;
-  border-top: 4px solid #2563eb;
+  border: 4px solid var(--border);
+  border-top: 4px solid var(--primary);
 
   border-radius: 50%;
 

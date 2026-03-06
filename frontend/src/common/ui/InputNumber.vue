@@ -49,6 +49,6 @@ input:focus {
 
   box-shadow:
     0 0 0 1px var(--primary),
-    0 0 14px rgba(59, 130, 246, 0.25);
+    0 0 14px var(--primary-hover);
 }
 </style>

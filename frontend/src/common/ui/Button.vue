@@ -1,15 +1,17 @@
 <script setup lang="ts">
 interface Props {
-  variant?: 'ghost' | 'primary';
+  size?: 'lg' | 'md' | 'sm';
+  variant?: 'destructive' | 'ghost' | 'link' | 'primary';
 }
 
 withDefaults(defineProps<Props>(), {
-  variant: 'primary'
+  variant: 'primary',
+  size: 'md'
 });
 </script>
 
 <template>
-  <button class="btn" :class="variant" v-bind="$attrs">
+  <button type="button" class="btn" :class="[variant, size]" v-bind="$attrs">
     <slot />
   </button>
 </template>
@@ -18,8 +20,6 @@ withDefaults(defineProps<Props>(), {
 .btn {
   border: none;
   border-radius: 8px;
-
-  padding: 8px 14px;
 
   font-size: 14px;
   cursor: pointer;
@@ -37,37 +37,43 @@ withDefaults(defineProps<Props>(), {
 }
 
 .btn:disabled:hover {
-  cursor: not-allowed;
-  opacity: 0.6;
+  box-shadow: none;
 }
+
+.sm {
+  padding: 6px 12px;
+}
+
+.md {
+  padding: 8px 14px;
+}
+
+.lg {
+  padding: 10px 16px;
+}
+
+/* PRIMARY */
 
 .primary {
   background: var(--primary);
   color: white;
 
-  box-shadow: 0 0 0 rgba(59, 130, 246, 0);
+  box-shadow: 0 0 0 transparent;
 }
 
 .primary:hover {
   background: var(--primary-hover);
-
   box-shadow:
-    0 0 12px rgba(59, 130, 246, 0.45),
-    0 0 22px rgba(59, 130, 246, 0.25);
-}
-
-.primary:disabled {
-  background: var(--primary);
-  cursor: not-allowed;
-  opacity: 0.6;
+    0 0 8px var(--primary-glow),
+    0 0 14px var(--primary-glow-soft);
 }
 
 .primary:disabled:hover {
   background: var(--primary);
-  cursor: not-allowed;
-  opacity: 0.6;
   box-shadow: none;
 }
+
+/* GHOST */
 
 .ghost {
   background: var(--button-bg);
@@ -76,21 +82,43 @@ withDefaults(defineProps<Props>(), {
 
 .ghost:hover {
   background: var(--button-hover);
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
-}
-
-.ghost:disabled {
-  background: var(--button-bg);
-  color: var(--text);
-  cursor: not-allowed;
-  opacity: 0.6;
+  box-shadow: 0 0 8px var(--button-glow);
 }
 
 .ghost:disabled:hover {
   background: var(--button-bg);
-  color: var(--text);
-  cursor: not-allowed;
-  opacity: 0.6;
   box-shadow: none;
+}
+
+/* DESTRUCTIVE */
+
+.destructive {
+  background: var(--destructive);
+  color: var(--text);
+}
+
+.destructive:hover {
+  background: var(--destructive-hover);
+  box-shadow:
+    0 0 8px var(--destructive-glow),
+    0 0 14px var(--destructive-glow-soft);
+}
+
+.destructive:disabled:hover {
+  background: var(--destructive);
+  box-shadow: none;
+}
+
+.link {
+  background: transparent;
+  color: var(--text);
+}
+
+.link:hover {
+  opacity: 0.6;
+}
+
+.link:disabled:hover {
+  opacity: 1;
 }
 </style>

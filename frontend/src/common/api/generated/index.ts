@@ -1,3 +1,4 @@
+export * from './requests/Areas/getAreas.gen';
 export * from './requests/Favorites/deleteFavoriteByUserIdByJobId.gen';
 export * from './requests/Favorites/getFavoriteByUserId.gen';
 export * from './requests/Favorites/postFavorites.gen';

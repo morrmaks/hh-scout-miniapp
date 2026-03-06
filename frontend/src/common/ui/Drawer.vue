@@ -33,7 +33,9 @@ function onTouchMove(e: TouchEvent) {
   const touch = e.touches[0];
   if (!touch) return;
 
-  currentY.value = touch.clientY - startY.value;
+  const diff = touch.clientY - startY.value;
+
+  currentY.value = diff > 0 ? diff : 0;
 }
 
 function onTouchEnd() {
@@ -62,23 +64,23 @@ onUnmounted(() => {
 
 <template>
   <Teleport to="body">
-    <div v-if="open" class="drawer">
-      <div class="overlay" @click="close" />
-
-      <div
-        class="content"
-        :style="{
-          transform: dragging ? `translateY(${currentY}px)` : ''
-        }"
-        @touchstart="onTouchStart"
-        @touchmove="onTouchMove"
-        @touchend="onTouchEnd"
-      >
-        <div class="handle" />
-
-        <slot />
+    <Transition name="drawer">
+      <div v-if="open" class="drawer">
+        <div class="overlay" @click="close" />
+        <div
+          class="content"
+          :style="{
+            transform: dragging ? `translateY(${currentY}px)` : ''
+          }"
+          @touchstart="onTouchStart"
+          @touchmove="onTouchMove"
+          @touchend="onTouchEnd"
+        >
+          <div class="handle" />
+          <slot />
+        </div>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>
 
@@ -111,8 +113,6 @@ onUnmounted(() => {
   padding: 20px;
 
   transition: transform 0.2s ease;
-
-  animation: drawerIn 0.25s ease;
 }
 
 .handle {
@@ -126,12 +126,26 @@ onUnmounted(() => {
   margin: 0 auto 16px auto;
 }
 
-@keyframes drawerIn {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.drawer-enter-from,
+.drawer-leave-to {
+  opacity: 0;
+}
+
+.drawer-enter-active .content,
+.drawer-leave-active .content {
+  transition: transform 0.25s ease;
+}
+
+.drawer-enter-from .content {
+  transform: translateY(100%);
+}
+
+.drawer-leave-to .content {
+  transform: translateY(100%);
 }
 </style>

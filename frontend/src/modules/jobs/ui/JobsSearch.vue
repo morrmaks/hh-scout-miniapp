@@ -1,17 +1,28 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { Bookmark, Search } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 import Button from '@/common/ui/Button.vue';
+import { useJobsStore } from '@/modules/jobs/store/jobs.store';
 
-const emit = defineEmits<{
-  search: [string];
-}>();
+import { useSearchHistory } from '../composables/useSearchHistory';
 
-const query = ref('');
+const store = useJobsStore();
+const { add } = useSearchHistory();
+
+const query = computed({
+  get: () => store.query,
+  set: (v: string) => (store.query = v)
+});
 
 function submit() {
   if (!query.value.trim()) return;
-  emit('search', query.value);
+  store.setQuery(query.value);
+}
+
+function saveQuery() {
+  if (!query.value.trim()) return;
+  add(query.value);
 }
 </script>
 
@@ -19,7 +30,14 @@ function submit() {
   <div class="search">
     <input v-model="query" placeholder="Search jobs..." @keyup.enter="submit" />
 
-    <Button @click="submit"> Search </Button>
+    <Button @click="submit">
+      <Search :size="16" />
+      Поиск
+    </Button>
+
+    <Button variant="ghost" @click="saveQuery">
+      <Bookmark :size="16" />
+    </Button>
   </div>
 </template>
 
@@ -32,8 +50,8 @@ function submit() {
 input {
   flex: 1;
 
-  background: #020617;
-  border: 1px solid #1e293b;
+  background: var(--card);
+  border: 0px solid var(--border);
 
   border-radius: 10px;
 
@@ -45,7 +63,7 @@ input {
 }
 
 input::placeholder {
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 input:focus {
@@ -55,6 +73,6 @@ input:focus {
 
   box-shadow:
     0 0 0 1px var(--primary),
-    0 0 14px rgba(59, 130, 246, 0.25);
+    0 0 14px var(--primary-hover);
 }
 </style>

@@ -1,50 +1,51 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 
-import Spinner from '@/common/ui/Spinner.vue';
+import PaginationSkeleton from '@/common/ui/PaginationSkeleton.vue';
+import { useAreasStore } from '@/modules/areas';
 import { useJobsStore } from '@/modules/jobs/store/jobs.store';
-import JobsFilters from '@/modules/jobs/ui/JobsFilters.vue';
+import JobsFiltersDrawer from '@/modules/jobs/ui/JobsFiltersDrawer.vue';
 import JobsFiltersToggle from '@/modules/jobs/ui/JobsFiltersToggle.vue';
 import JobsPagination from '@/modules/jobs/ui/JobsPagination.vue';
 import JobsSearch from '@/modules/jobs/ui/JobsSearch.vue';
+import JobsSearchHistory from '@/modules/jobs/ui/JobsSearchHistory.vue';
 import JobViewer from '@/modules/jobs/ui/JobViewer.vue';
+import JobViewerSkeleton from '@/modules/jobs/ui/JobViewerSkeleton.vue';
 
 const store = useJobsStore();
+const areasStore = useAreasStore();
 
 const filtersOpen = ref(false);
 
 onMounted(() => {
   store.restore();
-
-  if (store.query) store.fetchJobs();
+  areasStore.fetchAreas();
 });
 
-watch(
-  () => [store.page, store.index, store.query],
-  () => store.savePosition()
-);
+watch([() => store.page, () => store.index, () => store.query], () => store.savePosition());
 </script>
 
 <template>
   <div class="page">
-    <JobsSearch @search="store.setQuery" />
+    <JobsSearch />
+
+    <JobsSearchHistory @select="store.setQuery" />
 
     <JobsFiltersToggle :open="filtersOpen" @toggle="filtersOpen = !filtersOpen" />
 
-    <transition name="filters">
-      <JobsFilters v-if="filtersOpen" @change="store.setFilters" />
-    </transition>
+    <JobsFiltersDrawer v-model:open="filtersOpen" />
 
-    <div v-if="store.loading && !store.hasData" class="loader">
-      <Spinner />
+    <div v-if="store.loading && !store.initialized">
+      <JobViewerSkeleton />
+      <PaginationSkeleton />
     </div>
 
-    <div v-else class="content" :class="{ disabled: store.loading && store.hasData }">
+    <div v-else class="content" :class="{ disabled: store.loading && store.initialized }">
       <JobViewer
         :job="store.currentJob"
         :position="store.pagePosition"
         :disable-prev="store.index === 0"
-        :disable-next="store.index === store.perPage - 1"
+        :disable-next="store.index === store.pageItems - 1"
         @next="store.nextJob"
         @prev="store.prevJob"
       />
@@ -61,47 +62,35 @@ watch(
 
 <style scoped>
 .page {
-  max-width: 760px;
+  max-width: 900px;
   margin: 0 auto;
 
-  padding: 40px 20px;
+  padding: 16px;
 
   display: flex;
   flex-direction: column;
-  gap: 28px;
+
+  gap: 16px;
 }
 
 .content {
   display: flex;
   flex-direction: column;
 
-  transition: opacity 0.2s ease;
-}
-
-.content.updating {
-  opacity: 0.45;
-  pointer-events: none;
+  gap: 16px;
 }
 
 .content.disabled {
-  opacity: 0.45;
+  opacity: 0.6;
   pointer-events: none;
 }
 
-.loader {
-  display: flex;
-  justify-content: center;
-  margin-top: 80px;
-}
+/* mobile */
 
-.filters-enter-active,
-.filters-leave-active {
-  transition: all 0.18s ease;
-}
-
-.filters-enter-from,
-.filters-leave-to {
-  opacity: 0;
-  transform: translateY(-8px);
+@media (max-width: 640px) {
+  .page {
+    padding: 12px;
+    gap: 14px;
+  }
 }
 </style>

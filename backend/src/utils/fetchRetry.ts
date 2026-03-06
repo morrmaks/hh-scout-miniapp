@@ -10,12 +10,7 @@ export async function fetchRetry(url: string, retries = 3, options: RequestInit 
 
       const res = await fetch(url, {
         ...options,
-        signal: controller.signal,
-        headers: {
-          'HH-User-Agent': 'hh-scout-miniapp/1.0 (dev@example.com)',
-          'User-Agent': 'hh-scout-miniapp/1.0',
-          ...(options.headers || {})
-        }
+        signal: controller.signal
       });
 
       clearTimeout(timeout);
@@ -26,7 +21,19 @@ export async function fetchRetry(url: string, retries = 3, options: RequestInit 
       }
 
       if (!res.ok) {
-        throw new Error(`HH API error ${res.status}`);
+        let body: any;
+
+        try {
+          body = await res.json();
+        } catch {
+          body = await res.text();
+        }
+
+        const error = new Error(`HH API error ${res.status}`);
+        (error as any).status = res.status;
+        (error as any).hh = body;
+
+        throw error;
       }
 
       return res;

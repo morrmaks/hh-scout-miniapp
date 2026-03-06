@@ -6,21 +6,11 @@ export interface FlatArea {
 }
 
 export function flattenAreas(areas: Area[]): FlatArea[] {
-  const result: FlatArea[] = [];
-  const stack = [...areas];
+  const russia = areas.find((a) => a.id === '113');
+  if (!russia) return [];
 
-  while (stack.length) {
-    const area = stack.pop()!;
-
-    if (area.areas?.length) {
-      stack.push(...area.areas);
-    } else {
-      result.push({
-        id: area.id,
-        name: area.name
-      });
-    }
-  }
-
-  return result;
+  return russia.areas.map((region) => ({
+    id: region.id,
+    name: region.name
+  }));
 }

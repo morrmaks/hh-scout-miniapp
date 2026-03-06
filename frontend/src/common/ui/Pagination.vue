@@ -40,7 +40,7 @@ const items = computed(() => buildPagination(props.currentPage, props.totalPages
       :disabled="disabled || currentPage === 1"
       @click="change(currentPage - 1)"
     >
-      <ArrowLeft size="16" />
+      <ArrowLeft :size="16" />
     </Button>
 
     <template v-for="(item, i) in items" :key="i">
@@ -62,7 +62,7 @@ const items = computed(() => buildPagination(props.currentPage, props.totalPages
       :disabled="disabled || currentPage === totalPages"
       @click="change(currentPage + 1)"
     >
-      <ArrowRight size="16" />
+      <ArrowRight :size="16" />
     </Button>
   </div>
 </template>
@@ -83,6 +83,15 @@ const items = computed(() => buildPagination(props.currentPage, props.totalPages
   pointer-events: none;
 }
 
+.pagination :deep(.btn) {
+  width: 46px;
+  justify-content: center;
+}
+
+.pagination :deep(.btn svg) {
+  margin: 0 auto;
+}
+
 .dots {
   padding: 6px;
   color: var(--text-muted);
@@ -90,6 +99,6 @@ const items = computed(() => buildPagination(props.currentPage, props.totalPages
 
 .active {
   background: var(--primary);
-  color: white;
+  color: var(--text);
 }
 </style>

@@ -21,7 +21,6 @@ defineProps<Props>();
 <style scoped>
 .group {
   display: grid;
-
   grid-template-columns: 140px 1fr;
 
   align-items: center;
@@ -35,6 +34,16 @@ defineProps<Props>();
 
 .control {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* mobile */
+
+@media (max-width: 640px) {
+  .group {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
 }
 </style>

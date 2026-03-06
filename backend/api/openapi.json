@@ -19,25 +19,61 @@
   ],
 
   "paths": {
-
     "/jobs": {
       "get": {
         "operationId": "searchJobs",
         "tags": ["Jobs"],
         "summary": "Search jobs",
         "parameters": [
+          { "name": "text", "in": "query", "schema": { "type": "string" } },
 
-          { "name": "q", "in": "query", "schema": { "type": "string" } },
           { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
 
           { "name": "order_by", "in": "query", "schema": { "type": "string" } },
+
           { "name": "salary", "in": "query", "schema": { "type": "number" } },
 
-          { "name": "experience", "in": "query", "schema": { "type": "array", "items": { "type": "string" } } },
-          { "name": "employment_form", "in": "query", "schema": { "type": "array", "items": { "type": "string" } } },
-          { "name": "work_format", "in": "query", "schema": { "type": "array", "items": { "type": "string" } } },
+          {
+            "name": "experience",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
 
-          { "name": "area", "in": "query", "schema": { "type": "array", "items": { "type": "string" } } },
+          {
+            "name": "employment_form",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
+          {
+            "name": "work_format",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
+          {
+            "name": "work_schedule_by_days",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
+          {
+            "name": "area",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
 
           { "name": "period", "in": "query", "schema": { "type": "number" } }
         ],
@@ -63,10 +99,61 @@
         "tags": ["Jobs"],
         "summary": "Prefetch next jobs",
         "parameters": [
-          { "name": "q", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "text", "in": "query", "schema": { "type": "string" } },
+
           { "name": "page", "in": "query", "required": true, "schema": { "type": "number" } },
-          { "name": "index", "in": "query", "required": true, "schema": { "type": "number" } }
+
+          { "name": "index", "in": "query", "required": true, "schema": { "type": "number" } },
+
+          { "name": "order_by", "in": "query", "schema": { "type": "string" } },
+
+          { "name": "salary", "in": "query", "schema": { "type": "number" } },
+
+          {
+            "name": "experience",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+
+          {
+            "name": "employment_form",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
+          {
+            "name": "work_format",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
+          {
+            "name": "work_schedule_by_days",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
+          {
+            "name": "area",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
+          { "name": "period", "in": "query", "schema": { "type": "number" } }
         ],
+
         "responses": {
           "200": {
             "description": "Prefetched jobs",
@@ -209,20 +296,18 @@
         }
       }
     }
-
   },
 
   "components": {
-
     "schemas": {
-
       "Job": {
         "type": "object",
         "required": ["id", "title", "company", "url", "description"],
         "properties": {
-
           "id": { "type": "string" },
+
           "title": { "type": "string" },
+
           "company": { "type": "string" },
 
           "url": { "type": "string" },
@@ -230,15 +315,29 @@
           "description": { "type": "string" },
 
           "salaryFrom": { "type": "number", "nullable": true },
+
           "salaryTo": { "type": "number", "nullable": true },
+
           "currency": { "type": "string", "nullable": true },
 
           "experience": { "type": "string", "nullable": true },
 
-          "schedule": { "type": "string", "nullable": true },
-          "employment": { "type": "string", "nullable": true },
-          "workFormat": { "type": "string", "nullable": true },
-          "workingHours": { "type": "string", "nullable": true },
+          "employmentForm": { "type": "string", "nullable": true },
+
+          "workFormat": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+
+          "workSchedule": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+
+          "workingHours": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
 
           "city": { "type": "string", "nullable": true },
 
@@ -246,14 +345,12 @@
             "type": "array",
             "items": { "type": "string" }
           }
-
         }
       },
 
       "Favorite": {
         "type": "object",
         "properties": {
-
           "id": { "type": "number" },
 
           "userId": { "type": "number" },
@@ -261,16 +358,18 @@
           "jobId": { "type": "string" },
 
           "title": { "type": "string" },
+
           "company": { "type": "string" },
 
           "salaryFrom": { "type": "number", "nullable": true },
+
           "salaryTo": { "type": "number", "nullable": true },
+
           "currency": { "type": "string", "nullable": true },
 
           "experience": { "type": "string", "nullable": true },
 
           "url": { "type": "string" }
-
         }
       },
 
@@ -278,21 +377,18 @@
         "type": "object",
         "required": ["userId", "job"],
         "properties": {
-
           "userId": { "type": "number" },
 
           "job": {
             "$ref": "#/components/schemas/Job"
           }
-
         }
       },
 
       "SearchResult": {
         "type": "object",
-        "required": ["items", "page", "pages", "found", "perPage"],
+        "required": ["items", "page", "pages", "found", "perPage", "pageItems"],
         "properties": {
-
           "items": {
             "type": "array",
             "items": {
@@ -306,8 +402,9 @@
 
           "found": { "type": "number" },
 
-          "perPage": { "type": "number" }
+          "perPage": { "type": "number" },
 
+          "pageItems": { "type": "number" }
         }
       },
 
@@ -319,8 +416,6 @@
           "name": { "type": "string" }
         }
       }
-
     }
-
   }
 }

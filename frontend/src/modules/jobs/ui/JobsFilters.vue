@@ -5,6 +5,8 @@ import Button from '@/common/ui/Button.vue';
 import FilterGroup from '@/common/ui/FilterGroup.vue';
 import InputNumber from '@/common/ui/InputNumber.vue';
 import Select from '@/common/ui/Select.vue';
+import ToggleGroup from '@/common/ui/ToggleGroup.vue';
+import { AreaSelect, useAreasStore } from '@/modules/areas';
 
 import type { LocalFilters } from '../lib/filtersMapper';
 import type { JobFilters } from '../types/jobsFilters';
@@ -25,12 +27,17 @@ const local = reactive<LocalFilters>(toLocalFilters(props.modelValue));
 
 watch(
   () => props.modelValue,
-  (v) => Object.assign(local, toLocalFilters(v))
+  (v) => {
+    const mapped = toLocalFilters(v);
+    Object.assign(local, mapped);
+  }
 );
 
 function apply() {
   emit('apply', toApiFilters(local));
 }
+
+const areasStore = useAreasStore();
 </script>
 
 <template>
@@ -39,7 +46,7 @@ function apply() {
       <Select
         v-model="local.order_by"
         :options="[
-          { label: 'По релевантности', value: 'relevance' },
+          { label: 'По соответствию', value: 'relevance' },
           { label: 'По дате', value: 'publication_time' },
           { label: 'Зарплата ↑', value: 'salary_asc' },
           { label: 'Зарплата ↓', value: 'salary_desc' }
@@ -64,35 +71,32 @@ function apply() {
     </FilterGroup>
 
     <FilterGroup label="Тип занятости">
-      <Select
+      <ToggleGroup
         v-model="local.employment_form"
         :options="[
-          { label: 'Полная занятость', value: 'full' },
-          { label: 'Частичная', value: 'part' },
-          { label: 'Проект', value: 'project' }
+          { label: 'Полная занятость', value: 'FULL' },
+          { label: 'Частичная занятость', value: 'PART' },
+          { label: 'Проект', value: 'PROJECT' },
+          { label: 'Вахта', value: 'FLY_IN_FLY_OUT' },
+          { label: 'Подработка', value: 'SIDE_JOB' }
         ]"
       />
     </FilterGroup>
 
     <FilterGroup label="Формат работы">
-      <Select
+      <ToggleGroup
         v-model="local.work_format"
         :options="[
-          { label: 'Удаленно', value: 'remote' },
-          { label: 'Офис', value: 'office' },
-          { label: 'Гибрид', value: 'hybrid' }
+          { label: 'Удаленно', value: 'REMOTE' },
+          { label: 'Разъездной', value: 'FIELD_WORK' },
+          { label: 'Гибрид', value: 'HYBRID' },
+          { label: 'На месте работодателя', value: 'ON_SITE' }
         ]"
       />
     </FilterGroup>
 
     <FilterGroup label="Регион">
-      <Select
-        v-model="local.area"
-        :options="[
-          { label: 'Москва', value: '1' },
-          { label: 'Санкт-Петербург', value: '2' }
-        ]"
-      />
+      <AreaSelect v-model="local.area" :areas="areasStore.items" />
     </FilterGroup>
 
     <FilterGroup label="Период">

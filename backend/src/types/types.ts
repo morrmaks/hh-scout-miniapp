@@ -18,7 +18,7 @@ export interface VacancyFull {
     name: string;
   };
 
-  employment?: {
+  employment_form?: {
     id: string;
     name: string;
   };
@@ -42,20 +42,20 @@ export interface VacancyFull {
     currency?: string;
   };
 
-  schedule?: {
-    id: string;
-    name: string;
-  };
-
   work_format?: {
     id: string;
     name: string;
-  };
+  }[];
+
+  work_schedule_by_days?: {
+    id: string;
+    name: string;
+  }[];
 
   working_hours?: {
     id: string;
     name: string;
-  };
+  }[];
 }
 
 export interface SearchSession {

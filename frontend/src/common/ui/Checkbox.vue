@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Check } from 'lucide-vue-next';
+
 interface Props {
   label?: string;
   modelValue?: boolean;
@@ -20,7 +22,9 @@ function toggle(e: Event) {
   <label class="checkbox">
     <input type="checkbox" :checked="modelValue" @change="toggle" />
 
-    <span class="box"> ✓ </span>
+    <span class="box">
+      <Check v-if="modelValue" :size="12" />
+    </span>
 
     <span class="text">
       {{ label }}
@@ -53,7 +57,7 @@ function toggle(e: Event) {
   justify-content: center;
 
   font-size: 12px;
-  color: white;
+  color: var(--text);
 
   background: transparent;
 

@@ -7,12 +7,29 @@ import { getJobs, getJobsPrefetch } from '@/common/api/generated';
 
 import type { JobFilters } from '../types/jobsFilters';
 
+import { useViewedJobs } from '../composables/useViewedJobs';
+
 const STEP = 10;
 const PREFETCH_TRIGGER = 7;
+const DEFAULT_FILTERS: JobFilters = {
+  order_by: 'relevance',
+
+  area: [],
+  employment_form: [],
+  work_format: [],
+  work_schedule_by_days: [],
+  label: []
+};
 
 export const useJobsStore = defineStore('jobs', () => {
+  const { markViewed } = useViewedJobs();
+
+  const initialized = ref(false);
+
   const query = ref('');
-  const filters = ref<JobFilters>({});
+  const filters = ref<JobFilters>({
+    ...DEFAULT_FILTERS
+  });
 
   const page = ref(1);
   const index = ref(0);
@@ -20,6 +37,8 @@ export const useJobsStore = defineStore('jobs', () => {
   const items = ref<Job[]>([]);
   const pages = ref(0);
   const perPage = ref(0);
+
+  const pageItems = ref(0);
 
   const loading = ref(false);
   const prefetching = ref(false);
@@ -30,19 +49,36 @@ export const useJobsStore = defineStore('jobs', () => {
 
   const currentJob = computed(() => items.value[index.value] ?? null);
 
+  const hasFilters = computed(() =>
+    Object.entries(filters.value).some(([key, value]) => {
+      const def = DEFAULT_FILTERS[key as keyof JobFilters];
+
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== undefined && value !== def;
+    })
+  );
+
   const pagePosition = computed(() => {
-    if (!perPage.value) return '0 / 0';
-    return `${index.value + 1} / ${perPage.value}`;
+    if (!pageItems.value) return '0 / 0';
+    return `${index.value + 1} / ${pageItems.value}`;
   });
 
   let requestId = 0;
 
   function buildQuery() {
-    return {
+    const queryObject: Record<string, any> = {
       q: query.value,
-      page: page.value,
-      ...filters.value
+      page: page.value
     };
+
+    for (const [key, value] of Object.entries(filters.value)) {
+      if (Array.isArray(value) && value.length === 0) continue;
+      if (value === undefined || value === '') continue;
+
+      queryObject[key] = value;
+    }
+
+    return queryObject;
   }
 
   async function fetchJobs() {
@@ -50,6 +86,7 @@ export const useJobsStore = defineStore('jobs', () => {
       items.value = [];
       pages.value = 0;
       perPage.value = 0;
+      pageItems.value = 0;
       return;
     }
 
@@ -68,10 +105,14 @@ export const useJobsStore = defineStore('jobs', () => {
       items.value = data.items ?? [];
       pages.value = data.pages ?? 0;
       perPage.value = data.perPage ?? 0;
+      pageItems.value = data.pageItems ?? 0;
 
       if (index.value >= items.value.length) index.value = 0;
     } finally {
-      if (id === requestId) loading.value = false;
+      if (id === requestId) {
+        loading.value = false;
+        initialized.value = true;
+      }
     }
   }
 
@@ -89,7 +130,7 @@ export const useJobsStore = defineStore('jobs', () => {
 
       if (!data?.items?.length) return;
 
-      const remaining = perPage.value - items.value.length;
+      const remaining = pageItems.value - items.value.length;
       if (remaining <= 0) return;
 
       items.value = [...items.value, ...data.items.slice(0, remaining)];
@@ -113,14 +154,15 @@ export const useJobsStore = defineStore('jobs', () => {
   }
 
   function nextJob() {
+    if (currentJob.value) markViewed(currentJob.value.id);
+
     if (index.value < items.value.length - 1) {
       index.value++;
       maybePrefetch();
-
       return;
     }
 
-    if (items.value.length < perPage.value) {
+    if (items.value.length < pageItems.value) {
       maybePrefetch();
       return;
     }
@@ -128,7 +170,6 @@ export const useJobsStore = defineStore('jobs', () => {
     if (page.value < pages.value) {
       page.value++;
       index.value = 0;
-
       fetchJobs();
     }
   }
@@ -153,7 +194,6 @@ export const useJobsStore = defineStore('jobs', () => {
 
     page.value = 1;
     index.value = 0;
-    items.value = [];
 
     prefetchedOffsets.value.clear();
 
@@ -161,11 +201,24 @@ export const useJobsStore = defineStore('jobs', () => {
   }
 
   function setFilters(f: JobFilters) {
-    filters.value = f;
+    filters.value = {
+      ...DEFAULT_FILTERS,
+      ...f
+    };
 
     page.value = 1;
     index.value = 0;
-    items.value = [];
+
+    prefetchedOffsets.value.clear();
+
+    fetchJobs();
+  }
+
+  function resetFilters() {
+    filters.value = { ...DEFAULT_FILTERS };
+
+    page.value = 1;
+    index.value = 0;
 
     prefetchedOffsets.value.clear();
 
@@ -176,7 +229,6 @@ export const useJobsStore = defineStore('jobs', () => {
     page.value = p;
 
     index.value = 0;
-    items.value = [];
 
     prefetchedOffsets.value.clear();
 
@@ -185,16 +237,19 @@ export const useJobsStore = defineStore('jobs', () => {
 
   function restore() {
     const saved = localStorage.getItem('jobs-position');
-
     if (!saved) return;
 
-    const data = JSON.parse(saved);
+    try {
+      const data = JSON.parse(saved);
 
-    query.value = data.query;
-    page.value = data.page;
-    index.value = data.index;
+      query.value = data.query ?? '';
+      page.value = data.page ?? 1;
+      index.value = data.index ?? 0;
 
-    fetchJobs();
+      if (query.value) fetchJobs();
+    } catch {
+      localStorage.removeItem('jobs-position');
+    }
   }
 
   function savePosition() {
@@ -218,16 +273,20 @@ export const useJobsStore = defineStore('jobs', () => {
 
     items,
     perPage,
+    pageItems,
 
     currentJob,
+    hasFilters,
     pagePosition,
 
     loading,
+    initialized,
     hasData,
 
     fetchJobs,
     setQuery,
     setFilters,
+    resetFilters,
     setPage,
 
     nextJob,

@@ -1,5 +1,4 @@
 :root {
-
   --bg: #111111;
   --bg-soft: #171717;
   --card: #1f1f1f;
@@ -11,9 +10,17 @@
 
   --primary: #f97316;
   --primary-hover: #ea580c;
+  --primary-glow: rgba(249, 115, 22, 0.6);
+  --primary-glow-soft: rgba(249, 115, 22, 0.3);
+
+  --destructive: #b91c1c;
+  --destructive-hover: #dc2626;
+  --destructive-glow: rgba(220, 38, 38, 0.6);
+  --destructive-glow-soft: rgba(220, 38, 38, 0.3);
 
   --button-bg: #1f1f1f;
   --button-hover: #2a2a2a;
+  --button-glow: rgba(59, 130, 246, 0.2);
 
   --scrollbar: #3a3a3a;
   --scrollbar-hover: #4a4a4a;
