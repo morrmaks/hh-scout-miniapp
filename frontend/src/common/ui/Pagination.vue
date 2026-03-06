@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ArrowLeft, ArrowRight } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 import { buildPagination } from '@/common/utils/pagination';
@@ -23,6 +24,7 @@ const emit = defineEmits<{
 
 function change(page: number) {
   if (props.disabled) return;
+  if (page === props.currentPage) return;
   if (page < 1 || page > props.totalPages) return;
 
   emit('change', page);
@@ -38,7 +40,7 @@ const items = computed(() => buildPagination(props.currentPage, props.totalPages
       :disabled="disabled || currentPage === 1"
       @click="change(currentPage - 1)"
     >
-      ←
+      <ArrowLeft size="16" />
     </Button>
 
     <template v-for="(item, i) in items" :key="i">
@@ -60,7 +62,7 @@ const items = computed(() => buildPagination(props.currentPage, props.totalPages
       :disabled="disabled || currentPage === totalPages"
       @click="change(currentPage + 1)"
     >
-      →
+      <ArrowRight size="16" />
     </Button>
   </div>
 </template>

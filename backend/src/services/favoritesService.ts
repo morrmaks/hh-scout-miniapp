@@ -3,6 +3,7 @@ import XLSX from 'xlsx';
 import type { JobDTO } from '../dto/jobDto';
 
 import { prisma } from '../db/prisma';
+import { toFavoriteJob } from '../dto/favoriteJobDto';
 
 export async function loadFavorites(userId: number) {
   return prisma.favorite.findMany({
@@ -12,17 +13,45 @@ export async function loadFavorites(userId: number) {
 }
 
 export async function saveFavorite(userId: number, job: JobDTO) {
-  await prisma.favorite.create({
-    data: {
+  const fav = toFavoriteJob(job);
+
+  await prisma.favorite.upsert({
+    where: {
+      userId_jobId: {
+        userId,
+        jobId: fav.id
+      }
+    },
+
+    update: {
+      title: fav.title,
+      company: fav.company,
+      url: fav.url,
+
+      salaryFrom: fav.salaryFrom,
+      salaryTo: fav.salaryTo,
+      currency: fav.currency,
+
+      experience: fav.experience
+    },
+
+    create: {
       userId,
-      jobId: job.id,
-      title: job.title,
-      company: job.company,
-      url: job.url
+
+      jobId: fav.id,
+
+      title: fav.title,
+      company: fav.company,
+      url: fav.url,
+
+      salaryFrom: fav.salaryFrom,
+      salaryTo: fav.salaryTo,
+      currency: fav.currency,
+
+      experience: fav.experience
     }
   });
 }
-
 export async function deleteFavorite(userId: number, jobId: string) {
   const fav = await prisma.favorite.findFirst({
     where: {

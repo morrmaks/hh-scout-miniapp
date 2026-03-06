@@ -17,14 +17,6 @@ router.post('/', async (req, res) => {
   res.json({ ok: true });
 });
 
-router.get('/:userId', async (req, res) => {
-  const userId = Number(req.params.userId);
-
-  const list = await loadFavorites(userId);
-
-  res.json(list);
-});
-
 router.get('/export/:userId', async (req, res) => {
   const userId = Number(req.params.userId);
   const buffer = await exportExcel(userId);
@@ -37,6 +29,14 @@ router.get('/export/:userId', async (req, res) => {
   res.setHeader('Content-Disposition', `attachment; filename=favorites_${userId}.xlsx`);
 
   res.send(buffer);
+});
+
+router.get('/:userId', async (req, res) => {
+  const userId = Number(req.params.userId);
+
+  const list = await loadFavorites(userId);
+
+  res.json(list);
 });
 
 router.delete('/:userId/:jobId', async (req, res) => {

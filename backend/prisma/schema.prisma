@@ -8,12 +8,20 @@ datasource db {
 }
 
 model Favorite {
-  id      Int    @id @default(autoincrement())
-  userId  Int
-  jobId   String
-  title   String
-  company String
-  url     String
+  id        Int     @id @default(autoincrement())
+
+  userId    Int
+  jobId     String
+
+  title     String
+  company   String
+  url       String
+
+  salaryFrom Int?
+  salaryTo   Int?
+  currency   String?
+
+  experience String?
 
   @@unique([userId, jobId])
 }

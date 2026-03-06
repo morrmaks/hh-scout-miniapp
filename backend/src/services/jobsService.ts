@@ -1,23 +1,30 @@
 import type { SearchResultDTO } from '../dto/searchResultDto';
-import type { VacancyShort } from '../types/types';
+import type { JobFilters, VacancyShort } from '../types/types';
 
 import { inFlightSearch, inFlightVacancy, searchSessions, vacancyCache } from '../cache/jobsCache';
 import { toJobDTO } from '../dto/jobDto';
 import { enqueue } from '../queue/queue';
+import { buildHHUrl } from '../utils/buildHHUrl';
+import { buildSearchKey } from '../utils/buildSearchKey';
 import { fetchRetry } from '../utils/fetchRetry';
-import { normalizeQuery } from '../utils/normalizeQuery';
 
-const PAGE_SIZE = 10;
+const STEP = 10;
 
-export async function searchJobs(query: string, page: number): Promise<SearchResultDTO> {
-  const normalized = normalizeQuery(query);
+export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> {
+  const page = filters.page ?? 1;
 
-  const session = searchSessions.get(normalized);
+  const searchKey = buildSearchKey({
+    ...filters,
+    page: undefined
+  });
+
+  const session = searchSessions.get(searchKey);
+
   if (session && session.pages[page]) {
     const raw = session.pages[page];
-    const first10 = raw.slice(0, PAGE_SIZE);
+    const first = raw.slice(0, STEP);
 
-    const jobs = await Promise.all(first10.map((v) => getVacancyById(v.id)));
+    const jobs = await Promise.all(first.map((v) => getVacancyById(v.id)));
 
     return {
       items: jobs,
@@ -28,15 +35,15 @@ export async function searchJobs(query: string, page: number): Promise<SearchRes
     };
   }
 
-  const key = `${normalized}_${page}`;
+  const requestKey = `${searchKey}_${page}`;
 
-  const existing = inFlightSearch.get(key);
+  const existing = inFlightSearch.get(requestKey);
   if (existing) return existing;
 
   const promise = enqueue(async () => {
-    const res = await fetchRetry(
-      `https://api.hh.ru/vacancies?text=${encodeURIComponent(query)}&per_page=100&page=${page - 1}`
-    );
+    const url = buildHHUrl(filters);
+
+    const res = await fetchRetry(url);
 
     const data = (await res.json()) as {
       items: VacancyShort[];
@@ -44,8 +51,6 @@ export async function searchJobs(query: string, page: number): Promise<SearchRes
       found: number;
       per_page: number;
     };
-
-    const rawItems = data.items;
 
     let newSession = session;
 
@@ -58,27 +63,57 @@ export async function searchJobs(query: string, page: number): Promise<SearchRes
       };
     }
 
-    newSession.pages[page] = rawItems;
-    searchSessions.set(normalized, newSession);
+    if (!newSession.pages[page]) {
+      newSession.pages[page] = data.items;
+    }
 
-    const jobs = await Promise.all(rawItems.slice(0, PAGE_SIZE).map((v) => getVacancyById(v.id)));
+    searchSessions.set(searchKey, newSession);
+
+    const first = data.items.slice(0, STEP);
+
+    const jobs = await Promise.all(first.map((v) => getVacancyById(v.id)));
 
     return {
       items: jobs,
       page,
-      pages: newSession.pagesTotal,
-      found: newSession.found,
-      perPage: newSession.perPage
+      pages: data.pages,
+      found: data.found,
+      perPage: data.per_page
     };
   });
 
-  inFlightSearch.set(key, promise);
+  inFlightSearch.set(requestKey, promise);
 
   try {
     return await promise;
   } finally {
-    inFlightSearch.delete(key);
+    inFlightSearch.delete(requestKey);
   }
+}
+
+export async function prefetchVacancies(filters: JobFilters & { index: number }) {
+  const page = filters.page ?? 1;
+
+  const searchKey = buildSearchKey({
+    ...filters,
+    page: undefined
+  });
+
+  const session = searchSessions.get(searchKey);
+  if (!session) return { items: [] };
+
+  const raw = session.pages[page];
+  if (!raw) return { items: [] };
+
+  const offset = Math.floor(filters.index / STEP) * STEP + STEP;
+
+  if (offset >= raw.length) return { items: [] };
+
+  const slice = raw.slice(offset, offset + STEP);
+
+  const jobs = await Promise.all(slice.map((v) => getVacancyById(v.id)));
+
+  return { items: jobs };
 }
 
 export async function getVacancyById(id: string) {
@@ -95,7 +130,9 @@ export async function getVacancyById(id: string) {
   const promise = enqueue(async () => {
     const res = await fetchRetry(`https://api.hh.ru/vacancies/${id}`);
     const data = await res.json();
+
     vacancyCache.set(id, data);
+
     return data;
   });
 
@@ -107,21 +144,4 @@ export async function getVacancyById(id: string) {
   } finally {
     inFlightVacancy.delete(id);
   }
-}
-
-export async function prefetchVacancies(query: string, page: number, index: number) {
-  const normalized = normalizeQuery(query);
-
-  const session = searchSessions.get(normalized);
-  if (!session) return { items: [] };
-
-  const raw = session.pages[page];
-  if (!raw) return { items: [] };
-
-  const offset = Math.floor(index / PAGE_SIZE) * PAGE_SIZE + PAGE_SIZE;
-  const slice = raw.slice(offset, offset + PAGE_SIZE);
-
-  const jobs = await Promise.all(slice.map((v) => getVacancyById(v.id)));
-
-  return { items: jobs };
 }

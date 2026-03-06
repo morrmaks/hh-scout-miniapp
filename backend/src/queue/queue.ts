@@ -5,20 +5,19 @@ let active = 0;
 const queue: Array<() => Promise<void>> = [];
 
 function process() {
-  if (active >= MAX_CONCURRENT) return;
+  while (active < MAX_CONCURRENT && queue.length) {
+    const task = queue.shift();
+    if (!task) return;
 
-  const task = queue.shift();
+    active++;
 
-  if (!task) return;
-
-  active++;
-
-  task()
-    .catch(() => {})
-    .finally(() => {
-      active--;
-      process();
-    });
+    Promise.resolve(task())
+      .catch(() => {})
+      .finally(() => {
+        active--;
+        process();
+      });
+  }
 }
 
 export function enqueue<T>(task: () => Promise<T>): Promise<T> {

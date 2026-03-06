@@ -14,5 +14,10 @@ defineEmits<{
 </script>
 
 <template>
-  <Pagination :current-page="page" :total-pages="pages" @change="$emit('change', $event)" />
+  <Pagination
+    v-if="pages > 0"
+    :current-page="page"
+    :total-pages="pages"
+    @change="$emit('change', $event)"
+  />
 </template>

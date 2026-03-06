@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-vue-next';
+
 import type { Job } from '@/common/api/generated';
 
 import Button from '@/common/ui/Button.vue';
 
 interface Props {
+  disableNext?: boolean;
+  disablePrev?: boolean;
   job: Job | null;
   position: string;
 }
@@ -38,12 +42,19 @@ defineEmits<{
     </article>
 
     <div class="nav">
-      <Button variant="ghost" @click="$emit('prev')"> ← </Button>
+      <Button variant="ghost" :disabled="disablePrev" @click="$emit('prev')">
+        <ArrowLeft :size="16" />
+      </Button>
 
-      <Button variant="ghost" @click="$emit('next')"> → </Button>
+      <Button variant="ghost" :disabled="disableNext" @click="$emit('next')">
+        <ArrowRight :size="16" />
+      </Button>
 
       <a :href="job.url" target="_blank">
-        <Button> Open </Button>
+        <Button>
+          <ExternalLink :size="16" />
+          Open
+        </Button>
       </a>
     </div>
   </div>
@@ -71,6 +82,7 @@ defineEmits<{
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 16px;
 }
 
 .title-block {
@@ -85,6 +97,7 @@ defineEmits<{
   background: var(--bg-soft);
   padding: 4px 8px;
   border-radius: 6px;
+  flex-shrink: 0;
 }
 
 .title {
@@ -108,6 +121,7 @@ defineEmits<{
   padding: 16px;
 
   border-radius: 10px;
+  white-space: pre-line;
 }
 
 .nav {

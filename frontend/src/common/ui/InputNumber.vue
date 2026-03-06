@@ -1,45 +1,39 @@
 <script setup lang="ts">
 interface Props {
-  disabled?: boolean;
-  modelValue?: string;
+  modelValue?: number;
   placeholder?: string;
 }
 
-withDefaults(defineProps<Props>(), {
-  modelValue: '',
-  placeholder: '',
-  disabled: false
-});
+defineProps<Props>();
 
 const emit = defineEmits<{
-  'update:modelValue': [string];
-  enter: [];
+  'update:modelValue': [number];
 }>();
 
-function onInput(event: Event) {
-  const target = event.target as HTMLInputElement;
-  emit('update:modelValue', target.value);
+function input(e: Event) {
+  const target = e.target as HTMLInputElement;
+  emit('update:modelValue', Number(target.value));
 }
 </script>
 
 <template>
   <input
+    type="number"
     class="input"
     :value="modelValue"
     :placeholder="placeholder"
-    :disabled="disabled"
-    @input="onInput"
-    @keydown.enter="$emit('enter')"
+    @input="input"
   />
 </template>
 
 <style scoped>
 input {
+  width: 120px;
   flex: 1;
   background: var(--bg-soft);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 14px;
+  border-radius: 8px;
+  padding: 8px 12px;
   color: var(--text);
   transition: all 0.15s ease;
 }

@@ -5,30 +5,43 @@
     "version": "1.0.0",
     "description": "API for HH Scout Miniapp"
   },
+
   "servers": [
     {
       "url": "http://localhost:3000"
     }
   ],
-  "tags": [{ "name": "Jobs" }, { "name": "Favorites" }],
+
+  "tags": [
+    { "name": "Jobs" },
+    { "name": "Favorites" },
+    { "name": "Areas" }
+  ],
+
   "paths": {
+
     "/jobs": {
       "get": {
         "operationId": "searchJobs",
         "tags": ["Jobs"],
         "summary": "Search jobs",
         "parameters": [
-          {
-            "name": "q",
-            "in": "query",
-            "schema": { "type": "string" }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": { "type": "number", "default": 1 }
-          }
+
+          { "name": "q", "in": "query", "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
+
+          { "name": "order_by", "in": "query", "schema": { "type": "string" } },
+          { "name": "salary", "in": "query", "schema": { "type": "number" } },
+
+          { "name": "experience", "in": "query", "schema": { "type": "array", "items": { "type": "string" } } },
+          { "name": "employment_form", "in": "query", "schema": { "type": "array", "items": { "type": "string" } } },
+          { "name": "work_format", "in": "query", "schema": { "type": "array", "items": { "type": "string" } } },
+
+          { "name": "area", "in": "query", "schema": { "type": "array", "items": { "type": "string" } } },
+
+          { "name": "period", "in": "query", "schema": { "type": "number" } }
         ],
+
         "responses": {
           "200": {
             "description": "Search result",
@@ -64,7 +77,9 @@
                   "properties": {
                     "items": {
                       "type": "array",
-                      "items": { "$ref": "#/components/schemas/Job" }
+                      "items": {
+                        "$ref": "#/components/schemas/Job"
+                      }
                     }
                   }
                 }
@@ -95,6 +110,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/areas": {
+      "get": {
+        "operationId": "getAreas",
+        "tags": ["Areas"],
+        "summary": "Get list of regions",
+        "responses": {
+          "200": {
+            "description": "List of areas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Area"
+                  }
                 }
               }
             }
@@ -161,18 +199,8 @@
         "operationId": "deleteFavorite",
         "tags": ["Favorites"],
         "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "number" }
-          },
-          {
-            "name": "jobId",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" }
-          }
+          { "name": "userId", "in": "path", "required": true, "schema": { "type": "number" } },
+          { "name": "jobId", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
           "200": {
@@ -181,31 +209,68 @@
         }
       }
     }
+
   },
 
   "components": {
+
     "schemas": {
+
       "Job": {
         "type": "object",
         "required": ["id", "title", "company", "url", "description"],
         "properties": {
+
           "id": { "type": "string" },
           "title": { "type": "string" },
           "company": { "type": "string" },
+
           "url": { "type": "string" },
-          "description": { "type": "string" }
+
+          "description": { "type": "string" },
+
+          "salaryFrom": { "type": "number", "nullable": true },
+          "salaryTo": { "type": "number", "nullable": true },
+          "currency": { "type": "string", "nullable": true },
+
+          "experience": { "type": "string", "nullable": true },
+
+          "schedule": { "type": "string", "nullable": true },
+          "employment": { "type": "string", "nullable": true },
+          "workFormat": { "type": "string", "nullable": true },
+          "workingHours": { "type": "string", "nullable": true },
+
+          "city": { "type": "string", "nullable": true },
+
+          "skills": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+
         }
       },
 
       "Favorite": {
         "type": "object",
         "properties": {
+
           "id": { "type": "number" },
+
           "userId": { "type": "number" },
+
           "jobId": { "type": "string" },
+
           "title": { "type": "string" },
           "company": { "type": "string" },
+
+          "salaryFrom": { "type": "number", "nullable": true },
+          "salaryTo": { "type": "number", "nullable": true },
+          "currency": { "type": "string", "nullable": true },
+
+          "experience": { "type": "string", "nullable": true },
+
           "url": { "type": "string" }
+
         }
       },
 
@@ -213,10 +278,13 @@
         "type": "object",
         "required": ["userId", "job"],
         "properties": {
+
           "userId": { "type": "number" },
+
           "job": {
             "$ref": "#/components/schemas/Job"
           }
+
         }
       },
 
@@ -224,18 +292,35 @@
         "type": "object",
         "required": ["items", "page", "pages", "found", "perPage"],
         "properties": {
+
           "items": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Job"
             }
           },
+
           "page": { "type": "number" },
+
           "pages": { "type": "number" },
+
           "found": { "type": "number" },
+
           "perPage": { "type": "number" }
+
+        }
+      },
+
+      "Area": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" }
         }
       }
+
     }
+
   }
 }

@@ -31,6 +31,16 @@ withDefaults(defineProps<Props>(), {
   transition: all 0.2s ease;
 }
 
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn:disabled:hover {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .primary {
   background: var(--primary);
   color: white;
@@ -46,6 +56,19 @@ withDefaults(defineProps<Props>(), {
     0 0 22px rgba(59, 130, 246, 0.25);
 }
 
+.primary:disabled {
+  background: var(--primary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.primary:disabled:hover {
+  background: var(--primary);
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
 .ghost {
   background: var(--button-bg);
   color: var(--text);
@@ -53,7 +76,21 @@ withDefaults(defineProps<Props>(), {
 
 .ghost:hover {
   background: var(--button-hover);
-
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+}
+
+.ghost:disabled {
+  background: var(--button-bg);
+  color: var(--text);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.ghost:disabled:hover {
+  background: var(--button-bg);
+  color: var(--text);
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
 }
 </style>

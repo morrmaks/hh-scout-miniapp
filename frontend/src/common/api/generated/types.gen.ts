@@ -62,10 +62,14 @@ export interface PrefetchJobsData {
 
 export interface PrefetchJobsResponses {
   /**
-   * Prefetch completed
+   * Prefetched jobs
    */
-  200: unknown;
+  200: {
+    items?: Array<Job>;
+  };
 }
+
+export type PrefetchJobsResponse = PrefetchJobsResponses[keyof PrefetchJobsResponses];
 
 export interface GetJobByIdData {
   body?: never;

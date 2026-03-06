@@ -1,31 +1,20 @@
 :root {
-  /* background */
 
-  --bg: #020617;
-  --bg-soft: #020617;
-  --card: #0f172a;
+  --bg: #111111;
+  --bg-soft: #171717;
+  --card: #1f1f1f;
 
-  /* text */
+  --text: #f5f5f5;
+  --text-muted: #a3a3a3;
 
-  --text: #f1f5f9;
-  --text-muted: #64748b;
+  --border: #2a2a2a;
 
-  /* borders */
+  --primary: #f97316;
+  --primary-hover: #ea580c;
 
-  --border: #1e293b;
+  --button-bg: #1f1f1f;
+  --button-hover: #2a2a2a;
 
-  /* primary */
-
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-
-  /* buttons */
-
-  --button-bg: #0b1220;
-  --button-hover: #1e293b;
-
-  /* scrollbar */
-
-  --scrollbar: #334155;
-  --scrollbar-hover: #475569;
+  --scrollbar: #3a3a3a;
+  --scrollbar-hover: #4a4a4a;
 }
