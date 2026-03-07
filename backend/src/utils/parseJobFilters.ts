@@ -15,14 +15,18 @@ function toArray(value: unknown): string[] | undefined {
   return [String(value)];
 }
 
-export function parseJobFilters(query: ParsedQs): JobFilters {
-  const pageRaw = toNumber(query.page);
+const MAX_RESULTS = 2000;
 
-  const page = pageRaw === undefined ? 1 : Math.min(Math.max(pageRaw, 1), 20);
+export function parseJobFilters(query: ParsedQs): JobFilters {
+  const perPage = Math.min(toNumber(query.per_page) ?? 100, 100);
+  const maxPageIndex = Math.floor(MAX_RESULTS / perPage) - 1;
+  const pageRaw = toNumber(query.page);
+  const pageIndex = pageRaw === undefined ? 0 : Math.min(Math.max(pageRaw - 1, 0), maxPageIndex);
 
   return {
-    text: query.q ? String(query.q) : undefined,
-    page,
+    text: query.text ? String(query.text) : undefined,
+    page: pageIndex,
+    index: toNumber(query.index),
     per_page: toNumber(query.per_page),
     order_by: query.order_by ? String(query.order_by) : undefined,
     salary: toNumber(query.salary),

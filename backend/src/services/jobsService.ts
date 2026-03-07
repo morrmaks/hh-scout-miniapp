@@ -9,22 +9,38 @@ import { buildSearchKey } from '../utils/buildSearchKey';
 import { fetchRetry } from '../utils/fetchRetry';
 
 const STEP = 10;
+const PREFETCH_TRIGGER = 7;
+
+function calcRestoreLimit(index: number) {
+  const base = Math.ceil((index + 1) / STEP) * STEP;
+
+  const needExtra = index % STEP >= PREFETCH_TRIGGER - 1;
+
+  return needExtra ? base + STEP : base;
+}
+
+async function loadVacancies(slice: VacancyShort[]) {
+  return Promise.all(slice.map((v) => getVacancyById(v.id)));
+}
 
 export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> {
-  const page = filters.page ?? 1;
+  const pageIndex = filters.page ?? 0;
+  const page = pageIndex + 1;
 
-  const searchKey = buildSearchKey({
-    ...filters,
-    page: undefined
-  });
+  const index = filters.index;
+
+  const searchKey = buildSearchKey(filters);
 
   const session = searchSessions.get(searchKey);
 
-  if (session && session.pages[page]) {
-    const raw = session.pages[page];
-    const first = raw.slice(0, STEP);
+  if (session && session.pages[pageIndex]) {
+    const raw = session.pages[pageIndex];
 
-    const jobs = await Promise.all(first.map((v) => getVacancyById(v.id)));
+    const limit = typeof index === 'number' ? Math.min(calcRestoreLimit(index), raw.length) : STEP;
+
+    const slice = raw.slice(0, limit);
+
+    const jobs = await loadVacancies(slice);
 
     return {
       items: jobs,
@@ -36,11 +52,11 @@ export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> 
     };
   }
 
-  const requestKey = `${searchKey}_${page}`;
+  const requestKey = `${searchKey}_${pageIndex}`;
 
   const existing = inFlightSearch.get(requestKey);
-  if (existing) return existing;
 
+  if (existing) return existing;
   const promise = enqueue(async () => {
     const url = buildHHUrl(filters);
 
@@ -64,16 +80,17 @@ export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> 
       };
     }
 
-    if (!newSession.pages[page]) {
-      newSession.pages[page] = data.items;
-    }
+    if (!newSession.pages[pageIndex]) newSession.pages[pageIndex] = data.items;
 
     searchSessions.set(searchKey, newSession);
 
     const raw = data.items;
-    const first = raw.slice(0, STEP);
 
-    const jobs = await Promise.all(first.map((v) => getVacancyById(v.id)));
+    const limit = typeof index === 'number' ? Math.min(calcRestoreLimit(index), raw.length) : STEP;
+
+    const slice = raw.slice(0, limit);
+
+    const jobs = await loadVacancies(slice);
 
     return {
       items: jobs,
@@ -94,44 +111,48 @@ export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> 
   }
 }
 
-export async function prefetchVacancies(filters: JobFilters & { index: number }) {
-  const page = filters.page ?? 1;
+export async function prefetchVacancies(filters: JobFilters) {
+  const pageIndex = filters.page ?? 0;
 
-  const searchKey = buildSearchKey({
-    ...filters,
-    page: undefined
-  });
+  const index = filters.index ?? 0;
+
+  const searchKey = buildSearchKey(filters);
 
   const session = searchSessions.get(searchKey);
+
   if (!session) return { items: [] };
 
-  const raw = session.pages[page];
+  const raw = session.pages[pageIndex];
+
   if (!raw) return { items: [] };
 
-  const offset = Math.floor(filters.index / STEP) * STEP + STEP;
+  const offset = Math.floor(index / STEP) * STEP + STEP;
 
   if (offset >= raw.length) return { items: [] };
 
   const slice = raw.slice(offset, offset + STEP);
 
-  const jobs = await Promise.all(slice.map((v) => getVacancyById(v.id)));
+  const jobs = await loadVacancies(slice);
 
   return { items: jobs };
 }
 
 export async function getVacancyById(id: string) {
   const cached = vacancyCache.get(id);
+
   if (cached) return toJobDTO(cached);
 
   const existing = inFlightVacancy.get(id);
 
   if (existing) {
     const full = await existing;
+
     return toJobDTO(full);
   }
 
   const promise = enqueue(async () => {
     const res = await fetchRetry(`https://api.hh.ru/vacancies/${id}`);
+
     const data = await res.json();
 
     vacancyCache.set(id, data);
@@ -143,6 +164,7 @@ export async function getVacancyById(id: string) {
 
   try {
     const full = await promise;
+
     return toJobDTO(full);
   } finally {
     inFlightVacancy.delete(id);

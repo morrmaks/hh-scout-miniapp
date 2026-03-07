@@ -3,9 +3,9 @@ import { Bookmark, Search } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 import Button from '@/common/ui/Button.vue';
-import { useJobsStore } from '@/modules/jobs/store/jobs.store';
 
 import { useSearchHistory } from '../composables/useSearchHistory';
+import { useJobsStore } from '../store/jobs.store';
 
 const store = useJobsStore();
 const { add } = useSearchHistory();
@@ -16,13 +16,17 @@ const query = computed({
 });
 
 function submit() {
-  if (!query.value.trim()) return;
-  store.setQuery(query.value);
+  const q = query.value.trim();
+  if (!q) return;
+
+  store.setQuery(q);
 }
 
 function saveQuery() {
-  if (!query.value.trim()) return;
-  add(query.value);
+  const q = query.value.trim();
+  if (!q) return;
+
+  add(q);
 }
 </script>
 
@@ -49,16 +53,11 @@ function saveQuery() {
 
 input {
   flex: 1;
-
   background: var(--card);
   border: 0px solid var(--border);
-
   border-radius: 10px;
-
   padding: 10px 14px;
-
   color: var(--text);
-
   transition: all 0.15s ease;
 }
 
@@ -68,11 +67,38 @@ input::placeholder {
 
 input:focus {
   outline: none;
-
   border-color: var(--primary);
-
   box-shadow:
     0 0 0 1px var(--primary),
     0 0 14px var(--primary-hover);
+}
+
+@media (max-width: 640px) {
+  .search {
+    gap: 6px;
+  }
+
+  input {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  .search :deep(.btn) {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .search :deep(svg) {
+    width: 14px;
+    height: 14px;
+  }
+
+  .search :deep(.btn span) {
+    display: none;
+  }
+
+  .search :deep(.btn) {
+    padding: 8px;
+  }
 }
 </style>

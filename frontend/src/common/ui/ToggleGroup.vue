@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
+import Button from './Button.vue';
+
 interface Option {
   label: string;
   value: string;
@@ -9,38 +13,41 @@ interface Props {
   options: Option[];
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => []
+});
 
 const emit = defineEmits<{
   'update:modelValue': [string[]];
 }>();
 
-function toggle(value: string) {
-  const current = props.modelValue ?? [];
+const selected = computed(() => new Set(props.modelValue));
 
-  if (current.includes(value)) {
-    emit(
-      'update:modelValue',
-      current.filter((v) => v !== value)
-    );
+function toggle(value: string) {
+  const next = new Set(props.modelValue);
+
+  if (next.has(value)) {
+    next.delete(value);
   } else {
-    emit('update:modelValue', [...current, value]);
+    next.add(value);
   }
+
+  emit('update:modelValue', Array.from(next));
 }
 </script>
 
 <template>
   <div class="group">
-    <button
+    <Button
       v-for="o in options"
       :key="o.value"
-      type="button"
-      class="item"
-      :class="{ active: modelValue?.includes(o.value) }"
+      variant="ghost"
+      size="sm"
+      :active="selected.has(o.value)"
       @click="toggle(o.value)"
     >
       {{ o.label }}
-    </button>
+    </Button>
   </div>
 </template>
 
@@ -49,30 +56,5 @@ function toggle(value: string) {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-.item {
-  padding: 6px 12px;
-
-  border: 1px solid var(--border);
-  border-radius: 8px;
-
-  background: var(--button-bg);
-  color: var(--text);
-
-  font-size: 13px;
-  cursor: pointer;
-
-  transition: all 0.15s ease;
-}
-
-.item:hover {
-  background: var(--button-hover);
-}
-
-.item.active {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: white;
 }
 </style>

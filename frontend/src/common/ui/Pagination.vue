@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ArrowLeft, ArrowRight } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { useEventListener } from '@vueuse/core';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 import { buildPagination } from '@/common/utils/pagination';
 
 import Button from './Button.vue';
+import PageScrubber from './PageScrubber.vue';
 
 interface Props {
   currentPage: number;
@@ -30,39 +32,121 @@ function change(page: number) {
   emit('change', page);
 }
 
+/* pagination items */
+
 const items = computed(() => buildPagination(props.currentPage, props.totalPages, props.window));
+
+/* scrubber */
+
+const showScrubber = ref(false);
+const scrubber = ref<InstanceType<typeof PageScrubber> | null>(null);
+
+const lastX = ref(0);
+
+function startPress(e: PointerEvent) {
+  showScrubber.value = true;
+  lastX.value = e.clientX;
+}
+
+function onMove(e: PointerEvent) {
+  const dx = e.clientX - lastX.value;
+  lastX.value = e.clientX;
+  scrubber.value?.move(dx);
+}
+
+function stopPress() {
+  const page = scrubber.value?.current;
+
+  if (page) change(page);
+
+  showScrubber.value = false;
+}
+
+useEventListener(window, 'pointermove', onMove);
+useEventListener(window, 'pointerup', stopPress);
 </script>
 
 <template>
   <div class="pagination" :class="{ disabled }">
+    <!-- jump start -->
+
     <Button
-      variant="ghost"
+      class="mobile-edge"
+      variant="link"
+      :disabled="disabled || currentPage === 1"
+      @click="change(1)"
+    >
+      <ChevronsLeft :size="16" />
+    </Button>
+
+    <!-- prev -->
+
+    <Button
+      variant="link"
       :disabled="disabled || currentPage === 1"
       @click="change(currentPage - 1)"
     >
-      <ArrowLeft :size="16" />
+      <ChevronLeft :size="16" />
     </Button>
 
-    <template v-for="(item, i) in items" :key="i">
-      <span v-if="item.type === 'dots'" class="dots"> ... </span>
+    <!-- desktop pages -->
 
-      <Button
-        v-else
-        variant="ghost"
-        :class="{ active: item.page === currentPage }"
-        :disabled="disabled"
-        @click="change(item.page)"
-      >
-        {{ item.page }}
-      </Button>
-    </template>
+    <div class="pages">
+      <template v-for="(item, i) in items" :key="i">
+        <span v-if="item.type === 'dots'" class="dots"> ... </span>
+
+        <Button
+          v-else
+          variant="ghost"
+          :active="item.page === currentPage"
+          :disabled="disabled"
+          @click="change(item.page)"
+        >
+          {{ item.page }}
+        </Button>
+      </template>
+    </div>
+
+    <!-- mobile info -->
+
+    <div class="mobile-info" @pointerdown.prevent="startPress">
+      <span class="current">
+        {{ currentPage }}
+      </span>
+
+      <span class="divider"> / </span>
+
+      <span class="total">
+        {{ totalPages }}
+      </span>
+
+      <PageScrubber
+        v-if="showScrubber"
+        ref="scrubber"
+        :model-value="currentPage"
+        :total="totalPages"
+      />
+    </div>
+
+    <!-- next -->
 
     <Button
-      variant="ghost"
+      variant="link"
       :disabled="disabled || currentPage === totalPages"
       @click="change(currentPage + 1)"
     >
-      <ArrowRight :size="16" />
+      <ChevronRight :size="16" />
+    </Button>
+
+    <!-- jump end -->
+
+    <Button
+      class="mobile-edge"
+      variant="link"
+      :disabled="disabled || currentPage === totalPages"
+      @click="change(totalPages)"
+    >
+      <ChevronsRight :size="16" />
     </Button>
   </div>
 </template>
@@ -71,11 +155,9 @@ const items = computed(() => buildPagination(props.currentPage, props.totalPages
 .pagination {
   display: flex;
   justify-content: center;
-
+  align-items: center;
   gap: 8px;
   margin-top: 24px;
-
-  transition: opacity 0.2s;
 }
 
 .pagination.disabled {
@@ -85,7 +167,9 @@ const items = computed(() => buildPagination(props.currentPage, props.totalPages
 
 .pagination :deep(.btn) {
   width: 46px;
+  height: 36px;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .pagination :deep(.btn svg) {
@@ -100,5 +184,63 @@ const items = computed(() => buildPagination(props.currentPage, props.totalPages
 .active {
   background: var(--primary);
   color: var(--text);
+}
+
+/* desktop */
+
+.pages {
+  display: flex;
+  gap: 8px;
+}
+
+/* mobile */
+
+.mobile-info {
+  display: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  position: relative;
+}
+
+.current {
+  font-size: 18px;
+  color: var(--primary);
+}
+
+.divider {
+  opacity: 0.5;
+}
+
+.total {
+  opacity: 0.6;
+}
+
+.mobile-edge {
+  display: none;
+}
+
+/* responsive */
+
+@media (max-width: 640px) {
+  .pages {
+    display: none;
+  }
+
+  .mobile-info {
+    display: flex;
+  }
+
+  .mobile-edge {
+    display: flex;
+  }
+
+  .pagination :deep(.btn) {
+    width: 38px;
+  }
 }
 </style>

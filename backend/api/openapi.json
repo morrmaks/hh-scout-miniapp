@@ -5,19 +5,16 @@
     "version": "1.0.0",
     "description": "API for HH Scout Miniapp"
   },
-
   "servers": [
     {
       "url": "http://localhost:3000"
     }
   ],
-
   "tags": [
     { "name": "Jobs" },
     { "name": "Favorites" },
     { "name": "Areas" }
   ],
-
   "paths": {
     "/jobs": {
       "get": {
@@ -29,14 +26,23 @@
 
           { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
 
+          { "name": "index", "in": "query", "schema": { "type": "number" } },
+
+          { "name": "per_page", "in": "query", "schema": { "type": "number", "default": 100 } },
+
           { "name": "order_by", "in": "query", "schema": { "type": "string" } },
 
           { "name": "salary", "in": "query", "schema": { "type": "number" } },
 
+          { "name": "currency", "in": "query", "schema": { "type": "string" } },
+
           {
             "name": "experience",
             "in": "query",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
           },
 
           {
@@ -75,9 +81,17 @@
             }
           },
 
+          {
+            "name": "label",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
           { "name": "period", "in": "query", "schema": { "type": "number" } }
         ],
-
         "responses": {
           "200": {
             "description": "Search result",
@@ -99,20 +113,27 @@
         "tags": ["Jobs"],
         "summary": "Prefetch next jobs",
         "parameters": [
-          { "name": "text", "in": "query", "schema": { "type": "string" } },
+          { "name": "q", "in": "query", "schema": { "type": "string" } },
 
           { "name": "page", "in": "query", "required": true, "schema": { "type": "number" } },
 
           { "name": "index", "in": "query", "required": true, "schema": { "type": "number" } },
 
+          { "name": "per_page", "in": "query", "schema": { "type": "number", "default": 100 } },
+
           { "name": "order_by", "in": "query", "schema": { "type": "string" } },
 
           { "name": "salary", "in": "query", "schema": { "type": "number" } },
 
+          { "name": "currency", "in": "query", "schema": { "type": "string" } },
+
           {
             "name": "experience",
             "in": "query",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
           },
 
           {
@@ -151,9 +172,17 @@
             }
           },
 
+          {
+            "name": "label",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
           { "name": "period", "in": "query", "schema": { "type": "number" } }
         ],
-
         "responses": {
           "200": {
             "description": "Prefetched jobs",
@@ -175,216 +204,11 @@
           }
         }
       }
-    },
-
-    "/jobs/{id}": {
-      "get": {
-        "operationId": "getJobById",
-        "tags": ["Jobs"],
-        "summary": "Get job by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Job",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Job"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/areas": {
-      "get": {
-        "operationId": "getAreas",
-        "tags": ["Areas"],
-        "summary": "Get list of regions",
-        "responses": {
-          "200": {
-            "description": "List of areas",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Area"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/favorites": {
-      "post": {
-        "operationId": "saveFavorite",
-        "tags": ["Favorites"],
-        "summary": "Save favorite job",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FavoriteCreate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Favorite saved"
-          }
-        }
-      }
-    },
-
-    "/favorites/{userId}": {
-      "get": {
-        "operationId": "getFavorites",
-        "tags": ["Favorites"],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "number" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Favorite jobs",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Favorite"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/favorites/{userId}/{jobId}": {
-      "delete": {
-        "operationId": "deleteFavorite",
-        "tags": ["Favorites"],
-        "parameters": [
-          { "name": "userId", "in": "path", "required": true, "schema": { "type": "number" } },
-          { "name": "jobId", "in": "path", "required": true, "schema": { "type": "string" } }
-        ],
-        "responses": {
-          "200": {
-            "description": "Favorite removed"
-          }
-        }
-      }
     }
   },
 
   "components": {
     "schemas": {
-      "Job": {
-        "type": "object",
-        "required": ["id", "title", "company", "url", "description"],
-        "properties": {
-          "id": { "type": "string" },
-
-          "title": { "type": "string" },
-
-          "company": { "type": "string" },
-
-          "url": { "type": "string" },
-
-          "description": { "type": "string" },
-
-          "salaryFrom": { "type": "number", "nullable": true },
-
-          "salaryTo": { "type": "number", "nullable": true },
-
-          "currency": { "type": "string", "nullable": true },
-
-          "experience": { "type": "string", "nullable": true },
-
-          "employmentForm": { "type": "string", "nullable": true },
-
-          "workFormat": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-
-          "workSchedule": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-
-          "workingHours": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-
-          "city": { "type": "string", "nullable": true },
-
-          "skills": {
-            "type": "array",
-            "items": { "type": "string" }
-          }
-        }
-      },
-
-      "Favorite": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "number" },
-
-          "userId": { "type": "number" },
-
-          "jobId": { "type": "string" },
-
-          "title": { "type": "string" },
-
-          "company": { "type": "string" },
-
-          "salaryFrom": { "type": "number", "nullable": true },
-
-          "salaryTo": { "type": "number", "nullable": true },
-
-          "currency": { "type": "string", "nullable": true },
-
-          "experience": { "type": "string", "nullable": true },
-
-          "url": { "type": "string" }
-        }
-      },
-
-      "FavoriteCreate": {
-        "type": "object",
-        "required": ["userId", "job"],
-        "properties": {
-          "userId": { "type": "number" },
-
-          "job": {
-            "$ref": "#/components/schemas/Job"
-          }
-        }
-      },
-
       "SearchResult": {
         "type": "object",
         "required": ["items", "page", "pages", "found", "perPage", "pageItems"],
@@ -395,25 +219,11 @@
               "$ref": "#/components/schemas/Job"
             }
           },
-
           "page": { "type": "number" },
-
           "pages": { "type": "number" },
-
           "found": { "type": "number" },
-
           "perPage": { "type": "number" },
-
           "pageItems": { "type": "number" }
-        }
-      },
-
-      "Area": {
-        "type": "object",
-        "required": ["id", "name"],
-        "properties": {
-          "id": { "type": "string" },
-          "name": { "type": "string" }
         }
       }
     }

@@ -1,32 +1,41 @@
 <script setup lang="ts">
 import { Check } from 'lucide-vue-next';
+import { computed, useAttrs } from 'vue';
 
-interface Props {
-  label?: string;
-  modelValue?: boolean;
-}
+defineOptions({ inheritAttrs: false });
 
-defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: false,
+  disabled: false
+});
 
 const emit = defineEmits<{
   'update:modelValue': [boolean];
 }>();
 
-function toggle(e: Event) {
-  const target = e.target as HTMLInputElement;
-  emit('update:modelValue', target.checked);
+interface Props {
+  disabled?: boolean;
+  label?: string;
+  modelValue?: boolean;
 }
+
+const attrs = useAttrs();
+
+const checked = computed({
+  get: () => props.modelValue,
+  set: (v: boolean) => emit('update:modelValue', v)
+});
 </script>
 
 <template>
-  <label class="checkbox">
-    <input type="checkbox" :checked="modelValue" @change="toggle" />
+  <label class="checkbox" :class="{ disabled }" v-bind="attrs">
+    <input v-model="checked" type="checkbox" :disabled="disabled" aria-hidden="true" />
 
     <span class="box">
-      <Check v-if="modelValue" :size="12" />
+      <Check v-if="checked" :size="12" />
     </span>
 
-    <span class="text">
+    <span v-if="label" class="text">
       {{ label }}
     </span>
   </label>
@@ -34,39 +43,45 @@ function toggle(e: Event) {
 
 <style scoped>
 .checkbox {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-
   cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.checkbox.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .checkbox input {
-  display: none;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .box {
   width: 18px;
   height: 18px;
-
   border: 1px solid var(--border);
   border-radius: 4px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: 12px;
-  color: var(--text);
-
   background: transparent;
-
-  transition: all 0.15s;
+  color: var(--text);
+  transition:
+    background-сolor 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
 
 .checkbox input:checked + .box {
   background: var(--primary);
   border-color: var(--primary);
+  color: #fff;
 }
 
 .text {

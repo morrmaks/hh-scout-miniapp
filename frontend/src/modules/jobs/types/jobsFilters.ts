@@ -3,7 +3,6 @@ export interface JobFilters {
   currency?: string;
   employment_form?: string[];
   experience?: string;
-  label?: string[];
   order_by?: string;
   page?: number;
   per_page?: number;

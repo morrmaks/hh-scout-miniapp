@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ArrowLeft, ArrowRight, ExternalLink, MapPin } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import type { Job } from '@/common/api/generated';
 
+import Badge from '@/common/ui/Badge.vue';
 import Button from '@/common/ui/Button.vue';
-import { useViewedJobs } from '@/modules/jobs/composables/useViewedJobs';
+
+import { useViewedJobs } from '../composables/useViewedJobs';
 
 interface Props {
   disableNext?: boolean;
@@ -14,7 +16,7 @@ interface Props {
   position: string;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 defineEmits<{
   prev: [];
@@ -24,10 +26,37 @@ defineEmits<{
 const expanded = ref(false);
 
 const { isViewed } = useViewedJobs();
+
+// watch(() => props.job?.id, () => {
+//   expanded.value = false
+// })
+
+const SKILLS_LIMIT = 6;
+
+const visibleSkills = computed(() => {
+  if (!props.job?.skills) return [];
+  return props.job.skills.slice(0, SKILLS_LIMIT);
+});
+
+const hiddenSkillsCount = computed(() => {
+  if (!props.job?.skills) return 0;
+  return Math.max(props.job.skills.length - SKILLS_LIMIT, 0);
+});
+
+const meta = computed(() => {
+  if (!props.job) return [];
+
+  return [
+    props.job.workSchedule?.length && `График: ${props.job.workSchedule.join(', ')}`,
+    props.job.employmentForm && `Занятость: ${props.job.employmentForm}`,
+    props.job.workFormat?.length && `Формат: ${props.job.workFormat.join(', ')}`,
+    props.job.workingHours?.length && `Часы: ${props.job.workingHours.join(', ')}`
+  ].filter(Boolean) as string[];
+});
 </script>
 
 <template>
-  <div v-if="job" class="viewer">
+  <div v-if="job" class="viewer" :class="{ expanded }">
     <span v-if="!isViewed(job.id)" class="viewed" />
 
     <div class="position">
@@ -39,6 +68,7 @@ const { isViewed } = useViewedJobs();
         <h2 class="title">
           {{ job.title }}
         </h2>
+
         <a :href="job.url" target="_blank">
           <Button variant="link" size="sm">
             <ExternalLink :size="12" />
@@ -69,33 +99,28 @@ const { isViewed } = useViewedJobs();
       </div>
     </header>
 
-    <button
-      v-if="job.schedule || job.employment || job.workFormat || job.workingHours"
-      class="more"
-      @click="expanded = !expanded"
-    >
+    <Button v-if="meta.length" variant="link" size="sm" class="more" @click="expanded = !expanded">
       {{ expanded ? 'Скрыть детали' : 'Подробнее' }}
-    </button>
+    </Button>
 
     <div v-if="expanded" class="meta-grid">
       <div class="meta-grid-details">
-        <div v-if="job.schedule">График: {{ job.schedule }}</div>
-
-        <div v-if="job.employment">Занятость: {{ job.employment }}</div>
-
-        <div v-if="job.workFormat">Формат: {{ job.workFormat }}</div>
-
-        <div v-if="job.workingHours">Рабочие часы: {{ job.workingHours }}</div>
+        <div v-for="m in meta" :key="m">
+          {{ m }}
+        </div>
       </div>
 
       <div v-if="job.skills?.length" class="skills">
-        <span v-for="skill in job.skills" :key="skill" class="skill">
+        <Badge v-for="skill in visibleSkills" :key="skill">
           {{ skill }}
-        </span>
+        </Badge>
+        <Badge v-if="hiddenSkillsCount"> +{{ hiddenSkillsCount }} </Badge>
       </div>
     </div>
 
-    <article v-if="job.description" class="description" v-html="job.description" />
+    <article v-if="job.description" class="description">
+      {{ job.description }}
+    </article>
 
     <div class="nav">
       <Button variant="ghost" :disabled="disablePrev" @click="$emit('prev')">
@@ -107,13 +132,21 @@ const { isViewed } = useViewedJobs();
       </Button>
     </div>
   </div>
-
-  <div v-else class="empty">Начните искать вакансии</div>
 </template>
 
 <style scoped>
+.pagination-test {
+  margin-top: 40px;
+
+  width: 100%;
+  max-width: 420px;
+
+  display: flex;
+  justify-content: center;
+}
 .viewer {
   position: relative;
+
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -126,6 +159,12 @@ const { isViewed } = useViewedJobs();
   height: 80vh;
 
   gap: 16px;
+
+  transition: height 0.2s ease;
+}
+
+.viewer.expanded {
+  height: 110vh;
 }
 
 /* HEADER */
@@ -148,10 +187,14 @@ const { isViewed } = useViewedJobs();
   font-weight: 600;
 }
 
+/* MARKERS */
+
 .viewed {
   position: absolute;
+
   height: 20px;
   width: 20px;
+
   top: 0;
   left: 0;
 
@@ -163,8 +206,10 @@ const { isViewed } = useViewedJobs();
 
 .position {
   position: absolute;
+
   top: 0;
   right: 0;
+
   font-size: 12px;
   font-weight: 600;
 
@@ -175,9 +220,9 @@ const { isViewed } = useViewedJobs();
 
   background: var(--bg-soft);
   color: var(--text-muted);
-
-  white-space: nowrap;
 }
+
+/* INFO */
 
 .info-row {
   display: flex;
@@ -189,43 +234,39 @@ const { isViewed } = useViewedJobs();
   display: flex;
   flex-direction: column;
   gap: 4px;
+  font-size: 14px;
 }
 
 .right {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  font-size: 14px;
   text-align: right;
 }
 
 .company {
-  font-size: 14px;
   color: var(--text-muted);
 }
 
 .meta {
-  font-size: 13px;
   color: var(--text-muted);
 }
 
 .muted {
-  font-size: 13px;
   color: var(--text-muted);
 }
 
 /* DETAILS */
 
 .more {
-  font-size: 13px;
-
+  font-size: 14px;
+  margin-top: 8px;
+  padding: 0;
   border: none;
-
   background: transparent;
-
   color: var(--primary);
-
   cursor: pointer;
-
   align-self: flex-start;
 }
 
@@ -254,11 +295,8 @@ const { isViewed } = useViewedJobs();
 
 .skill {
   font-size: 12px;
-
   padding: 4px 8px;
-
   border-radius: 6px;
-
   background: var(--bg-soft);
 }
 
@@ -266,6 +304,8 @@ const { isViewed } = useViewedJobs();
 
 .description {
   flex: 1;
+
+  white-space: pre-line;
 
   overflow-y: auto;
 
@@ -287,14 +327,6 @@ const { isViewed } = useViewedJobs();
   gap: 10px;
 }
 
-/* EMPTY */
-
-.empty {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-muted);
-}
-
 /* MOBILE */
 
 @media (max-width: 640px) {
@@ -307,11 +339,21 @@ const { isViewed } = useViewedJobs();
     gap: 6px;
   }
 
+  .left {
+    font-size: 12px;
+  }
+
   .right {
     text-align: left;
+    font-size: 12px;
   }
 
   .description {
+    font-size: 12px;
+  }
+
+  .meta-grid-details {
+    gap: 6px;
     font-size: 12px;
   }
 }

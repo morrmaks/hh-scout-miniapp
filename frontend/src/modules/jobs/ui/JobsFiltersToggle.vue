@@ -47,4 +47,24 @@ const store = useJobsStore();
 .arrow.open {
   transform: rotate(180deg);
 }
+
+@media (max-width: 640px) {
+  .filters-toggle {
+    gap: 6px;
+  }
+
+  .filters-toggle :deep(.btn) {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .filters-toggle :deep(svg) {
+    width: 14px;
+    height: 14px;
+  }
+
+  .filters-toggle :deep(.btn) {
+    gap: 4px;
+  }
+}
 </style>

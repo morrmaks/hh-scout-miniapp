@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { useEventListener, useScrollLock } from '@vueuse/core';
+import { computed, ref, watch } from 'vue';
 
 interface Props {
   open: boolean;
 }
 
-const { open } = defineProps<Props>();
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
   'update:open': [boolean];
@@ -15,50 +16,53 @@ const startY = ref(0);
 const currentY = ref(0);
 const dragging = ref(false);
 
+const CLOSE_THRESHOLD = 120;
+
+const bodyScrollLock = useScrollLock(document.body);
+
+watch(
+  () => props.open,
+  (v) => {
+    bodyScrollLock.value = v;
+  }
+);
+
 function close() {
   emit('update:open', false);
 }
 
-function onTouchStart(e: TouchEvent) {
-  const touch = e.touches[0];
-  if (!touch) return;
+/* pointer drag */
 
+function onPointerDown(e: PointerEvent) {
   dragging.value = true;
-  startY.value = touch.clientY;
+  startY.value = e.clientY;
 }
 
-function onTouchMove(e: TouchEvent) {
+function onPointerMove(e: PointerEvent) {
   if (!dragging.value) return;
 
-  const touch = e.touches[0];
-  if (!touch) return;
-
-  const diff = touch.clientY - startY.value;
-
+  const diff = e.clientY - startY.value;
   currentY.value = diff > 0 ? diff : 0;
 }
 
-function onTouchEnd() {
+function onPointerUp() {
   if (!dragging.value) return;
 
-  if (currentY.value > 120) {
-    close();
-  }
+  if (currentY.value > CLOSE_THRESHOLD) close();
 
   dragging.value = false;
   currentY.value = 0;
 }
 
-function onKey(e: KeyboardEvent) {
-  if (e.key === 'Escape') close();
-}
+/* keyboard */
 
-onMounted(() => {
-  window.addEventListener('keydown', onKey);
+useEventListener(window, 'keydown', (e: KeyboardEvent) => {
+  if (e.key === 'Escape') close();
 });
 
-onUnmounted(() => {
-  window.removeEventListener('keydown', onKey);
+const style = computed(() => {
+  if (!dragging.value) return {};
+  return { transform: `translateY(${currentY.value}px)` };
 });
 </script>
 
@@ -67,16 +71,17 @@ onUnmounted(() => {
     <Transition name="drawer">
       <div v-if="open" class="drawer">
         <div class="overlay" @click="close" />
+
         <div
           class="content"
-          :style="{
-            transform: dragging ? `translateY(${currentY}px)` : ''
-          }"
-          @touchstart="onTouchStart"
-          @touchmove="onTouchMove"
-          @touchend="onTouchEnd"
+          :style="style"
+          @pointerdown="onPointerDown"
+          @pointermove="onPointerMove"
+          @pointerup="onPointerUp"
+          @pointercancel="onPointerUp"
         >
           <div class="handle" />
+
           <slot />
         </div>
       </div>
@@ -102,28 +107,21 @@ onUnmounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-
   background: var(--card);
-
   border-radius: 20px 20px 0 0;
-
   max-height: 80vh;
   overflow-y: auto;
-
   padding: 20px;
-
   transition: transform 0.2s ease;
+  touch-action: none;
 }
 
 .handle {
   width: 36px;
   height: 4px;
-
   background: var(--border);
-
   border-radius: 2px;
-
-  margin: 0 auto 16px auto;
+  margin: 0 auto 16px;
 }
 
 .drawer-enter-active,

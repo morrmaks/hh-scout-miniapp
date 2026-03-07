@@ -1,28 +1,40 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import PaginationSkeleton from '@/common/ui/PaginationSkeleton.vue';
 import { useAreasStore } from '@/modules/areas';
-import { useJobsStore } from '@/modules/jobs/store/jobs.store';
-import JobsFiltersDrawer from '@/modules/jobs/ui/JobsFiltersDrawer.vue';
-import JobsFiltersToggle from '@/modules/jobs/ui/JobsFiltersToggle.vue';
-import JobsPagination from '@/modules/jobs/ui/JobsPagination.vue';
-import JobsSearch from '@/modules/jobs/ui/JobsSearch.vue';
-import JobsSearchHistory from '@/modules/jobs/ui/JobsSearchHistory.vue';
-import JobViewer from '@/modules/jobs/ui/JobViewer.vue';
-import JobViewerSkeleton from '@/modules/jobs/ui/JobViewerSkeleton.vue';
+import {
+  JobsFiltersDrawer,
+  JobsFiltersToggle,
+  JobsPagination,
+  JobsSearch,
+  JobsSearchHistory,
+  JobViewer,
+  JobViewerSkeleton,
+  useJobsStore
+} from '@/modules/jobs';
 
 const store = useJobsStore();
 const areasStore = useAreasStore();
 
 const filtersOpen = ref(false);
 
+const searchState = computed(() => {
+  if (!store.query) return 'idle';
+  if (store.loading && !store.initialized) return 'loading';
+  if (store.found === 0) return 'empty';
+  return 'results';
+});
+
+const foundText = computed(() => {
+  if (!store.found) return '';
+  return `Найдено ${store.found} вакансий`;
+});
+
 onMounted(() => {
   store.restore();
   areasStore.fetchAreas();
 });
-
-watch([() => store.page, () => store.index, () => store.query], () => store.savePosition());
 </script>
 
 <template>
@@ -34,6 +46,12 @@ watch([() => store.page, () => store.index, () => store.query], () => store.save
     <JobsFiltersToggle :open="filtersOpen" @toggle="filtersOpen = !filtersOpen" />
 
     <JobsFiltersDrawer v-model:open="filtersOpen" />
+
+    <div v-if="searchState === 'empty'" class="search-empty">Ничего не найдено</div>
+    <div v-else-if="searchState === 'results'" class="search-found">
+      {{ foundText }}
+    </div>
+    <div v-if="searchState === 'idle'" class="search-idle">Начните искать вакансии</div>
 
     <div v-if="store.loading && !store.initialized">
       <JobViewerSkeleton />
@@ -73,6 +91,26 @@ watch([() => store.page, () => store.index, () => store.query], () => store.save
   gap: 16px;
 }
 
+.search-idle {
+  text-align: center;
+  padding: 40px 0;
+
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.search-empty {
+  text-align: center;
+  padding: 40px 0;
+
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.search-found {
+  font-size: 13px;
+  color: var(--text-muted);
+}
 .content {
   display: flex;
   flex-direction: column;

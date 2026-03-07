@@ -5,17 +5,17 @@ export interface Job {
   company: string;
   currency?: string | null;
   description: string;
-  employment?: string | null;
+  employmentForm?: string | null;
   experience?: string | null;
   id: string;
   salaryFrom?: number | null;
   salaryTo?: number | null;
-  schedule?: string | null;
   skills?: Array<string>;
   title: string;
   url: string;
-  workFormat?: string | null;
-  workingHours?: string | null;
+  workFormat?: Array<string>;
+  workingHours?: Array<string>;
+  workSchedule?: Array<string>;
 }
 
 export interface Favorite {
@@ -40,6 +40,7 @@ export interface SearchResult {
   found: number;
   items: Array<Job>;
   page: number;
+  pageItems: number;
   pages: number;
   perPage: number;
 }
@@ -53,13 +54,14 @@ export interface SearchJobsData {
   body?: never;
   path?: never;
   query?: {
-    q?: string;
+    text?: string;
     page?: number;
     order_by?: string;
     salary?: number;
-    experience?: Array<string>;
+    experience?: string;
     employment_form?: Array<string>;
     work_format?: Array<string>;
+    work_schedule_by_days?: Array<string>;
     area?: Array<string>;
     period?: number;
   };
@@ -79,9 +81,17 @@ export interface PrefetchJobsData {
   body?: never;
   path?: never;
   query: {
-    q: string;
+    text?: string;
     page: number;
     index: number;
+    order_by?: string;
+    salary?: number;
+    experience?: string;
+    employment_form?: Array<string>;
+    work_format?: Array<string>;
+    work_schedule_by_days?: Array<string>;
+    area?: Array<string>;
+    period?: number;
   };
   url: '/jobs/prefetch';
 }

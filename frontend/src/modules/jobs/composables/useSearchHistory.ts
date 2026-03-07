@@ -1,41 +1,58 @@
 import { ref } from 'vue';
 
+import { dbGet, dbSet } from '@/common/lib/indexedDb';
+
 const KEY = 'jobs-search-history';
 const LIMIT = 8;
 
-const history = ref<string[]>(load());
+const history = ref<string[]>([]);
 
-function load(): string[] {
-  try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
+let ready: Promise<void> | null = null;
+
+function init() {
+  if (!ready) {
+    ready = (async () => {
+      const data = await dbGet<string[]>(KEY);
+      history.value = data ?? [];
+    })();
   }
+
+  return ready;
 }
 
-function save() {
-  localStorage.setItem(KEY, JSON.stringify(history.value));
+async function persist() {
+  // важно: сохраняем обычный массив, не Proxy
+  await dbSet(KEY, [...history.value]);
 }
 
 export function useSearchHistory() {
-  function add(query: string) {
+  init();
+
+  async function add(query: string) {
+    await init();
+
     const q = query.trim();
     if (!q) return;
 
     history.value = [q, ...history.value.filter((v) => v !== q)].slice(0, LIMIT);
 
-    save();
+    await persist();
   }
 
-  function remove(query: string) {
+  async function remove(query: string) {
+    await init();
+
     history.value = history.value.filter((v) => v !== query);
-    save();
+
+    await persist();
   }
 
-  function clear() {
+  async function clear() {
+    await init();
+
     history.value = [];
-    save();
+
+    await persist();
   }
 
   return {

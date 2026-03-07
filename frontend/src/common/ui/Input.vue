@@ -1,14 +1,13 @@
 <script setup lang="ts">
-interface Props {
-  disabled?: boolean;
-  modelValue?: string;
-  placeholder?: string;
-}
+import { computed, ref, useAttrs } from 'vue';
 
-withDefaults(defineProps<Props>(), {
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
   placeholder: '',
-  disabled: false
+  disabled: false,
+  type: 'text'
 });
 
 const emit = defineEmits<{
@@ -16,20 +15,37 @@ const emit = defineEmits<{
   enter: [];
 }>();
 
-function onInput(event: Event) {
-  const target = event.target as HTMLInputElement;
-  emit('update:modelValue', target.value);
+interface Props {
+  disabled?: boolean;
+  modelValue?: string;
+  placeholder?: string;
+  type?: string;
 }
+
+const attrs = useAttrs();
+
+const inputRef = ref<HTMLInputElement | null>(null);
+
+const value = computed({
+  get: () => props.modelValue,
+  set: (v: string) => emit('update:modelValue', v)
+});
+
+defineExpose({
+  focus: () => inputRef.value?.focus(),
+  blur: () => inputRef.value?.blur()
+});
 </script>
 
 <template>
   <input
+    ref="inputRef"
+    v-model="value"
     class="input"
-    type="text"
-    :value="modelValue"
+    :type="type"
     :placeholder="placeholder"
     :disabled="disabled"
-    @input="onInput"
+    v-bind="attrs"
     @keydown.enter="$emit('enter')"
   />
 </template>
@@ -42,7 +58,9 @@ function onInput(event: Event) {
   border-radius: 10px;
   padding: 10px 14px;
   color: var(--text);
-  transition: all 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .input::placeholder {
@@ -51,11 +69,14 @@ function onInput(event: Event) {
 
 .input:focus {
   outline: none;
-
   border-color: var(--primary);
-
   box-shadow:
     0 0 0 1px var(--primary),
     0 0 14px var(--primary-hover);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>

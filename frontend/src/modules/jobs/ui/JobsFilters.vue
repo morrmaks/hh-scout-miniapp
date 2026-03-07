@@ -42,6 +42,16 @@ const areasStore = useAreasStore();
 
 <template>
   <div class="filters">
+    <FilterGroup label="Показывать на странице">
+      <Select
+        v-model="local.per_page"
+        :options="[
+          { label: '20 вакансий', value: '20' },
+          { label: '50 вакансий', value: '50' },
+          { label: '100 вакансий', value: '100' }
+        ]"
+      />
+    </FilterGroup>
     <FilterGroup label="Сортировка">
       <Select
         v-model="local.order_by"
@@ -62,6 +72,7 @@ const areasStore = useAreasStore();
       <Select
         v-model="local.experience"
         :options="[
+          { label: 'любой', value: '' },
           { label: 'Без опыта', value: 'noExperience' },
           { label: '1-3 года', value: 'between1And3' },
           { label: '3-6 лет', value: 'between3And6' },
@@ -103,6 +114,7 @@ const areasStore = useAreasStore();
       <Select
         v-model="local.period"
         :options="[
+          { label: 'любой', value: '0' },
           { label: 'За день', value: '1' },
           { label: 'За 3 дня', value: '3' },
           { label: 'За неделю', value: '7' },

@@ -1,34 +1,58 @@
 <script setup lang="ts">
+import { computed, useAttrs } from 'vue';
+
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(defineProps<Props>(), {
+  size: 'md',
+  variant: 'primary',
+  type: 'button',
+  active: false
+});
+
 interface Props {
+  active?: boolean;
   size?: 'lg' | 'md' | 'sm';
-  variant?: 'destructive' | 'ghost' | 'link' | 'primary';
+  type?: 'button' | 'reset' | 'submit';
+  variant?: 'destructive' | 'ghost' | 'link' | 'outline' | 'primary';
 }
 
-withDefaults(defineProps<Props>(), {
-  variant: 'primary',
-  size: 'md'
-});
+const attrs = useAttrs();
+
+const classes = computed(() => [
+  'btn',
+  `btn-${props.variant}`,
+  `btn-${props.size}`,
+  { 'is-active': props.active }
+]);
 </script>
 
 <template>
-  <button type="button" class="btn" :class="[variant, size]" v-bind="$attrs">
+  <button
+    :type="props.type"
+    :class="classes"
+    :aria-pressed="props.active || undefined"
+    v-bind="attrs"
+  >
     <slot />
   </button>
 </template>
 
 <style scoped>
 .btn {
-  border: none;
-  border-radius: 8px;
-
-  font-size: 14px;
-  cursor: pointer;
-
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-
-  transition: all 0.2s ease;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    border-color 0.15s,
+    opacity 0.15s;
 }
 
 .btn:disabled {
@@ -36,89 +60,94 @@ withDefaults(defineProps<Props>(), {
   opacity: 0.6;
 }
 
-.btn:disabled:hover {
-  box-shadow: none;
-}
+/* sizes */
 
-.sm {
+.btn-sm {
   padding: 6px 12px;
 }
 
-.md {
+.btn-md {
   padding: 8px 14px;
 }
 
-.lg {
+.btn-lg {
   padding: 10px 16px;
 }
 
-/* PRIMARY */
+/* primary */
 
-.primary {
+.btn-primary {
   background: var(--primary);
-  color: white;
-
-  box-shadow: 0 0 0 transparent;
+  color: #fff;
 }
 
-.primary:hover {
+.btn-primary:hover:not(:disabled) {
   background: var(--primary-hover);
-  box-shadow:
-    0 0 8px var(--primary-glow),
-    0 0 14px var(--primary-glow-soft);
 }
 
-.primary:disabled:hover {
-  background: var(--primary);
-  box-shadow: none;
-}
+/* ghost */
 
-/* GHOST */
-
-.ghost {
+.btn-ghost {
   background: var(--button-bg);
   color: var(--text);
 }
 
-.ghost:hover {
+.btn-ghost:hover:not(:disabled) {
   background: var(--button-hover);
-  box-shadow: 0 0 8px var(--button-glow);
 }
 
-.ghost:disabled:hover {
-  background: var(--button-bg);
-  box-shadow: none;
+.btn-ghost.is-active {
+  background: var(--primary);
+  color: #fff;
 }
 
-/* DESTRUCTIVE */
-
-.destructive {
-  background: var(--destructive);
-  color: var(--text);
+.btn-ghost.is-active:hover:not(:disabled) {
+  background: var(--primary-hover);
 }
 
-.destructive:hover {
-  background: var(--destructive-hover);
-  box-shadow:
-    0 0 8px var(--destructive-glow),
-    0 0 14px var(--destructive-glow-soft);
-}
+/* outline */
 
-.destructive:disabled:hover {
-  background: var(--destructive);
-  box-shadow: none;
-}
-
-.link {
+.btn-outline {
   background: transparent;
   color: var(--text);
+  border: 1px solid var(--border);
 }
 
-.link:hover {
-  opacity: 0.6;
+.btn-outline:hover:not(:disabled) {
+  background: var(--button-hover);
 }
 
-.link:disabled:hover {
-  opacity: 1;
+.btn-outline.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.btn-outline.is-active:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+/* destructive */
+
+.btn-destructive {
+  background: var(--destructive);
+  color: #fff;
+}
+
+.btn-destructive:hover:not(:disabled) {
+  background: var(--destructive-hover);
+}
+
+/* link */
+
+.btn-link {
+  background: transparent;
+  padding: 0;
+  color: var(--text);
+}
+
+.btn-link:hover:not(:disabled) {
+  opacity: 0.7;
 }
 </style>

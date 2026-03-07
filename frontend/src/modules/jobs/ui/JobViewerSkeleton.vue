@@ -43,10 +43,7 @@ import Skeleton from '@/common/ui/Skeleton.vue';
 
     <div class="nav">
       <Skeleton height="36px" width="40px" radius="10px" />
-
       <Skeleton height="36px" width="40px" radius="10px" />
-
-      <Skeleton height="36px" width="130px" radius="10px" />
     </div>
   </div>
 </template>

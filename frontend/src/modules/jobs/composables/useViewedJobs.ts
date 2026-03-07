@@ -1,26 +1,30 @@
 import { ref } from 'vue';
 
+import { dbGet, dbSet } from '@/common/lib/indexedDb';
+
 const KEY = 'viewed-jobs';
 
-const viewed = ref<Set<string>>(load());
+const viewed = ref<Set<string>>(new Set());
 
-function load(): Set<string> {
-  try {
-    const raw = localStorage.getItem(KEY);
+let loaded = false;
 
-    const arr = raw ? (JSON.parse(raw) as string[]) : [];
+async function load() {
+  if (loaded) return;
 
-    return new Set(arr);
-  } catch {
-    return new Set<string>();
-  }
+  const data = await dbGet<string[]>(KEY);
+
+  viewed.value = new Set(data ?? []);
+
+  loaded = true;
 }
 
-function save() {
-  localStorage.setItem(KEY, JSON.stringify([...viewed.value]));
+async function save() {
+  await dbSet(KEY, [...viewed.value]);
 }
 
 export function useViewedJobs() {
+  load();
+
   function markViewed(id: string) {
     if (viewed.value.has(id)) return;
 

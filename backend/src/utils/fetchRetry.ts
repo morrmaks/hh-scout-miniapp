@@ -5,7 +5,6 @@ export async function fetchRetry(url: string, retries = 3, options: RequestInit 
 
     try {
       const controller = new AbortController();
-
       timeout = setTimeout(() => controller.abort(), 10000);
 
       const res = await fetch(url, {

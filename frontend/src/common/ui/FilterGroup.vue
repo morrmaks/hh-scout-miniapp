@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface Props {
-  label: string;
+  label?: string;
 }
 
 defineProps<Props>();
@@ -8,7 +8,7 @@ defineProps<Props>();
 
 <template>
   <div class="group">
-    <div class="label">
+    <div v-if="label" class="label">
       {{ label }}
     </div>
 
@@ -22,7 +22,6 @@ defineProps<Props>();
 .group {
   display: grid;
   grid-template-columns: 140px 1fr;
-
   align-items: center;
   gap: 12px;
 }

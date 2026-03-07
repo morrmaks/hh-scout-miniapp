@@ -17,11 +17,7 @@ router.get('/', async (req, res, next) => {
 router.get('/prefetch', async (req, res, next) => {
   try {
     const filters = parseJobFilters(req.query);
-
-    const result = await prefetchVacancies({
-      ...filters,
-      index: Number(req.query.index || 0)
-    });
+    const result = await prefetchVacancies(filters);
 
     res.json(result);
   } catch (err) {

@@ -16,6 +16,7 @@
   "dependencies": {
     "@siberiacancode/fetches": "^1.14.1",
     "@twa-dev/sdk": "^8.0.2",
+    "@vueuse/core": "^14.2.1",
     "lucide-vue-next": "^0.577.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.25",
