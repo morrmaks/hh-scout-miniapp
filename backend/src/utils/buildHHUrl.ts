@@ -22,7 +22,7 @@ export function buildHHUrl(filters: JobFilters) {
 
   if (filters.currency) params.set('currency', filters.currency);
 
-  filters.experience?.forEach((v) => params.append('experience', v));
+  if (filters.experience) params.append('experience', filters.experience);
 
   filters.employment_form?.forEach((v) => params.append('employment_form', v));
 
