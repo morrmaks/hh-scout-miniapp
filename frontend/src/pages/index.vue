@@ -22,10 +22,8 @@ const filtersOpen = ref(false);
 const searchState = computed(() => {
   if (!store.query) return 'idle';
   if (store.loading && !store.initialized) return 'loading';
-  if (store.found === 0) return 'empty';
-  return 'results';
+  return store.found ? 'results' : 'empty';
 });
-
 const foundText = computed(() => {
   if (!store.found) return '';
   return `Найдено ${store.found} вакансий`;

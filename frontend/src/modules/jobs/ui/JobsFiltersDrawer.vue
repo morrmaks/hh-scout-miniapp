@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Drawer from '@/common/ui/Drawer.vue';
 
-import type { JobFilters } from '../types/jobsFilters';
+import type { JobsFiltersType } from '../types/types';
 
 import { useJobsStore } from '../store/jobs.store';
 import JobsFilters from './JobsFilters.vue';
@@ -18,7 +18,7 @@ const emit = defineEmits<{
 
 const store = useJobsStore();
 
-function apply(filters: JobFilters) {
+function apply(filters: JobsFiltersType) {
   store.setFilters(filters);
   emit('update:open', false);
 }

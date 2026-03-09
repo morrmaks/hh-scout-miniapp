@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useEventListener, useScrollLock } from '@vueuse/core';
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 interface Props {
   open: boolean;
@@ -12,107 +12,173 @@ const emit = defineEmits<{
   'update:open': [boolean];
 }>();
 
+const bodyScrollLock = useScrollLock(document.body);
+
+const visible = ref(false);
+const state = ref<'closed' | 'open'>('closed');
+
+const drawerRef = ref<HTMLElement | null>(null);
+
 const startY = ref(0);
-const currentY = ref(0);
 const dragging = ref(false);
+let offset = 0;
 
 const CLOSE_THRESHOLD = 120;
-
-const bodyScrollLock = useScrollLock(document.body);
+const DRAG_DAMPING = 0.6;
 
 watch(
   () => props.open,
-  (v) => {
-    bodyScrollLock.value = v;
-  }
+  (open) => {
+    bodyScrollLock.value = open;
+
+    if (open) {
+      visible.value = true;
+      requestAnimationFrame(() => {
+        state.value = 'open';
+      });
+    } else {
+      state.value = 'closed';
+    }
+  },
+  { immediate: true }
 );
 
 function close() {
   emit('update:open', false);
 }
 
-/* pointer drag */
+function setTransform(y: number) {
+  const el = drawerRef.value;
+  if (!el) return;
+
+  el.style.transform = `translate3d(0, ${y}px, 0)`;
+}
+
+function resetTransform() {
+  drawerRef.value?.style.removeProperty('transform');
+}
+
+function onAnimationEnd(e: AnimationEvent) {
+  if (e.target !== drawerRef.value) return;
+  if (state.value === 'closed') visible.value = false;
+}
 
 function onPointerDown(e: PointerEvent) {
   dragging.value = true;
   startY.value = e.clientY;
+  drawerRef.value?.classList.add('dragging');
 }
 
 function onPointerMove(e: PointerEvent) {
   if (!dragging.value) return;
-
   const diff = e.clientY - startY.value;
-  currentY.value = diff > 0 ? diff : 0;
+
+  if (diff <= 0) return;
+  offset = diff * DRAG_DAMPING;
+  setTransform(offset);
 }
 
 function onPointerUp() {
   if (!dragging.value) return;
 
-  if (currentY.value > CLOSE_THRESHOLD) close();
-
   dragging.value = false;
-  currentY.value = 0;
+  drawerRef.value?.classList.remove('dragging');
+
+  if (offset > CLOSE_THRESHOLD) close();
+  else resetTransform();
+
+  offset = 0;
 }
 
-/* keyboard */
-
-useEventListener(window, 'keydown', (e: KeyboardEvent) => {
+useEventListener(window, 'pointermove', onPointerMove);
+useEventListener(window, ['pointerup', 'pointercancel'], onPointerUp);
+useEventListener(window, 'keydown', (e) => {
   if (e.key === 'Escape') close();
-});
-
-const style = computed(() => {
-  if (!dragging.value) return {};
-  return { transform: `translateY(${currentY.value}px)` };
 });
 </script>
 
 <template>
   <Teleport to="body">
-    <Transition name="drawer">
-      <div v-if="open" class="drawer">
-        <div class="overlay" @click="close" />
+    <template v-if="visible">
+      <div class="overlay" :data-state="state" @click="close" @animationend="onAnimationEnd" />
 
-        <div
-          class="content"
-          :style="style"
-          @pointerdown="onPointerDown"
-          @pointermove="onPointerMove"
-          @pointerup="onPointerUp"
-          @pointercancel="onPointerUp"
-        >
+      <div
+        ref="drawerRef"
+        class="drawer"
+        data-drawer
+        data-direction="bottom"
+        :data-state="state"
+        @animationend="onAnimationEnd"
+      >
+        <div class="handle-area" @pointerdown="onPointerDown">
           <div class="handle" />
-
-          <slot />
         </div>
+
+        <slot />
       </div>
-    </Transition>
+    </template>
   </Teleport>
 </template>
 
 <style scoped>
 .drawer {
   position: fixed;
-  inset: 0;
+  inset: auto 0 0 0;
   z-index: 50;
+
+  background: var(--card);
+  border-radius: 20px 20px 0 0;
+
+  max-height: 80vh;
+  overflow-y: auto;
+
+  padding: 0 20px 20px;
+
+  touch-action: auto;
+  will-change: transform;
+  overscroll-behavior: contain;
+  transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+
+  animation-duration: 0.25s;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.drawer.dragging {
+  animation: none;
+  transition: none;
+}
+
+.drawer[data-state='open'] {
+  animation-name: slideFromBottom;
+}
+
+.drawer[data-state='closed'] {
+  animation-name: slideToBottom;
 }
 
 .overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: 40;
+
   background: rgba(0, 0, 0, 0.45);
+
+  animation-duration: 0.25s;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-.content {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--card);
-  border-radius: 20px 20px 0 0;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 20px;
-  transition: transform 0.2s ease;
+.overlay[data-state='open'] {
+  animation-name: fadeIn;
+}
+
+.overlay[data-state='closed'] {
+  animation-name: fadeOut;
+}
+
+.handle-area {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 12px;
   touch-action: none;
 }
 
@@ -121,29 +187,35 @@ const style = computed(() => {
   height: 4px;
   background: var(--border);
   border-radius: 2px;
-  margin: 0 auto 16px;
 }
 
-.drawer-enter-active,
-.drawer-leave-active {
-  transition: opacity 0.25s ease;
+@keyframes slideFromBottom {
+  from {
+    transform: translate3d(0, 100%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
 }
 
-.drawer-enter-from,
-.drawer-leave-to {
-  opacity: 0;
+@keyframes slideToBottom {
+  to {
+    transform: translate3d(0, 100%, 0);
+  }
 }
 
-.drawer-enter-active .content,
-.drawer-leave-active .content {
-  transition: transform 0.25s ease;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.drawer-enter-from .content {
-  transform: translateY(100%);
-}
-
-.drawer-leave-to .content {
-  transform: translateY(100%);
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
 }
 </style>

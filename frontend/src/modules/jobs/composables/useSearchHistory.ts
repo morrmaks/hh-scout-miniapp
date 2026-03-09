@@ -11,48 +11,50 @@ let ready: Promise<void> | null = null;
 
 function init() {
   if (!ready) {
-    ready = (async () => {
-      const data = await dbGet<string[]>(KEY);
+    ready = dbGet<string[]>(KEY).then((data) => {
       history.value = data ?? [];
-    })();
+    });
   }
 
   return ready;
 }
 
-async function persist() {
-  // важно: сохраняем обычный массив, не Proxy
-  await dbSet(KEY, [...history.value]);
+function persist() {
+  return dbSet(KEY, [...history.value]);
+}
+
+async function ensure() {
+  await init();
 }
 
 export function useSearchHistory() {
   init();
 
   async function add(query: string) {
-    await init();
+    await ensure();
 
     const q = query.trim();
     if (!q) return;
 
     history.value = [q, ...history.value.filter((v) => v !== q)].slice(0, LIMIT);
 
-    await persist();
+    return persist();
   }
 
   async function remove(query: string) {
-    await init();
+    await ensure();
 
     history.value = history.value.filter((v) => v !== query);
 
-    await persist();
+    return persist();
   }
 
   async function clear() {
-    await init();
+    await ensure();
 
     history.value = [];
 
-    await persist();
+    return persist();
   }
 
   return {

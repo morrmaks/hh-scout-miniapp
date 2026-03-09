@@ -6,7 +6,7 @@ import { computed, ref } from 'vue';
 import { buildPagination } from '@/common/utils/pagination';
 
 import Button from './Button.vue';
-import PageScrubber from './PageScrubber.vue';
+import Scrubber from './Scrubber.vue';
 
 interface Props {
   currentPage: number;
@@ -32,38 +32,45 @@ function change(page: number) {
   emit('change', page);
 }
 
-/* pagination items */
-
 const items = computed(() => buildPagination(props.currentPage, props.totalPages, props.window));
 
-/* scrubber */
-
 const showScrubber = ref(false);
-const scrubber = ref<InstanceType<typeof PageScrubber> | null>(null);
+const scrubber = ref<InstanceType<typeof Scrubber> | null>(null);
 
+const skipMove = ref(false);
 const lastX = ref(0);
 
 function startPress(e: PointerEvent) {
   showScrubber.value = true;
   lastX.value = e.clientX;
+  skipMove.value = true;
+  (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
 }
 
 function onMove(e: PointerEvent) {
+  if (!showScrubber.value) return;
+
+  if (skipMove.value) {
+    skipMove.value = false;
+    lastX.value = e.clientX;
+    return;
+  }
+
   const dx = e.clientX - lastX.value;
   lastX.value = e.clientX;
+
   scrubber.value?.move(dx);
 }
 
 function stopPress() {
   const page = scrubber.value?.current;
-
   if (page) change(page);
-
   showScrubber.value = false;
 }
 
 useEventListener(window, 'pointermove', onMove);
 useEventListener(window, 'pointerup', stopPress);
+useEventListener(window, 'pointercancel', stopPress);
 </script>
 
 <template>
@@ -120,12 +127,7 @@ useEventListener(window, 'pointerup', stopPress);
         {{ totalPages }}
       </span>
 
-      <PageScrubber
-        v-if="showScrubber"
-        ref="scrubber"
-        :model-value="currentPage"
-        :total="totalPages"
-      />
+      <Scrubber v-if="showScrubber" ref="scrubber" :model-value="currentPage" :total="totalPages" />
     </div>
 
     <!-- next -->
@@ -205,6 +207,7 @@ useEventListener(window, 'pointerup', stopPress);
   font-size: 16px;
   font-weight: 600;
   position: relative;
+  touch-action: none;
 }
 
 .current {

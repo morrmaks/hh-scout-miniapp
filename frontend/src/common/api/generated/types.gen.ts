@@ -56,13 +56,16 @@ export interface SearchJobsData {
   query?: {
     text?: string;
     page?: number;
+    per_page?: number;
     order_by?: string;
     salary?: number;
+    currency?: string;
     experience?: string;
     employment_form?: Array<string>;
     work_format?: Array<string>;
     work_schedule_by_days?: Array<string>;
     area?: Array<string>;
+    label?: Array<string>;
     period?: number;
   };
   url: '/jobs';

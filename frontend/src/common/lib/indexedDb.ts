@@ -13,13 +13,15 @@ function openDB(): Promise<IDBDatabase> {
     request.onupgradeneeded = () => {
       const db = request.result;
 
-      if (!db.objectStoreNames.contains(STORE)) {
-        db.createObjectStore(STORE);
-      }
+      if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE);
     };
 
     request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+
+    request.onerror = () => {
+      dbPromise = null;
+      reject(request.error);
+    };
   });
 
   return dbPromise;
@@ -39,30 +41,30 @@ export async function dbGet<T>(key: string): Promise<T | null> {
   });
 }
 
-export async function dbSet<T>(key: string, value: T) {
+export async function dbSet(key: string, value: unknown): Promise<void> {
   const db = await openDB();
 
-  return new Promise<void>((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE, 'readwrite');
     const store = tx.objectStore(STORE);
 
-    const req = store.put(value, key);
+    store.put(value, key);
 
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
   });
 }
 
-export async function dbDelete(key: string) {
+export async function dbDelete(key: string): Promise<void> {
   const db = await openDB();
 
-  return new Promise<void>((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE, 'readwrite');
     const store = tx.objectStore(STORE);
 
-    const req = store.delete(key);
+    store.delete(key);
 
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
   });
 }

@@ -19,28 +19,47 @@ const emit = defineEmits<{
 
 const expanded = ref(false);
 
+const selectedSet = computed(() => new Set(props.modelValue ?? []));
+
 const visibleAreas = computed(() => {
-  const selectedIds = new Set(props.modelValue ?? []);
+  const selected: Area[] = [];
+  const rest: Area[] = [];
 
-  const selected = props.areas.filter((a) => selectedIds.has(a.id));
+  for (const area of props.areas) {
+    if (selectedSet.value.has(area.id)) {
+      selected.push(area);
+    } else {
+      rest.push(area);
+    }
+  }
 
-  const base = expanded.value ? props.areas : props.areas.slice(0, 5);
+  if (expanded.value) {
+    return [...selected, ...rest];
+  }
 
-  const map = new Map<string, Area>();
+  if (selected.length > 5) {
+    return selected;
+  }
 
-  selected.forEach((a) => map.set(a.id, a));
-  base.forEach((a) => map.set(a.id, a));
+  const limit = 5 - selected.length;
 
-  return [...map.values()];
+  return [...selected, ...rest.slice(0, limit)];
 });
 
 function toggle(id: string) {
-  const current = props.modelValue ?? [];
-  const set = new Set(current);
+  const set = new Set(props.modelValue ?? []);
 
-  set.has(id) ? set.delete(id) : set.add(id);
+  if (set.has(id)) {
+    set.delete(id);
+  } else {
+    set.add(id);
+  }
 
   emit('update:modelValue', [...set]);
+}
+
+function toggleExpanded() {
+  expanded.value = !expanded.value;
 }
 </script>
 
@@ -51,10 +70,9 @@ function toggle(id: string) {
       size="sm"
       variant="primary"
       class="toggle"
-      @click="expanded = !expanded"
+      @click="toggleExpanded"
     >
-      <Minus v-if="expanded" :size="16" />
-      <Plus v-if="!expanded" :size="16" />
+      <component :is="expanded ? Minus : Plus" :size="16" />
     </Button>
 
     <Button
@@ -62,8 +80,7 @@ function toggle(id: string) {
       :key="area.id"
       size="sm"
       variant="ghost"
-      class="area"
-      :class="{ active: modelValue?.includes(area.id) }"
+      :active="selectedSet.has(area.id)"
       @click="toggle(area.id)"
     >
       {{ area.name }}
@@ -75,22 +92,14 @@ function toggle(id: string) {
 .toggle {
   position: sticky;
   top: -6px;
-  right: -6px;
 }
 
 .areas {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-
   background: var(--bg-soft);
   padding: 8px;
-
   border-radius: 8px;
-}
-
-.area.active {
-  background: var(--primary);
-  color: white;
 }
 </style>

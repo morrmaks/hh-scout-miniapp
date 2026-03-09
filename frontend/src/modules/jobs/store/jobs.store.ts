@@ -1,19 +1,22 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 import type { Job } from '@/common/api/generated';
 
 import { getJobs, getJobsPrefetch } from '@/common/api/generated';
 
-import type { JobFilters } from '../types/jobsFilters';
+import type { JobsFiltersType } from '../types/types';
 
 import { useJobsPosition } from '../composables/useJobsPosition';
 import { useViewedJobs } from '../composables/useViewedJobs';
+import { buildApiQuery, buildUrlQuery, resolveSearchState } from '../lib/search';
+import { equalFilters } from '../utils/equalFilters';
 
 const STEP = 10;
 const PREFETCH_TRIGGER = 7;
 
-const DEFAULT_FILTERS: JobFilters = {
+const DEFAULT_FILTERS: JobsFiltersType = {
   per_page: 100,
   order_by: 'relevance',
   area: [],
@@ -23,13 +26,15 @@ const DEFAULT_FILTERS: JobFilters = {
 };
 
 export const useJobsStore = defineStore('jobs', () => {
+  const router = useRouter();
+
   const { markViewed } = useViewedJobs();
   const { save, restore: restorePosition } = useJobsPosition();
 
   const initialized = ref(false);
 
   const query = ref('');
-  const filters = ref<JobFilters>({ ...DEFAULT_FILTERS });
+  const filters = ref<JobsFiltersType>({ ...DEFAULT_FILTERS });
 
   const page = ref(1);
   const index = ref(0);
@@ -42,18 +47,14 @@ export const useJobsStore = defineStore('jobs', () => {
 
   const loading = ref(false);
   const prefetching = ref(false);
-
   const prefetchedOffsets = ref(new Set<number>());
-
   const restoreMode = ref(false);
 
   const hasData = computed(() => items.value.length > 0);
-
   const currentJob = computed(() => items.value[index.value] ?? null);
-
   const hasFilters = computed(() =>
     Object.entries(filters.value).some(([key, value]) => {
-      const def = DEFAULT_FILTERS[key as keyof JobFilters];
+      const def = DEFAULT_FILTERS[key as keyof JobsFiltersType];
 
       if (Array.isArray(value)) return value.length > 0;
       return value !== undefined && value !== def;
@@ -66,24 +67,6 @@ export const useJobsStore = defineStore('jobs', () => {
   });
 
   let requestId = 0;
-
-  function buildQuery(): Partial<JobFilters> & { text: string; page: number; index?: number } {
-    const queryObject: Record<string, unknown> = {
-      text: query.value,
-      page: page.value
-    };
-
-    if (restoreMode.value && index.value > 0) queryObject.index = index.value;
-
-    for (const [key, value] of Object.entries(filters.value)) {
-      if (Array.isArray(value) && value.length === 0) continue;
-      if (value === undefined || value === '') continue;
-
-      queryObject[key] = value;
-    }
-
-    return queryObject as Partial<JobFilters> & { text: string; page: number; index?: number };
-  }
 
   async function fetchJobs() {
     if (!query.value.trim()) {
@@ -100,7 +83,7 @@ export const useJobsStore = defineStore('jobs', () => {
 
     try {
       const { data } = await getJobs({
-        query: buildQuery()
+        query: buildApiQuery(query.value, page.value, index.value, filters.value, restoreMode.value)
       });
 
       if (id !== requestId) return;
@@ -115,7 +98,6 @@ export const useJobsStore = defineStore('jobs', () => {
 
       if (index.value >= items.value.length) index.value = 0;
 
-      /** после первой загрузки restore режим выключаем */
       restoreMode.value = false;
     } finally {
       if (id === requestId) {
@@ -132,7 +114,7 @@ export const useJobsStore = defineStore('jobs', () => {
     try {
       const { data } = await getJobsPrefetch({
         query: {
-          ...buildQuery(),
+          ...buildApiQuery(query.value, page.value, index.value, filters.value, restoreMode.value),
           index: indexValue
         }
       });
@@ -149,39 +131,28 @@ export const useJobsStore = defineStore('jobs', () => {
   }
 
   function maybePrefetch() {
-    const pos = index.value + 1;
-
-    if (pos % STEP !== PREFETCH_TRIGGER) return;
-
+    if ((index.value + 1) % STEP !== PREFETCH_TRIGGER) return;
     const offset = Math.floor(index.value / STEP) * STEP + STEP;
 
     if (prefetchedOffsets.value.has(offset)) return;
-
     prefetchedOffsets.value.add(offset);
 
     prefetch(index.value);
   }
 
-  function savePosition() {
-    save(query.value, page.value, index.value);
-  }
-
   function nextJob() {
-    if (currentJob.value) markViewed(currentJob.value.id);
-
+    currentJob.value && markViewed(currentJob.value.id);
     if (index.value < items.value.length - 1) {
       index.value++;
-
       maybePrefetch();
-
-      savePosition();
+      commitNavigation();
     }
   }
 
   function prevJob() {
     if (index.value > 0) {
       index.value--;
-      savePosition();
+      commitNavigation();
     }
   }
 
@@ -190,63 +161,62 @@ export const useJobsStore = defineStore('jobs', () => {
     if (!value) return;
 
     query.value = value;
-
-    page.value = 1;
-    index.value = 0;
-
-    prefetchedOffsets.value.clear();
+    resetNavigation();
 
     await fetchJobs();
-
-    savePosition();
+    commitNavigation();
   }
 
-  function setFilters(f: JobFilters) {
-    filters.value = {
-      ...DEFAULT_FILTERS,
-      ...f
-    };
-
-    page.value = 1;
-    index.value = 0;
-
-    prefetchedOffsets.value.clear();
-
+  function setFilters(next: JobsFiltersType) {
+    if (equalFilters(filters.value, next)) return;
+    filters.value = { ...DEFAULT_FILTERS, ...next };
+    resetNavigation();
     fetchJobs();
+    commitNavigation();
   }
 
   function resetFilters() {
     filters.value = { ...DEFAULT_FILTERS };
-
-    page.value = 1;
-    index.value = 0;
-
-    prefetchedOffsets.value.clear();
-
+    resetNavigation();
     fetchJobs();
+    commitNavigation();
   }
 
   async function setPage(p: number) {
     page.value = p;
     index.value = 0;
-
     prefetchedOffsets.value.clear();
 
     await fetchJobs();
+    commitNavigation();
+  }
 
-    savePosition();
+  function resetNavigation() {
+    page.value = 1;
+    index.value = 0;
+    prefetchedOffsets.value.clear();
+  }
+
+  function commitNavigation() {
+    save(query.value, page.value, index.value, filters.value);
+
+    router.replace({
+      query: buildUrlQuery(query.value, page.value, index.value, filters.value)
+    });
   }
 
   async function restore() {
-    const data = await restorePosition();
+    const route = useRoute();
 
-    if (!data) return;
+    const state = await resolveSearchState(route.query, restorePosition, DEFAULT_FILTERS);
 
-    query.value = data.query ?? '';
-    page.value = data.page ?? 1;
-    index.value = data.index ?? 0;
+    if (!state) return;
 
-    /** включаем restore режим */
+    query.value = state.query;
+    page.value = state.page;
+    index.value = state.index;
+    filters.value = state.filters;
+
     restoreMode.value = true;
 
     if (query.value) await fetchJobs();
@@ -283,6 +253,6 @@ export const useJobsStore = defineStore('jobs', () => {
     prevJob,
 
     restore,
-    savePosition
+    commitNavigation
   };
 });

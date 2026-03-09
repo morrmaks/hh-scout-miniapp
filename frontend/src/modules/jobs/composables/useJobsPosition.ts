@@ -1,20 +1,23 @@
 import { dbGet, dbSet } from '@/common/lib/indexedDb';
 
+import type { JobsFiltersType } from '../types/types';
+
 const KEY = 'jobs-position';
 
 interface JobsPosition {
+  filters: JobsFiltersType;
   index: number;
   page: number;
   query: string;
 }
 
 export function useJobsPosition() {
-  async function save(query: string, page: number, index: number) {
-    await dbSet<JobsPosition>(KEY, { query, page, index });
+  function save(query: string, page: number, index: number, filters: JobsFiltersType) {
+    return dbSet(KEY, { query, page, index, filters: JSON.parse(JSON.stringify(filters)) });
   }
 
-  async function restore(): Promise<JobsPosition | null> {
-    return await dbGet<JobsPosition>(KEY);
+  function restore(): Promise<JobsPosition | null> {
+    return dbGet<JobsPosition>(KEY);
   }
 
   return {

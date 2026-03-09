@@ -10,16 +10,13 @@ let loaded = false;
 
 async function load() {
   if (loaded) return;
-
   const data = await dbGet<string[]>(KEY);
-
   viewed.value = new Set(data ?? []);
-
   loaded = true;
 }
 
-async function save() {
-  await dbSet(KEY, [...viewed.value]);
+function save() {
+  return dbSet(KEY, [...viewed.value]);
 }
 
 export function useViewedJobs() {

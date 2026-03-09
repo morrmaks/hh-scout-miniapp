@@ -51,23 +51,19 @@ const meta = computed(() => {
     props.job.employmentForm && `Занятость: ${props.job.employmentForm}`,
     props.job.workFormat?.length && `Формат: ${props.job.workFormat.join(', ')}`,
     props.job.workingHours?.length && `Часы: ${props.job.workingHours.join(', ')}`
-  ].filter(Boolean) as string[];
+  ].filter((v): v is string => Boolean(v));
 });
 </script>
 
 <template>
   <div v-if="job" class="viewer" :class="{ expanded }">
     <span v-if="!isViewed(job.id)" class="viewed" />
-
-    <div class="position">
-      {{ position }}
-    </div>
+    <span class="public-date" v-text="job.publishedAt" />
+    <span class="position" v-text="position" />
 
     <header class="header">
       <div class="title-row">
-        <h2 class="title">
-          {{ job.title }}
-        </h2>
+        <h2 class="title" v-text="job.title" />
 
         <a :href="job.url" target="_blank">
           <Button variant="link" size="sm">
@@ -78,17 +74,16 @@ const meta = computed(() => {
 
       <div class="info-row">
         <div class="left">
-          <p class="company">
-            {{ job.company }}
-          </p>
+          <p class="company" v-text="job.company" />
 
-          <div v-if="job.city" class="meta"><MapPin :size="12" /> {{ job.city }}</div>
+          <div v-if="job.city" class="meta">
+            <MapPin :size="12" />
+            {{ job.city }}
+          </div>
         </div>
 
         <div class="right">
-          <div v-if="job.experience" class="muted">
-            {{ job.experience }}
-          </div>
+          <div v-if="job.experience" class="muted" v-text="job.experience" />
 
           <div v-if="job.salaryFrom || job.salaryTo" class="muted">
             {{ job.salaryFrom ?? 0 }}
@@ -183,7 +178,7 @@ const meta = computed(() => {
 }
 
 .title {
-  font-size: clamp(18px, 2.5vw, 22px);
+  font-size: 22px;
   font-weight: 600;
 }
 
@@ -202,6 +197,18 @@ const meta = computed(() => {
   border-top-left-radius: 14px;
 
   background: var(--primary);
+}
+
+.public-date {
+  position: absolute;
+
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 .position {
@@ -332,6 +339,10 @@ const meta = computed(() => {
 @media (max-width: 640px) {
   .viewer {
     padding: 24px 8px 8px;
+  }
+
+  .title {
+    font-size: 16px;
   }
 
   .info-row {

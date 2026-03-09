@@ -328,6 +328,8 @@
 
           "description": { "type": "string" },
 
+          "publishedAt": { "type": "string" },
+
           "salaryFrom": { "type": "number", "nullable": true },
 
           "salaryTo": { "type": "number", "nullable": true },

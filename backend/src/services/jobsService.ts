@@ -146,17 +146,13 @@ export async function getVacancyById(id: string) {
 
   if (existing) {
     const full = await existing;
-
     return toJobDTO(full);
   }
 
   const promise = enqueue(async () => {
     const res = await fetchRetry(`https://api.hh.ru/vacancies/${id}`);
-
     const data = await res.json();
-
     vacancyCache.set(id, data);
-
     return data;
   });
 
@@ -164,7 +160,6 @@ export async function getVacancyById(id: string) {
 
   try {
     const full = await promise;
-
     return toJobDTO(full);
   } finally {
     inFlightVacancy.delete(id);

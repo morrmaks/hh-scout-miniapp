@@ -17,7 +17,6 @@ export interface VacancyFull {
   employer?: {
     name: string;
   };
-
   employment_form?: {
     id: string;
     name: string;
@@ -35,6 +34,8 @@ export interface VacancyFull {
   }[];
 
   name: string;
+
+  published_at: string;
 
   salary?: {
     from?: number;

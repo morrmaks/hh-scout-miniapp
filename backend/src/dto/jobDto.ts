@@ -1,6 +1,7 @@
 import type { VacancyFull } from '../types/types';
 
 import { formatDescription } from '../utils/format';
+import { formatJobDate } from '../utils/formatJobDate';
 import { mapNames } from '../utils/mapNames';
 
 export interface JobDTO {
@@ -9,21 +10,16 @@ export interface JobDTO {
   currency?: string;
   description: string;
   employmentForm?: string;
-
   experience?: string;
-
   id: string;
+  publishedAt: string;
   salaryFrom?: number;
   salaryTo?: number;
-
   skills: string[];
-
   title: string;
-
   url: string;
   workFormat?: string[];
   workingHours?: string[];
-
   workSchedule?: string[];
 }
 
@@ -34,6 +30,7 @@ export function toJobDTO(job: VacancyFull): JobDTO {
     company: job.employer?.name ?? 'Unknown',
     url: job.alternate_url,
     description: formatDescription(job.description),
+    publishedAt: formatJobDate(job.published_at),
     salaryFrom: job.salary?.from,
     salaryTo: job.salary?.to,
     currency: job.salary?.currency,

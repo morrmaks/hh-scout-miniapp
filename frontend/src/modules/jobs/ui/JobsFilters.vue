@@ -8,19 +8,19 @@ import Select from '@/common/ui/Select.vue';
 import ToggleGroup from '@/common/ui/ToggleGroup.vue';
 import { AreaSelect, useAreasStore } from '@/modules/areas';
 
-import type { LocalFilters } from '../lib/filtersMapper';
-import type { JobFilters } from '../types/jobsFilters';
+import type { LocalFilters } from '../lib/filters';
+import type { JobsFiltersType } from '../types/types';
 
-import { toApiFilters, toLocalFilters } from '../lib/filtersMapper';
+import { toApiFilters, toLocalFilters } from '../lib/filters';
 
 interface Props {
-  modelValue: JobFilters;
+  modelValue: JobsFiltersType;
 }
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  apply: [JobFilters];
+  apply: [JobsFiltersType];
 }>();
 
 const local = reactive<LocalFilters>(toLocalFilters(props.modelValue));
@@ -125,7 +125,7 @@ const areasStore = useAreasStore();
   </div>
 
   <div class="footer">
-    <Button @click="apply"> Применить фильтры </Button>
+    <Button class="applyButton" @click="apply"> Применить фильтры </Button>
   </div>
 </template>
 
@@ -139,5 +139,11 @@ const areasStore = useAreasStore();
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .applyButton {
+    width: 100%;
+  }
 }
 </style>
