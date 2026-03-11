@@ -32,6 +32,49 @@ export interface Favorite {
   userId?: number;
 }
 
+export type StatusColor =
+  | 'blue'
+  | 'gray'
+  | 'green'
+  | 'indigo'
+  | 'orange'
+  | 'pink'
+  | 'purple'
+  | 'red'
+  | 'teal'
+  | 'yellow';
+
+export interface Status {
+  color: StatusColor;
+  id: number;
+  name: string;
+  userId: number;
+}
+
+export interface StatusCreate {
+  color: StatusColor;
+  name: string;
+  userId: number;
+}
+
+export interface StatusUpdate {
+  color?: StatusColor;
+  name?: string;
+}
+
+export interface FavoritesResponse {
+  filters?: {
+    companies?: Array<string>;
+    statuses?: Array<Status>;
+  };
+  items: Array<Favorite>;
+  meta: {
+    total?: number;
+    page?: number;
+    pages?: number;
+  };
+}
+
 export interface FavoriteCreate {
   job: Job;
   userId: number;
@@ -58,13 +101,13 @@ export interface SearchJobsData {
     text?: string;
     page?: number;
     per_page?: number;
+    index?: number;
     order_by?: string;
     salary?: number;
     currency?: string;
     experience?: string;
     employment_form?: Array<string>;
     work_format?: Array<string>;
-    work_schedule_by_days?: Array<string>;
     area?: Array<string>;
     label?: Array<string>;
     period?: number;
@@ -84,17 +127,19 @@ export type SearchJobsResponse = SearchJobsResponses[keyof SearchJobsResponses];
 export interface PrefetchJobsData {
   body?: never;
   path?: never;
-  query: {
+  query?: {
     text?: string;
-    page: number;
-    index: number;
+    page?: number;
+    per_page?: number;
+    index?: number;
     order_by?: string;
     salary?: number;
+    currency?: string;
     experience?: string;
     employment_form?: Array<string>;
     work_format?: Array<string>;
-    work_schedule_by_days?: Array<string>;
     area?: Array<string>;
+    label?: Array<string>;
     period?: number;
   };
   url: '/jobs/prefetch';
@@ -145,6 +190,30 @@ export interface GetAreasResponses {
 
 export type GetAreasResponse = GetAreasResponses[keyof GetAreasResponses];
 
+export interface GetFavoritesData {
+  body?: never;
+  path?: never;
+  query: {
+    userId: number;
+    page?: number;
+    per_page?: number;
+    salary_from?: number;
+    company?: Array<string>;
+    status?: Array<number>;
+    sort?: 'date' | 'salary_asc' | 'salary_desc' | 'status';
+  };
+  url: '/favorites';
+}
+
+export interface GetFavoritesResponses {
+  /**
+   * Favorites list
+   */
+  200: FavoritesResponse;
+}
+
+export type GetFavoritesResponse = GetFavoritesResponses[keyof GetFavoritesResponses];
+
 export interface SaveFavoriteData {
   body: FavoriteCreate;
   path?: never;
@@ -159,37 +228,139 @@ export interface SaveFavoriteResponses {
   200: unknown;
 }
 
-export interface GetFavoritesData {
+export interface GetFavoriteIdsData {
   body?: never;
-  path: {
+  path?: never;
+  query: {
     userId: number;
   };
-  query?: never;
-  url: '/favorites/{userId}';
+  url: '/favorites/ids';
 }
 
-export interface GetFavoritesResponses {
+export interface GetFavoriteIdsResponses {
   /**
-   * Favorite jobs
+   * List of favorite job ids
    */
-  200: Array<Favorite>;
+  200: {
+    ids?: Array<string>;
+  };
 }
 
-export type GetFavoritesResponse = GetFavoritesResponses[keyof GetFavoritesResponses];
+export type GetFavoriteIdsResponse = GetFavoriteIdsResponses[keyof GetFavoriteIdsResponses];
+
+export interface ExportFavoritesExcelData {
+  body?: never;
+  path?: never;
+  query: {
+    userId: number;
+  };
+  url: '/favorites/export';
+}
+
+export interface ExportFavoritesExcelResponses {
+  /**
+   * Excel file
+   */
+  200: unknown;
+}
 
 export interface DeleteFavoriteData {
   body?: never;
   path: {
-    userId: number;
     jobId: string;
   };
-  query?: never;
-  url: '/favorites/{userId}/{jobId}';
+  query: {
+    userId: number;
+  };
+  url: '/favorites/{jobId}';
 }
 
 export interface DeleteFavoriteResponses {
   /**
    * Favorite removed
+   */
+  200: unknown;
+}
+
+export interface SetFavoriteStatusData {
+  body: {
+    userId: number;
+    statusId?: number | null;
+  };
+  path: {
+    jobId: string;
+  };
+  query?: never;
+  url: '/favorites/{jobId}/status';
+}
+
+export interface SetFavoriteStatusResponses {
+  /**
+   * Status updated
+   */
+  200: unknown;
+}
+
+export interface GetStatusesData {
+  body?: never;
+  path?: never;
+  query: {
+    userId: number;
+  };
+  url: '/statuses';
+}
+
+export interface GetStatusesResponses {
+  /**
+   * List of statuses
+   */
+  200: Array<Status>;
+}
+
+export type GetStatusesResponse = GetStatusesResponses[keyof GetStatusesResponses];
+
+export interface CreateStatusData {
+  body: StatusCreate;
+  path?: never;
+  query?: never;
+  url: '/statuses';
+}
+
+export interface CreateStatusResponses {
+  /**
+   * Status created
+   */
+  200: unknown;
+}
+
+export interface DeleteStatusData {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: '/statuses/{id}';
+}
+
+export interface DeleteStatusResponses {
+  /**
+   * Status deleted
+   */
+  200: unknown;
+}
+
+export interface UpdateStatusData {
+  body: StatusUpdate;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: '/statuses/{id}';
+}
+
+export interface UpdateStatusResponses {
+  /**
+   * Status updated
    */
   200: unknown;
 }

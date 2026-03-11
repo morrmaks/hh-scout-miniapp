@@ -6,9 +6,10 @@ import type { GetFavoritesData, GetFavoritesResponse } from '../../types.gen';
 
 import { instance } from '../../../client';
 
-export type GetFavoriteByUserIdRequestParams = FetchesRequestParams<GetFavoritesData>;
+export type GetFavoritesRequestParams = FetchesRequestParams<GetFavoritesData>;
 
-export const getFavoriteByUserId = ({ config, path }: GetFavoriteByUserIdRequestParams) =>
-  instance.call<GetFavoritesResponse>('GET', `/favorites/${path.userId}`, {
+export const getFavorites = ({ config, query }: GetFavoritesRequestParams) =>
+  instance.call<GetFavoritesResponse>('GET', '/favorites', {
+    query,
     ...config
   });

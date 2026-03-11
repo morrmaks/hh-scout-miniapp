@@ -32,7 +32,7 @@ export function parseJobFilters(query: ParsedQs): JobFilters {
     salary: toNumber(query.salary),
     currency: query.currency ? String(query.currency) : undefined,
 
-    experience: query.experience ? String(query.experience) : undefined,
+    experience: toArray(query.experience),
     employment_form: toArray(query.employment_form),
     work_format: toArray(query.work_format),
     area: toArray(query.area),

@@ -13,7 +13,7 @@ export function buildSearchKey(filters: JobFilters) {
     currency: filters.currency ?? '',
     period: filters.period ?? '',
     perPage: filters.per_page ?? '',
-    experience: filters.experience ?? '',
+    experience: normalizeArray(filters.experience),
     employment: normalizeArray(filters.employment_form),
     format: normalizeArray(filters.work_format),
     area: normalizeArray(filters.area),

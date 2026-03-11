@@ -4,6 +4,7 @@ export type FavoriteSort = 'date' | 'salary_asc' | 'salary_desc' | 'status';
 
 export interface LoadFavoritesQuery {
   company?: string | string[];
+  experience?: string[];
   page?: string;
   per_page?: string;
   salary_from?: string;

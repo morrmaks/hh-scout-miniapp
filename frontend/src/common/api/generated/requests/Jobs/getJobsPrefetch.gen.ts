@@ -8,7 +8,7 @@ import { instance } from '../../../client';
 
 export type GetJobsPrefetchRequestParams = FetchesRequestParams<PrefetchJobsData>;
 
-export const getJobsPrefetch = ({ config, query }: GetJobsPrefetchRequestParams) =>
+export const getJobsPrefetch = ({ config, query }: GetJobsPrefetchRequestParams = {}) =>
   instance.call<PrefetchJobsResponse>('GET', '/jobs/prefetch', {
     query,
     ...config

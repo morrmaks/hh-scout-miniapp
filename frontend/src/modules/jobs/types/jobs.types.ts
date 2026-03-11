@@ -1,15 +1,6 @@
-export interface JobsFiltersType {
-  area?: string[];
-  currency?: string;
-  employment_form?: string[];
-  experience?: string;
-  label?: string[];
-  order_by?: string;
-  per_page?: number;
-  period?: number;
-  salary?: number;
-  work_format?: string[];
-}
+import type { SearchJobsData } from '@/common/api/generated';
+
+export type JobsFiltersType = NonNullable<SearchJobsData['query']>;
 export type JobsFiltersKeys = keyof JobsFiltersType;
 
 export interface JobsPosition {

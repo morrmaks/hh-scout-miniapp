@@ -7,7 +7,7 @@ export interface LocalFilters {
   currency?: string;
 
   employment_form?: string[];
-  experience?: string;
+  experience?: string[];
 
   label?: string[];
   order_by?: string;
@@ -29,7 +29,7 @@ export function toApiFilters(local: LocalFilters): JobsFiltersType {
     salary: local.salary,
     label: emptyToUndefined(local.label),
 
-    experience: local.experience,
+    experience: emptyToUndefined(local.experience),
 
     employment_form: emptyToUndefined(local.employment_form),
     work_format: emptyToUndefined(local.work_format),
@@ -50,7 +50,7 @@ export function toLocalFilters(filters: JobsFiltersType): LocalFilters {
     currency: filters.currency,
     salary: filters.salary,
     label: filters.label ?? [],
-    experience: filters.experience ?? '',
+    experience: filters.experience ?? [],
     employment_form: filters.employment_form ?? [],
     work_format: filters.work_format ?? [],
     area: filters.area ?? [],
@@ -74,7 +74,7 @@ export function parseFilters(
   if (query.salary !== undefined) filters.salary = Number(query.salary);
   if (query.label !== undefined) filters.label = parseStringArray(query.label);
   if (query.period !== undefined) filters.period = Number(query.period);
-  if (query.experience !== undefined) filters.experience = String(query.experience);
+  if (query.experience !== undefined) filters.experience = parseStringArray(query.experience);
   if (query.area !== undefined) filters.area = parseStringArray(query.area);
   if (query.employment_form !== undefined)
     filters.employment_form = parseStringArray(query.employment_form);

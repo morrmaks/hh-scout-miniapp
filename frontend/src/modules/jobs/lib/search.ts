@@ -1,3 +1,5 @@
+import type { SearchJobsData } from '@/common/api/generated';
+
 import { cleanObject } from '@/common/utils/object';
 import { hasQueryParams, parseNumber } from '@/common/utils/query';
 
@@ -15,7 +17,7 @@ export function buildUrlQuery(
   page: number,
   index: number,
   filters: JobsFiltersType
-) {
+): SearchJobsData['query'] {
   return {
     text: query,
     page,

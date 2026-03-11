@@ -48,8 +48,8 @@
   --scrollbar-hover: #495068;
 
   --page-gradient:
-  radial-gradient(circle at 10% -10%, rgba(99,102,241,0.15), transparent 50%),
-  radial-gradient(circle at 90% 0%, rgba(124,127,247,0.08), transparent 40%);
+    radial-gradient(circle at 10% -10%, rgba(99, 102, 241, 0.15), transparent 50%),
+    radial-gradient(circle at 90% 0%, rgba(124, 127, 247, 0.08), transparent 40%);
 }
 
 :root[data-theme='dark-emerald'] {
@@ -75,8 +75,8 @@
   --scrollbar-hover: #4b5c55;
 
   --page-gradient:
-  radial-gradient(circle at 15% -10%, rgba(16,185,129,0.15), transparent 55%),
-  radial-gradient(circle at 95% 0%, rgba(52,211,153,0.08), transparent 40%);
+    radial-gradient(circle at 15% -10%, rgba(16, 185, 129, 0.15), transparent 55%),
+    radial-gradient(circle at 95% 0%, rgba(52, 211, 153, 0.08), transparent 40%);
 }
 
 :root[data-theme='dark-purple'] {
@@ -102,8 +102,8 @@
   --scrollbar-hover: #544a78;
 
   --page-gradient:
-  radial-gradient(circle at 20% -10%, rgba(168,85,247,0.15), transparent 55%),
-  radial-gradient(circle at 100% 0%, rgba(192,132,252,0.08), transparent 40%);
+    radial-gradient(circle at 20% -10%, rgba(168, 85, 247, 0.15), transparent 55%),
+    radial-gradient(circle at 100% 0%, rgba(192, 132, 252, 0.08), transparent 40%);
 }
 
 :root[data-theme='dark-midnight'] {
@@ -129,8 +129,8 @@
   --scrollbar-hover: #47586d;
 
   --page-gradient:
-  radial-gradient(circle at 15% -10%, rgba(59,130,246,0.14), transparent 55%),
-  radial-gradient(circle at 95% 0%, rgba(96,165,250,0.07), transparent 40%);
+    radial-gradient(circle at 15% -10%, rgba(59, 130, 246, 0.14), transparent 55%),
+    radial-gradient(circle at 95% 0%, rgba(96, 165, 250, 0.07), transparent 40%);
 }
 
 :root[data-theme='dark-crimson'] {
@@ -155,10 +155,9 @@
   --scrollbar: #3a2b2b;
   --scrollbar-hover: #543d3d;
 
-
   --page-gradient:
-    radial-gradient(circle at 15% -10%, rgba(239,68,68,0.15), transparent 55%),
-    radial-gradient(circle at 95% 0%, rgba(255,107,107,0.08), transparent 40%);
+    radial-gradient(circle at 15% -10%, rgba(239, 68, 68, 0.15), transparent 55%),
+    radial-gradient(circle at 95% 0%, rgba(255, 107, 107, 0.08), transparent 40%);
 }
 
 :root[data-theme='dark-slate'] {
@@ -184,8 +183,8 @@
   --scrollbar-hover: #4f5868;
 
   --page-gradient:
-    radial-gradient(circle at 15% -10%, rgba(34,197,94,0.14), transparent 55%),
-    radial-gradient(circle at 95% 0%, rgba(74,222,128,0.07), transparent 40%);
+    radial-gradient(circle at 15% -10%, rgba(34, 197, 94, 0.14), transparent 55%),
+    radial-gradient(circle at 95% 0%, rgba(74, 222, 128, 0.07), transparent 40%);
 }
 
 :root[data-theme='light-orange'] {
@@ -211,9 +210,9 @@
   --scrollbar-hover: #bfb8b1;
 
   /* gradient */
-  --page-gradient:     
-  radial-gradient(circle at 20% -10%, rgba(249, 135, 22, 0.26), transparent 55%),
-  radial-gradient(circle at 100% 0%, rgba(238, 30, 30, 0.13), transparent 40%);
+  --page-gradient:
+    radial-gradient(circle at 20% -10%, rgba(249, 135, 22, 0.26), transparent 55%),
+    radial-gradient(circle at 100% 0%, rgba(238, 30, 30, 0.13), transparent 40%);
 }
 
 :root[data-theme='light-indigo'] {
@@ -239,8 +238,8 @@
   --scrollbar-hover: #b8bfd8;
 
   --page-gradient:
-    radial-gradient(circle at 10% -10%, rgba(99,102,241,0.10), transparent 55%),
-    radial-gradient(circle at 95% 0%, rgba(124,127,247,0.06), transparent 40%);
+    radial-gradient(circle at 10% -10%, rgba(99, 102, 241, 0.1), transparent 55%),
+    radial-gradient(circle at 95% 0%, rgba(124, 127, 247, 0.06), transparent 40%);
 }
 
 :root[data-theme='light-emerald'] {
@@ -266,8 +265,8 @@
   --scrollbar-hover: #a9c9bb;
 
   --page-gradient:
-    radial-gradient(circle at 10% -10%, rgba(16,185,129,0.12), transparent 55%),
-    radial-gradient(circle at 95% 0%, rgba(52,211,153,0.07), transparent 40%);
+    radial-gradient(circle at 10% -10%, rgba(16, 185, 129, 0.12), transparent 55%),
+    radial-gradient(circle at 95% 0%, rgba(52, 211, 153, 0.07), transparent 40%);
 }
 
 :root[data-theme='light-purple'] {
@@ -293,8 +292,8 @@
   --scrollbar-hover: #bfb3e5;
 
   --page-gradient:
-    radial-gradient(circle at 10% -10%, rgba(168,85,247,0.12), transparent 55%),
-    radial-gradient(circle at 95% 0%, rgba(192,132,252,0.07), transparent 40%);
+    radial-gradient(circle at 10% -10%, rgba(168, 85, 247, 0.12), transparent 55%),
+    radial-gradient(circle at 95% 0%, rgba(192, 132, 252, 0.07), transparent 40%);
 }
 
 :root[data-theme='light-midnight'] {
@@ -320,8 +319,8 @@
   --scrollbar-hover: #b9c4cf;
 
   --page-gradient:
-    radial-gradient(circle at 15% -10%, rgba(59,130,246,0.12), transparent 55%),
-    radial-gradient(circle at 95% 0%, rgba(96,165,250,0.07), transparent 40%);
+    radial-gradient(circle at 15% -10%, rgba(59, 130, 246, 0.12), transparent 55%),
+    radial-gradient(circle at 95% 0%, rgba(96, 165, 250, 0.07), transparent 40%);
 }
 
 :root[data-theme='light-crimson'] {
@@ -347,8 +346,8 @@
   --scrollbar-hover: #cdbbbb;
 
   --page-gradient:
-    radial-gradient(circle at 15% -10%, rgba(239,68,68,0.12), transparent 55%),
-    radial-gradient(circle at 95% 0%, rgba(255,107,107,0.07), transparent 40%);
+    radial-gradient(circle at 15% -10%, rgba(239, 68, 68, 0.12), transparent 55%),
+    radial-gradient(circle at 95% 0%, rgba(255, 107, 107, 0.07), transparent 40%);
 }
 
 :root[data-theme='light-slate'] {
@@ -374,6 +373,6 @@
   --scrollbar-hover: #b9c0c9;
 
   --page-gradient:
-    radial-gradient(circle at 15% -10%, rgba(34,197,94,0.12), transparent 55%),
-    radial-gradient(circle at 95% 0%, rgba(74,222,128,0.07), transparent 40%);
+    radial-gradient(circle at 15% -10%, rgba(34, 197, 94, 0.12), transparent 55%),
+    radial-gradient(circle at 95% 0%, rgba(74, 222, 128, 0.07), transparent 40%);
 }

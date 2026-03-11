@@ -121,10 +121,9 @@ const areasStore = useAreasStore();
 
     <!-- Требования -->
     <FilterGroup label="Опыт">
-      <Select
+      <ToggleGroup
         v-model="local.experience"
         :options="[
-          { label: 'любой', value: '' },
           { label: 'Без опыта', value: 'noExperience' },
           { label: '1-3 года', value: 'between1And3' },
           { label: '3-6 лет', value: 'between3And6' },

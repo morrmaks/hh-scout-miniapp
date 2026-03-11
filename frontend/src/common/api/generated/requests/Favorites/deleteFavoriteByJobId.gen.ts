@@ -6,12 +6,14 @@ import type { DeleteFavoriteData } from '../../types.gen';
 
 import { instance } from '../../../client';
 
-export type DeleteFavoriteByUserIdByJobIdRequestParams = FetchesRequestParams<DeleteFavoriteData>;
+export type DeleteFavoriteByJobIdRequestParams = FetchesRequestParams<DeleteFavoriteData>;
 
-export const deleteFavoriteByUserIdByJobId = ({
+export const deleteFavoriteByJobId = ({
   config,
+  query,
   path
-}: DeleteFavoriteByUserIdByJobIdRequestParams) =>
-  instance.call('DELETE', `/favorites/${path.userId}/${path.jobId}`, {
+}: DeleteFavoriteByJobIdRequestParams) =>
+  instance.call('DELETE', `/favorites/${path.jobId}`, {
+    query,
     ...config
   });

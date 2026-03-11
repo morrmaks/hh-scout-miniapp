@@ -70,7 +70,7 @@ export interface JobFilters {
   area?: string[];
   currency?: string;
   employment_form?: string[];
-  experience?: string;
+  experience?: string[];
   index?: number;
   label?: string[];
   order_by?: string;

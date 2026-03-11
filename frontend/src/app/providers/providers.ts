@@ -1,6 +1,6 @@
 import type { App } from 'vue';
 
-import { useTelegramStore } from '@/modules/telegram';
+import { useTelegramStore } from '@/app/integrations/telegram';
 
 import { createPiniaInstance } from './pinia';
 import { setupTheme } from './theme';
