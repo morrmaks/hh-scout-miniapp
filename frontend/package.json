@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@siberiacancode/fetches": "^1.14.1",
+    "@telegram-apps/sdk": "^3.11.8",
     "@twa-dev/sdk": "^8.0.2",
     "@vueuse/core": "^14.2.1",
     "lucide-vue-next": "^0.577.0",

@@ -1,4 +1,4 @@
-import type { JobFilters } from '../types/types';
+import type { JobFilters } from '../types/jobs.types';
 
 export function buildHHUrl(filters: JobFilters) {
   const params = new URLSearchParams();
@@ -27,8 +27,6 @@ export function buildHHUrl(filters: JobFilters) {
   filters.employment_form?.forEach((v) => params.append('employment_form', v));
 
   filters.work_format?.forEach((v) => params.append('work_format', v));
-
-  filters.work_schedule_by_days?.forEach((v) => params.append('work_schedule_by_days', v));
 
   filters.area?.forEach((v) => params.append('area', v));
 

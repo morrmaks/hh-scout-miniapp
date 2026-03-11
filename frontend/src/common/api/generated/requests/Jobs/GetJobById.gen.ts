@@ -4,7 +4,7 @@ import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
 import type { GetJobByIdData, GetJobByIdResponse } from '../../types.gen';
 
-import { instance } from '../../../../../app/http/client';
+import { instance } from '../../../client';
 
 export type GetJobByIdRequestParams = FetchesRequestParams<GetJobByIdData>;
 

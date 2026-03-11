@@ -8,6 +8,7 @@ export interface Job {
   employmentForm?: string | null;
   experience?: string | null;
   id: string;
+  publishedAt?: string;
   salaryFrom?: number | null;
   salaryTo?: number | null;
   skills?: Array<string>;

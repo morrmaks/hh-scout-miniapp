@@ -1,5 +1,5 @@
-import type { SearchResultDTO } from '../dto/searchResultDto';
-import type { SearchSession, VacancyFull } from '../types/types';
+import type { SearchResultDTO } from '../dto/searchResult.dto';
+import type { SearchSession, VacancyFull } from '../types/jobs.types';
 
 import { LRU } from './lru';
 

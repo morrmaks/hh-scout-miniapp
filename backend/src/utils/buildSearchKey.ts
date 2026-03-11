@@ -1,4 +1,4 @@
-import type { JobFilters } from '../types/types';
+import type { JobFilters } from '../types/jobs.types';
 
 function normalizeArray(arr?: string[]) {
   if (!arr || arr.length === 0) return '';
@@ -16,7 +16,6 @@ export function buildSearchKey(filters: JobFilters) {
     experience: filters.experience ?? '',
     employment: normalizeArray(filters.employment_form),
     format: normalizeArray(filters.work_format),
-    schedule: normalizeArray(filters.work_schedule_by_days),
     area: normalizeArray(filters.area),
     label: normalizeArray(filters.label)
   });

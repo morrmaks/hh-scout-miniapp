@@ -1,6 +1,6 @@
 import type { ParsedQs } from 'qs';
 
-import type { JobFilters } from '../types/types';
+import type { JobFilters } from '../types/jobs.types';
 
 function toNumber(value: unknown): number | undefined {
   if (value === undefined || value === '') return undefined;
@@ -35,7 +35,6 @@ export function parseJobFilters(query: ParsedQs): JobFilters {
     experience: query.experience ? String(query.experience) : undefined,
     employment_form: toArray(query.employment_form),
     work_format: toArray(query.work_format),
-    work_schedule_by_days: toArray(query.work_schedule_by_days),
     area: toArray(query.area),
     label: toArray(query.label),
     period: toNumber(query.period)

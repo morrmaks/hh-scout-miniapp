@@ -1,8 +1,11 @@
+@import './reset.css';
 @import './theme.css';
+@import './appLoader.css';
+@import './layout.css';
 
 body {
   min-width: 320px;
-  background: var(--bg);
+  background: transparent;
   color: var(--text);
 
   font-family:
@@ -13,6 +16,19 @@ body {
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: '';
+
+  position: fixed;
+  inset: 0;
+
+  background:
+    var(--page-gradient),
+    var(--bg);
+
+  z-index: -1;
 }
 
 h1,

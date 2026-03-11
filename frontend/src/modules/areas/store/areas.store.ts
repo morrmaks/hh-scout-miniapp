@@ -7,7 +7,9 @@ import { getAreas } from '@/common/api/generated';
 
 export const useAreasStore = defineStore('areas', () => {
   const items = shallowRef<Area[]>([]);
+
   const loading = ref(false);
+  const initialized = ref(false);
 
   let inFlight: Promise<void> | null = null;
 
@@ -25,6 +27,7 @@ export const useAreasStore = defineStore('areas', () => {
         console.error('Failed to load areas', err);
       } finally {
         loading.value = false;
+        initialized.value = true;
         inFlight = null;
       }
     })();
@@ -35,6 +38,7 @@ export const useAreasStore = defineStore('areas', () => {
   return {
     items,
     loading,
+    initialized,
     fetchAreas
   };
 });

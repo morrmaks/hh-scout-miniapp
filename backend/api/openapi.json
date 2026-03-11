@@ -12,7 +12,7 @@
     }
   ],
 
-  "tags": [{ "name": "Jobs" }, { "name": "Favorites" }, { "name": "Areas" }],
+  "tags": [{ "name": "Jobs" }, { "name": "Favorites" }, { "name": "Areas" }, { "name": "Statuses" }],
 
   "paths": {
     "/jobs": {
@@ -26,6 +26,8 @@
           { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
 
           { "name": "per_page", "in": "query", "schema": { "type": "number", "default": 100 } },
+
+          { "name": "index", "in": "query", "schema": { "type": "number", "default": 0 } },
 
           { "name": "order_by", "in": "query", "schema": { "type": "string" } },
 
@@ -48,17 +50,6 @@
 
           {
             "name": "work_format",
-            "in": "query",
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": { "type": "string" }
-            }
-          },
-
-          {
-            "name": "work_schedule_by_days",
             "in": "query",
             "style": "form",
             "explode": true,
@@ -115,23 +106,25 @@
         "parameters": [
           { "name": "text", "in": "query", "schema": { "type": "string" } },
 
-          { "name": "page", "in": "query", "required": true, "schema": { "type": "number" } },
+          { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
 
-          { "name": "index", "in": "query", "required": true, "schema": { "type": "number" } },
+          { "name": "per_page", "in": "query", "schema": { "type": "number", "default": 100 } },
+
+          { "name": "index", "in": "query", "schema": { "type": "number", "default": 0 } },
 
           { "name": "order_by", "in": "query", "schema": { "type": "string" } },
 
           { "name": "salary", "in": "query", "schema": { "type": "number" } },
 
-          {
-            "name": "experience",
-            "in": "query",
-            "schema": { "type": "string" }
-          },
+          { "name": "currency", "in": "query", "schema": { "type": "string" } },
+
+          { "name": "experience", "in": "query", "schema": { "type": "string" } },
 
           {
             "name": "employment_form",
             "in": "query",
+            "style": "form",
+            "explode": true,
             "schema": {
               "type": "array",
               "items": { "type": "string" }
@@ -141,15 +134,8 @@
           {
             "name": "work_format",
             "in": "query",
-            "schema": {
-              "type": "array",
-              "items": { "type": "string" }
-            }
-          },
-
-          {
-            "name": "work_schedule_by_days",
-            "in": "query",
+            "style": "form",
+            "explode": true,
             "schema": {
               "type": "array",
               "items": { "type": "string" }
@@ -159,6 +145,19 @@
           {
             "name": "area",
             "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
+          {
+            "name": "label",
+            "in": "query",
+            "style": "form",
+            "explode": true,
             "schema": {
               "type": "array",
               "items": { "type": "string" }
@@ -251,41 +250,78 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FavoriteCreate"
-              }
+              "schema": { "$ref": "#/components/schemas/FavoriteCreate" }
             }
           }
         },
+        "responses": { "200": { "description": "Favorite saved" } }
+      },
+
+      "get": {
+        "operationId": "getFavorites",
+        "tags": ["Favorites"],
+        "summary": "Get favorites with filters",
+        "parameters": [
+          { "name": "userId", "in": "query", "required": true, "schema": { "type": "number" } },
+          { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
+          { "name": "per_page", "in": "query", "schema": { "type": "number", "default": 20 } },
+          { "name": "salary_from", "in": "query", "schema": { "type": "number" } },
+          {
+            "name": "company",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": { "type": "array", "items": { "type": "number" } }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["date", "salary_asc", "salary_desc", "status"]
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Favorite saved"
+            "description": "Favorites list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FavoritesResponse" }
+              }
+            }
           }
         }
       }
     },
 
-    "/favorites/{userId}": {
+    "/favorites/ids": {
       "get": {
-        "operationId": "getFavorites",
+        "operationId": "getFavoriteIds",
         "tags": ["Favorites"],
+        "summary": "Get all favorite job ids",
         "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "number" }
-          }
+          { "name": "userId", "in": "query", "required": true, "schema": { "type": "number" } }
         ],
         "responses": {
           "200": {
-            "description": "Favorite jobs",
+            "description": "List of favorite job ids",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Favorite"
+                  "type": "object",
+                  "properties": {
+                    "ids": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
                   }
                 }
               }
@@ -295,19 +331,123 @@
       }
     },
 
-    "/favorites/{userId}/{jobId}": {
+    "/favorites/export": {
+      "get": {
+        "operationId": "exportFavoritesExcel",
+        "tags": ["Favorites"],
+        "summary": "Export favorites to Excel",
+        "parameters": [
+          { "name": "userId", "in": "query", "required": true, "schema": { "type": "number" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Excel file"
+          }
+        }
+      }
+    },
+
+    "/favorites/{jobId}": {
       "delete": {
         "operationId": "deleteFavorite",
         "tags": ["Favorites"],
         "parameters": [
-          { "name": "userId", "in": "path", "required": true, "schema": { "type": "number" } },
+          { "name": "jobId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "userId", "in": "query", "required": true, "schema": { "type": "number" } }
+        ],
+        "responses": { "200": { "description": "Favorite removed" } }
+      }
+    },
+
+    "/favorites/{jobId}/status": {
+      "patch": {
+        "operationId": "setFavoriteStatus",
+        "tags": ["Favorites"],
+        "summary": "Change favorite status",
+        "parameters": [
           { "name": "jobId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userId"],
+                "properties": {
+                  "userId": { "type": "number" },
+                  "statusId": { "type": "number", "nullable": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Status updated" } }
+      }
+    },
+
+    "/statuses": {
+      "get": {
+        "operationId": "getStatuses",
+        "tags": ["Statuses"],
+        "parameters": [
+          { "name": "userId", "in": "query", "required": true, "schema": { "type": "number" } }
         ],
         "responses": {
           "200": {
-            "description": "Favorite removed"
+            "description": "List of statuses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Status" }
+                }
+              }
+            }
           }
         }
+      },
+
+      "post": {
+        "operationId": "createStatus",
+        "tags": ["Statuses"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/StatusCreate" }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Status created" } }
+      }
+    },
+
+    "/statuses/{id}": {
+      "patch": {
+        "operationId": "updateStatus",
+        "tags": ["Statuses"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "number" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/StatusUpdate" }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Status updated" } }
+      },
+
+      "delete": {
+        "operationId": "deleteStatus",
+        "tags": ["Statuses"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "number" } }
+        ],
+        "responses": { "200": { "description": "Status deleted" } }
       }
     }
   },
@@ -386,6 +526,83 @@
           "experience": { "type": "string", "nullable": true },
 
           "url": { "type": "string" }
+        }
+      },
+
+      "StatusColor": {
+        "type": "string",
+        "enum": [
+          "blue",
+          "purple",
+          "orange",
+          "green",
+          "red",
+          "yellow",
+          "pink",
+          "teal",
+          "indigo",
+          "gray"
+        ]
+      },
+
+      "Status": {
+        "type": "object",
+        "required": ["id", "userId", "name", "color"],
+        "properties": {
+          "id": { "type": "number" },
+          "userId": { "type": "number" },
+          "name": { "type": "string" },
+          "color": { "$ref": "#/components/schemas/StatusColor" }
+        }
+      },
+
+      "StatusCreate": {
+        "type": "object",
+        "required": ["userId", "name", "color"],
+        "properties": {
+          "userId": { "type": "number" },
+          "name": { "type": "string" },
+          "color": { "$ref": "#/components/schemas/StatusColor" }
+        }
+      },
+
+      "StatusUpdate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "color": { "$ref": "#/components/schemas/StatusColor" }
+        }
+      },
+
+      "FavoritesResponse": {
+        "type": "object",
+        "required": ["items", "meta"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Favorite" }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "number" },
+              "page": { "type": "number" },
+              "pages": { "type": "number" }
+            }
+          },
+          "filters": {
+            "type": "object",
+            "properties": {
+              "companies": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "statuses": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Status" }
+              }
+            }
+          }
         }
       },
 

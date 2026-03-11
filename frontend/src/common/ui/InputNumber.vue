@@ -63,13 +63,12 @@ const value = computed({
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 8px 12px;
+  font-size: 14px;
   color: var(--text);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
 }
-
-/* убрать стрелки */
 
 .input::-webkit-outer-spin-button,
 .input::-webkit-inner-spin-button {

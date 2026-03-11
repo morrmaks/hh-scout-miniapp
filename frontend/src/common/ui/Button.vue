@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 interface Props {
   active?: boolean;
-  size?: 'lg' | 'md' | 'sm';
+  size?: 'lg' | 'md' | 'sm' | 'xs';
   type?: 'button' | 'reset' | 'submit';
   variant?: 'destructive' | 'ghost' | 'link' | 'outline' | 'primary';
 }
@@ -60,7 +60,15 @@ const classes = computed(() => [
   opacity: 0.6;
 }
 
+.btn :deep(svg) {
+  flex-shrink: 0;
+}
+
 /* sizes */
+
+.btn-xs {
+  padding: 4px 8px;
+}
 
 .btn-sm {
   padding: 6px 12px;
@@ -108,7 +116,7 @@ const classes = computed(() => [
 /* outline */
 
 .btn-outline {
-  background: transparent;
+  background: var(--bg-soft);
   color: var(--text);
   border: 1px solid var(--border);
 }
@@ -143,7 +151,6 @@ const classes = computed(() => [
 
 .btn-link {
   background: transparent;
-  padding: 0;
   color: var(--text);
 }
 

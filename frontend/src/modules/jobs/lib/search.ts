@@ -6,7 +6,7 @@ import type {
   JobsFiltersType,
   JobsPosition,
   JobsSearchState
-} from '../types/types';
+} from '../types/jobs.types';
 
 import { parseFilters } from './filters';
 
@@ -41,15 +41,15 @@ export function buildApiQuery(
 
 const FILTER_KEYS: readonly JobsFiltersKeys[] = [
   'area',
-  'currency',
   'employment_form',
   'experience',
   'order_by',
   'per_page',
   'period',
+  'currency',
   'salary',
-  'work_format',
-  'work_schedule_by_days'
+  'label',
+  'work_format'
 ];
 
 const SEARCH_KEYS = ['text', 'page', 'index', ...FILTER_KEYS] as const;

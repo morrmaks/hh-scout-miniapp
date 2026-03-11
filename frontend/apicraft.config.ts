@@ -7,7 +7,7 @@ export default apicraft([
     output: 'src/common/api/generated',
     instance: {
       name: 'fetches',
-      runtimeInstancePath: 'src/app/http/client'
+      runtimeInstancePath: 'src/common/api/client'
     },
     nameBy: 'path',
     groupBy: 'tags'

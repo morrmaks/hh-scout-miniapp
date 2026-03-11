@@ -20,23 +20,28 @@ const areasStore = useAreasStore();
 const filtersOpen = ref(false);
 
 const searchState = computed(() => {
-  if (!store.query) return 'idle';
-  if (store.loading && !store.initialized) return 'loading';
+  if (!store.lastSearchQuery) return store.initialized ? 'idle' : 'initial';
+
+  if (store.loading) return store.initialized ? 'refreshing' : 'loading';
+
   return store.found ? 'results' : 'empty';
 });
-const foundText = computed(() => {
-  if (!store.found) return '';
-  return `Найдено ${store.found} вакансий`;
-});
+
+const showSkeleton = computed(
+  () =>
+    searchState.value === 'loading' || (searchState.value === 'refreshing' && !store.items.length)
+);
+
+const foundText = computed(() => (store.found ? `Найдено ${store.found} вакансий` : ''));
 
 onMounted(() => {
-  store.restore();
-  areasStore.fetchAreas();
+  if (!store.initialized) store.restore();
+  if (!areasStore.initialized) areasStore.fetchAreas();
 });
 </script>
 
 <template>
-  <div class="page">
+  <div class="main-page">
     <JobsSearch />
 
     <JobsSearchHistory @select="store.setQuery" />
@@ -45,18 +50,32 @@ onMounted(() => {
 
     <JobsFiltersDrawer v-model:open="filtersOpen" />
 
-    <div v-if="searchState === 'empty'" class="search-empty">Ничего не найдено</div>
-    <div v-else-if="searchState === 'results'" class="search-found">
+    <div v-if="searchState === 'initial'" class="search-idle">Начните искать вакансии</div>
+
+    <div v-else-if="searchState === 'idle'" class="search-idle">
+      <p>нет запроса → нет вакансии</p>
+      <p>нет вакансии → нет отклика</p>
+      <p>нет отклика → нет собеса</p>
+      <p>нет собеса → нет оффера</p>
+      <p>нет оффера → нет работы</p>
+      <p>нет работы → нет денег</p>
+      <p>нет денег → нет нет</p>
+      <p>нет нет нет нет</p>
+      <p>Введите запрос, пожалуйста</p>
+    </div>
+
+    <div v-else-if="searchState === 'empty'" class="search-empty">Ничего не найдено</div>
+
+    <div v-else-if="searchState === 'results' || searchState === 'refreshing'" class="search-found">
       {{ foundText }}
     </div>
-    <div v-if="searchState === 'idle'" class="search-idle">Начните искать вакансии</div>
 
-    <div v-if="store.loading && !store.initialized">
+    <template v-if="showSkeleton">
       <JobViewerSkeleton />
       <PaginationSkeleton />
-    </div>
+    </template>
 
-    <div v-else class="content" :class="{ disabled: store.loading && store.initialized }">
+    <div v-else class="content" :class="{ disabled: searchState === 'refreshing' }">
       <JobViewer
         :job="store.currentJob"
         :position="store.pagePosition"
@@ -77,12 +96,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.page {
-  max-width: 900px;
-  margin: 0 auto;
-
-  padding: 16px;
-
+.main-page {
   display: flex;
   flex-direction: column;
 
@@ -114,6 +128,16 @@ onMounted(() => {
   flex-direction: column;
 
   gap: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .content.disabled {
@@ -124,8 +148,7 @@ onMounted(() => {
 /* mobile */
 
 @media (max-width: 640px) {
-  .page {
-    padding: 12px;
+  .main-page {
     gap: 14px;
   }
 }

@@ -35,6 +35,11 @@ defineExpose({
   focus: () => inputRef.value?.focus(),
   blur: () => inputRef.value?.blur()
 });
+
+const onEnter = () => {
+  emit('enter');
+  inputRef.value?.blur();
+};
 </script>
 
 <template>
@@ -46,7 +51,7 @@ defineExpose({
     :placeholder="placeholder"
     :disabled="disabled"
     v-bind="attrs"
-    @keydown.enter="$emit('enter')"
+    @keydown.enter.prevent="onEnter"
   />
 </template>
 
@@ -57,6 +62,7 @@ defineExpose({
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 14px;
+  font-size: 14px;
   color: var(--text);
   transition:
     border-color 0.15s ease,

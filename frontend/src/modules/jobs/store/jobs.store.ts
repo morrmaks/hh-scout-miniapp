@@ -6,7 +6,7 @@ import type { Job } from '@/common/api/generated';
 
 import { getJobs, getJobsPrefetch } from '@/common/api/generated';
 
-import type { JobsFiltersType } from '../types/types';
+import type { JobsFiltersType } from '../types/jobs.types';
 
 import { useJobsPosition } from '../composables/useJobsPosition';
 import { useViewedJobs } from '../composables/useViewedJobs';
@@ -19,10 +19,10 @@ const PREFETCH_TRIGGER = 7;
 const DEFAULT_FILTERS: JobsFiltersType = {
   per_page: 100,
   order_by: 'relevance',
+  currency: 'RUR',
   area: [],
   employment_form: [],
-  work_format: [],
-  work_schedule_by_days: []
+  work_format: []
 };
 
 export const useJobsStore = defineStore('jobs', () => {
@@ -34,6 +34,7 @@ export const useJobsStore = defineStore('jobs', () => {
   const initialized = ref(false);
 
   const query = ref('');
+  const lastSearchQuery = ref('');
   const filters = ref<JobsFiltersType>({ ...DEFAULT_FILTERS });
 
   const page = ref(1);
@@ -52,14 +53,8 @@ export const useJobsStore = defineStore('jobs', () => {
 
   const hasData = computed(() => items.value.length > 0);
   const currentJob = computed(() => items.value[index.value] ?? null);
-  const hasFilters = computed(() =>
-    Object.entries(filters.value).some(([key, value]) => {
-      const def = DEFAULT_FILTERS[key as keyof JobsFiltersType];
 
-      if (Array.isArray(value)) return value.length > 0;
-      return value !== undefined && value !== def;
-    })
-  );
+  const hasFilters = computed(() => !equalFilters(filters.value, DEFAULT_FILTERS));
 
   const pagePosition = computed(() => {
     if (!pageItems.value) return '0 / 0';
@@ -68,13 +63,17 @@ export const useJobsStore = defineStore('jobs', () => {
 
   let requestId = 0;
 
+  function clearResults() {
+    items.value = [];
+    found.value = 0;
+    pages.value = 0;
+    perPage.value = 0;
+    pageItems.value = 0;
+  }
+
   async function fetchJobs() {
     if (!query.value.trim()) {
-      items.value = [];
-      found.value = 0;
-      pages.value = 0;
-      perPage.value = 0;
-      pageItems.value = 0;
+      clearResults();
       return;
     }
 
@@ -132,6 +131,7 @@ export const useJobsStore = defineStore('jobs', () => {
 
   function maybePrefetch() {
     if ((index.value + 1) % STEP !== PREFETCH_TRIGGER) return;
+
     const offset = Math.floor(index.value / STEP) * STEP + STEP;
 
     if (prefetchedOffsets.value.has(offset)) return;
@@ -142,6 +142,7 @@ export const useJobsStore = defineStore('jobs', () => {
 
   function nextJob() {
     currentJob.value && markViewed(currentJob.value.id);
+
     if (index.value < items.value.length - 1) {
       index.value++;
       maybePrefetch();
@@ -158,18 +159,30 @@ export const useJobsStore = defineStore('jobs', () => {
 
   async function setQuery(text: string) {
     const value = text.trim();
-    if (!value) return;
+
+    if (value === lastSearchQuery.value) return;
+    lastSearchQuery.value = value;
+
+    if (!value) {
+      query.value = '';
+      clearResults();
+      resetNavigation();
+      commitNavigation();
+      return;
+    }
 
     query.value = value;
-    resetNavigation();
 
+    resetNavigation();
     await fetchJobs();
     commitNavigation();
   }
 
   function setFilters(next: JobsFiltersType) {
     if (equalFilters(filters.value, next)) return;
+
     filters.value = { ...DEFAULT_FILTERS, ...next };
+
     resetNavigation();
     fetchJobs();
     commitNavigation();
@@ -177,6 +190,7 @@ export const useJobsStore = defineStore('jobs', () => {
 
   function resetFilters() {
     filters.value = { ...DEFAULT_FILTERS };
+
     resetNavigation();
     fetchJobs();
     commitNavigation();
@@ -213,6 +227,7 @@ export const useJobsStore = defineStore('jobs', () => {
     if (!state) return;
 
     query.value = state.query;
+    lastSearchQuery.value = state.query;
     page.value = state.page;
     index.value = state.index;
     filters.value = state.filters;
@@ -224,6 +239,7 @@ export const useJobsStore = defineStore('jobs', () => {
 
   return {
     query,
+    lastSearchQuery,
     filters,
 
     found,

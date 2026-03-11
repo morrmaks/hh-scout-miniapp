@@ -1,6 +1,6 @@
 import { dbGet, dbSet } from '@/common/lib/indexedDb';
 
-import type { JobsFiltersType } from '../types/types';
+import type { JobsFiltersType } from '../types/jobs.types';
 
 const KEY = 'jobs-position';
 

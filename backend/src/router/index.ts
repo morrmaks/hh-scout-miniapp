@@ -1,8 +1,8 @@
 import express from 'express';
 
-import areasRouter from './areasRouter';
-import favoritesRouter from './favoritesRouter';
-import jobsRouter from './jobsRouter';
+import areasRouter from './areas.router';
+import favoritesRouter from './favorites.router';
+import jobsRouter from './jobs.router';
 
 const router = express.Router();
 

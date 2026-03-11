@@ -1,4 +1,4 @@
-import type { JobsFiltersType } from '../types/types';
+import type { JobsFiltersType } from '../types/jobs.types';
 
 export function equalFilters(a: JobsFiltersType, b: JobsFiltersType) {
   const keys = new Set([...Object.keys(a), ...Object.keys(b)]);

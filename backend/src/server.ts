@@ -3,7 +3,7 @@ import express from 'express';
 
 import { areasCache } from './cache/areasCache';
 import { searchSessions, vacancyCache } from './cache/jobsCache';
-import { errorMiddleware } from './middleware/errorMiddleware';
+import { errorMiddleware } from './middleware/error.middleware';
 import { router } from './router/index';
 
 const app = express();
@@ -11,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/', router);
+app.use('/api', router);
 app.use(errorMiddleware);
 
 app.listen(3000, () => {
