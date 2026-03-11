@@ -1,13 +1,13 @@
 import { Router } from 'express';
 
-import { getVacancyById, prefetchVacancies, searchJobs } from '../services/jobs.service';
+import { getJobById, getJobs, getPrefetchjobs } from '../services/jobs.service';
 import { parseJobFilters } from '../utils/parseJobFilters';
 
 const router = Router();
 
 router.get('/', async (req, res, next) => {
   try {
-    const result = await searchJobs(parseJobFilters(req.query));
+    const result = await getJobs(parseJobFilters(req.query));
     res.json(result);
   } catch (err) {
     next(err);
@@ -17,7 +17,7 @@ router.get('/', async (req, res, next) => {
 router.get('/prefetch', async (req, res, next) => {
   try {
     const filters = parseJobFilters(req.query);
-    const result = await prefetchVacancies(filters);
+    const result = await getPrefetchjobs(filters);
 
     res.json(result);
   } catch (err) {
@@ -27,7 +27,7 @@ router.get('/prefetch', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const job = await getVacancyById(req.params.id);
+    const job = await getJobById(req.params.id);
     res.json(job);
   } catch (err) {
     next(err);

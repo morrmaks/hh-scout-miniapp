@@ -14,9 +14,9 @@ const router = Router();
 // добавить в избранное
 router.post('/', async (req, res, next) => {
   try {
-    const { userId, job } = req.body;
+    const { userId, jobId } = req.body;
 
-    await saveFavorite(userId, job);
+    await saveFavorite(Number(userId), String(jobId));
 
     res.json({ ok: true });
   } catch (err) {

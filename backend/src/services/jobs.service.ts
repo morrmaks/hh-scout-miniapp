@@ -1,35 +1,34 @@
 import type { SearchResultDTO } from '../dto/searchResult.dto';
-import type { JobFilters, VacancyShort } from '../types/jobs.types';
+import type { HHVacancyShort } from '../integrations/hh';
+import type { JobFilters } from '../types/jobs.types';
 
 import { inFlightSearch, inFlightVacancy, searchSessions, vacancyCache } from '../cache/jobsCache';
 import { toJobDTO } from '../dto/job.dto';
+import { getVacancies, getVacancyById } from '../integrations/hh';
 import { enqueue } from '../queue/queue';
-import { buildHHUrl } from '../utils/buildHHUrl';
-import { buildSearchKey } from '../utils/buildSearchKey';
-import { fetchRetry } from '../utils/fetchRetry';
+import { buildSearchJobsKey } from '../utils/buildSearchKey';
 
 const STEP = 10;
 const PREFETCH_TRIGGER = 7;
 
 function calcRestoreLimit(index: number) {
   const base = Math.ceil((index + 1) / STEP) * STEP;
-
   const needExtra = index % STEP >= PREFETCH_TRIGGER - 1;
 
   return needExtra ? base + STEP : base;
 }
 
-async function loadVacancies(slice: VacancyShort[]) {
-  return Promise.all(slice.map((v) => getVacancyById(v.id)));
+async function loadVacancies(slice: HHVacancyShort[]) {
+  return Promise.all(slice.map((v) => getJobById(v.id)));
 }
 
-export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> {
+export async function getJobs(filters: JobFilters): Promise<SearchResultDTO> {
   const pageIndex = filters.page ?? 0;
   const page = pageIndex + 1;
 
   const index = filters.index;
 
-  const searchKey = buildSearchKey(filters);
+  const searchKey = buildSearchJobsKey(filters);
 
   const session = searchSessions.get(searchKey);
 
@@ -57,17 +56,9 @@ export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> 
   const existing = inFlightSearch.get(requestKey);
 
   if (existing) return existing;
+
   const promise = enqueue(async () => {
-    const url = buildHHUrl(filters);
-
-    const res = await fetchRetry(url);
-
-    const data = (await res.json()) as {
-      items: VacancyShort[];
-      pages: number;
-      found: number;
-      per_page: number;
-    };
+    const data = await getVacancies(filters);
 
     let newSession = session;
 
@@ -80,7 +71,9 @@ export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> 
       };
     }
 
-    if (!newSession.pages[pageIndex]) newSession.pages[pageIndex] = data.items;
+    if (!newSession.pages[pageIndex]) {
+      newSession.pages[pageIndex] = data.items;
+    }
 
     searchSessions.set(searchKey, newSession);
 
@@ -111,12 +104,11 @@ export async function searchJobs(filters: JobFilters): Promise<SearchResultDTO> 
   }
 }
 
-export async function prefetchVacancies(filters: JobFilters) {
+export async function getPrefetchjobs(filters: JobFilters) {
   const pageIndex = filters.page ?? 0;
-
   const index = filters.index ?? 0;
 
-  const searchKey = buildSearchKey(filters);
+  const searchKey = buildSearchJobsKey(filters);
 
   const session = searchSessions.get(searchKey);
 
@@ -137,7 +129,7 @@ export async function prefetchVacancies(filters: JobFilters) {
   return { items: jobs };
 }
 
-export async function getVacancyById(id: string) {
+export async function getJobById(id: string) {
   const cached = vacancyCache.get(id);
 
   if (cached) return toJobDTO(cached);
@@ -150,8 +142,7 @@ export async function getVacancyById(id: string) {
   }
 
   const promise = enqueue(async () => {
-    const res = await fetchRetry(`https://api.hh.ru/vacancies/${id}`);
-    const data = await res.json();
+    const data = await getVacancyById(id);
     vacancyCache.set(id, data);
     return data;
   });

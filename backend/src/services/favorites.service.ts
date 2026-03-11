@@ -2,11 +2,11 @@ import type { Prisma } from '@prisma/client';
 
 import XLSX from 'xlsx';
 
-import type { JobDTO } from '../dto/job.dto';
 import type { FavoritesResponse, LoadFavoritesQuery } from '../types/favorites.types';
 
 import { prisma } from '../db/prisma';
 import { toFavoriteJob } from '../dto/favoriteJob.dto';
+import { getJobById } from './jobs.service';
 
 const DEFAULT_PER_PAGE = 20;
 export const DEFAULT_STATUSES = [
@@ -18,11 +18,12 @@ export const DEFAULT_STATUSES = [
 ];
 
 async function ensureDefaultStatuses(userId: number) {
-  const count = await prisma.status.count({
-    where: { userId }
+  const exists = await prisma.status.findFirst({
+    where: { userId },
+    select: { id: true }
   });
 
-  if (count > 0) return;
+  if (exists) return;
 
   await prisma.status.createMany({
     data: DEFAULT_STATUSES.map((s) => ({
@@ -33,8 +34,10 @@ async function ensureDefaultStatuses(userId: number) {
   });
 }
 
-export async function saveFavorite(userId: number, job: JobDTO) {
+export async function saveFavorite(userId: number, jobId: string) {
   await ensureDefaultStatuses(userId);
+
+  const job = await getJobById(jobId);
 
   const fav = toFavoriteJob(job);
 
@@ -42,7 +45,7 @@ export async function saveFavorite(userId: number, job: JobDTO) {
     where: {
       userId_jobId: {
         userId,
-        jobId: fav.id
+        jobId
       }
     },
 
@@ -55,13 +58,13 @@ export async function saveFavorite(userId: number, job: JobDTO) {
       salaryTo: fav.salaryTo,
       currency: fav.currency,
 
-      experience: fav.experience
+      experience: fav.experience,
+      publishedAt: fav.publishedAt
     },
 
     create: {
       userId,
-
-      jobId: fav.id,
+      jobId,
 
       title: fav.title,
       company: fav.company,
@@ -71,7 +74,8 @@ export async function saveFavorite(userId: number, job: JobDTO) {
       salaryTo: fav.salaryTo,
       currency: fav.currency,
 
-      experience: fav.experience
+      experience: fav.experience,
+      publishedAt: fav.publishedAt
     }
   });
 
@@ -153,6 +157,14 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
     };
   }
 
+  if (query.experience) {
+    const exp = Array.isArray(query.experience) ? query.experience : [query.experience];
+
+    where.experience = {
+      in: exp
+    };
+  }
+
   if (query.status) {
     const statuses = Array.isArray(query.status)
       ? query.status.map(Number)
@@ -173,6 +185,9 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
 
       case 'status':
         return { statusId: 'asc' };
+
+      case 'published_desc':
+        return { publishedAt: 'desc' };
 
       default:
         return { createdAt: 'desc' };

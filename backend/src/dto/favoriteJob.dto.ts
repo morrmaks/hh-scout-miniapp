@@ -2,10 +2,12 @@ import type { JobDTO } from './job.dto';
 
 export interface FavoriteJobDTO {
   company: string;
+
   currency?: string;
   experience?: string;
-
   id: string;
+
+  publishedAt?: string;
   salaryFrom?: number;
   salaryTo?: number;
 
@@ -17,10 +19,9 @@ export interface FavoriteJobDTO {
 export function toFavoriteJob(job: JobDTO): FavoriteJobDTO {
   return {
     id: job.id,
-
     title: job.title,
-
     company: job.company,
+    url: job.url,
 
     salaryFrom: job.salaryFrom,
     salaryTo: job.salaryTo,
@@ -28,6 +29,6 @@ export function toFavoriteJob(job: JobDTO): FavoriteJobDTO {
 
     experience: job.experience,
 
-    url: job.url
+    publishedAt: job.publishedAt
   };
 }

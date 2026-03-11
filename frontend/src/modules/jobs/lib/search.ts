@@ -4,9 +4,9 @@ import { cleanObject } from '@/common/utils/object';
 import { hasQueryParams, parseNumber } from '@/common/utils/query';
 
 import type {
-  JobsFiltersKeys,
-  JobsFiltersType,
   JobsPosition,
+  JobsQueryParams,
+  JobsQueryParamsKeys,
   JobsSearchState
 } from '../types/jobs.types';
 
@@ -16,7 +16,7 @@ export function buildUrlQuery(
   query: string,
   page: number,
   index: number,
-  filters: JobsFiltersType
+  filters: JobsQueryParams
 ): SearchJobsData['query'] {
   return {
     text: query,
@@ -30,7 +30,7 @@ export function buildApiQuery(
   query: string,
   page: number,
   index: number,
-  filters: JobsFiltersType,
+  filters: JobsQueryParams,
   restoreMode: boolean
 ) {
   return {
@@ -41,7 +41,7 @@ export function buildApiQuery(
   };
 }
 
-const FILTER_KEYS: readonly JobsFiltersKeys[] = [
+const FILTER_KEYS: readonly JobsQueryParamsKeys[] = [
   'area',
   'employment_form',
   'experience',
@@ -56,7 +56,7 @@ const FILTER_KEYS: readonly JobsFiltersKeys[] = [
 
 const SEARCH_KEYS = ['text', 'page', 'index', ...FILTER_KEYS] as const;
 
-function parseQuery(query: Record<string, unknown>, defaults: JobsFiltersType): JobsSearchState {
+function parseQuery(query: JobsQueryParams, defaults: JobsQueryParams): JobsSearchState {
   return {
     query: String(query.text ?? ''),
     page: parseNumber(query.page, 1),
@@ -66,9 +66,9 @@ function parseQuery(query: Record<string, unknown>, defaults: JobsFiltersType): 
 }
 
 export async function resolveSearchState(
-  routeQuery: Record<string, unknown>,
+  routeQuery: JobsQueryParams,
   restorePosition: () => Promise<JobsPosition | null>,
-  defaults: JobsFiltersType
+  defaults: JobsQueryParams
 ): Promise<JobsSearchState | null> {
   if (hasQueryParams(routeQuery, SEARCH_KEYS)) return parseQuery(routeQuery, defaults);
 

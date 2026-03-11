@@ -5,7 +5,7 @@ function normalizeArray(arr?: string[]) {
   return [...arr].sort().join(',');
 }
 
-export function buildSearchKey(filters: JobFilters) {
+export function buildSearchJobsKey(filters: JobFilters) {
   return JSON.stringify({
     text: filters.text ?? '',
     order: filters.order_by ?? '',

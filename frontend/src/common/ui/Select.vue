@@ -1,27 +1,27 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string | number">
 import { onClickOutside } from '@vueuse/core';
 import { ChevronDown } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 import Button from './Button.vue';
 
-interface Option {
+interface Option<T> {
   icon?: any;
   label: string;
-  value: number | string;
+  value: T;
 }
 
-interface Props {
+interface Props<T> {
   disabled?: boolean;
-  modelValue?: number | string;
-  options: Option[];
+  modelValue?: T;
+  options: Option<T>[];
   placeholder?: string;
 }
 
-const props = defineProps<Props>();
+const props = defineProps<Props<T>>();
 
 const emit = defineEmits<{
-  'update:modelValue': [number | string];
+  'update:modelValue': [T];
 }>();
 
 const open = ref(false);
@@ -31,7 +31,7 @@ onClickOutside(root, () => (open.value = false));
 
 const selected = computed(() => props.options.find((o) => o.value === props.modelValue));
 
-function select(option: Option) {
+function select(option: Option<T>) {
   emit('update:modelValue', option.value);
   open.value = false;
 }

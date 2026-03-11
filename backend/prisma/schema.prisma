@@ -44,6 +44,7 @@ model Favorite {
 
   experience String?
 
+  publishedAt DateTime?
   createdAt DateTime @default(now())
 
   statusId Int?

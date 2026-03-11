@@ -1,6 +1,11 @@
 import type { Favorite, Status } from '@prisma/client';
 
-export type FavoriteSort = 'date' | 'salary_asc' | 'salary_desc' | 'status';
+export type FavoriteSort =
+  | 'created_desc'
+  | 'published_desc'
+  | 'salary_asc'
+  | 'salary_desc'
+  | 'status';
 
 export interface LoadFavoritesQuery {
   company?: string | string[];

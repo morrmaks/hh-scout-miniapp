@@ -6,7 +6,7 @@ import type { Job } from '@/common/api/generated';
 
 import { getJobs, getJobsPrefetch } from '@/common/api/generated';
 
-import type { JobsFiltersType } from '../types/jobs.types';
+import type { JobsQueryParams } from '../types/jobs.types';
 
 import { useJobsPosition } from '../composables/useJobsPosition';
 import { useViewedJobs } from '../composables/useViewedJobs';
@@ -16,13 +16,15 @@ import { equalFilters } from '../utils/equalFilters';
 const STEP = 10;
 const PREFETCH_TRIGGER = 7;
 
-const DEFAULT_FILTERS: JobsFiltersType = {
+const DEFAULT_FILTERS: JobsQueryParams = {
   per_page: 100,
   order_by: 'relevance',
   currency: 'RUR',
   area: [],
   employment_form: [],
-  work_format: []
+  work_format: [],
+  experience: [],
+  label: []
 };
 
 export const useJobsStore = defineStore('jobs', () => {
@@ -35,7 +37,7 @@ export const useJobsStore = defineStore('jobs', () => {
 
   const query = ref('');
   const lastSearchQuery = ref('');
-  const filters = ref<JobsFiltersType>({ ...DEFAULT_FILTERS });
+  const filters = ref<JobsQueryParams>({ ...DEFAULT_FILTERS });
 
   const page = ref(1);
   const index = ref(0);
@@ -178,7 +180,7 @@ export const useJobsStore = defineStore('jobs', () => {
     commitNavigation();
   }
 
-  function setFilters(next: JobsFiltersType) {
+  function setFilters(next: JobsQueryParams) {
     if (equalFilters(filters.value, next)) return;
 
     filters.value = { ...DEFAULT_FILTERS, ...next };

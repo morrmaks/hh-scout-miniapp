@@ -3,10 +3,10 @@ export function parseNumber(value: unknown, fallback: number) {
   return Number.isFinite(n) ? n : fallback;
 }
 
-export function parseStringArray(value: unknown): string[] {
+export function parseStringArray<T extends string>(value: unknown): T[] {
   if (!value) return [];
 
-  return Array.isArray(value) ? value.map(String) : [String(value)];
+  return Array.isArray(value) ? value.map((v) => String(v) as T) : [String(value) as T];
 }
 
 export function hasQueryParams<K extends readonly string[]>(

@@ -1,11 +1,11 @@
-import type { Area } from '../services/areas.service';
+import type { HHArea } from '../integrations/hh';
 
 export interface FlatArea {
   id: string;
   name: string;
 }
 
-export function flattenAreas(areas: Area[]): FlatArea[] {
+export function flattenAreas(areas: HHArea[]): FlatArea[] {
   const russia = areas.find((a) => a.id === '113');
   if (!russia) return [];
 

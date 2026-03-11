@@ -34,11 +34,19 @@
 
           { "name": "index", "in": "query", "schema": { "type": "number", "default": 0 } },
 
-          { "name": "order_by", "in": "query", "schema": { "$ref": "#/components/schemas/JobsOrderBy" } },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/JobsOrderBy" }
+          },
 
           { "name": "salary", "in": "query", "schema": { "type": "number" } },
 
-          { "name": "currency", "in": "query", "schema": { "$ref": "#/components/schemas/Currency" } },
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/Currency" }
+          },
 
           {
             "name": "experience",
@@ -97,7 +105,11 @@
             }
           },
 
-          { "name": "period", "in": "query", "schema": { "$ref": "#/components/schemas/JobPeriod" } }
+          {
+            "name": "period",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/JobPeriod" }
+          }
         ],
         "responses": {
           "200": {
@@ -128,11 +140,19 @@
 
           { "name": "index", "in": "query", "schema": { "type": "number", "default": 0 } },
 
-          { "name": "order_by", "in": "query", "schema": { "$ref": "#/components/schemas/JobsOrderBy" } },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/JobsOrderBy" }
+          },
 
           { "name": "salary", "in": "query", "schema": { "type": "number" } },
 
-          { "name": "currency", "in": "query", "schema": { "$ref": "#/components/schemas/Currency" } },
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/Currency" }
+          },
 
           {
             "name": "experience",
@@ -190,7 +210,11 @@
             }
           },
 
-          { "name": "period", "in": "query", "schema": { "$ref": "#/components/schemas/JobPeriod" } }
+          {
+            "name": "period",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/JobPeriod" }
+          }
         ],
 
         "responses": {
@@ -498,33 +522,17 @@
 
       "JobsExperience": {
         "type": "string",
-        "enum": [
-          "noExperience",
-          "between1And3",
-          "between3And6",
-          "moreThan6"
-        ]
+        "enum": ["noExperience", "between1And3", "between3And6", "moreThan6"]
       },
 
       "EmploymentForm": {
         "type": "string",
-        "enum": [
-          "FULL",
-          "PART",
-          "PROJECT",
-          "FLY_IN_FLY_OUT",
-          "SIDE_JOB"
-        ]
+        "enum": ["FULL", "PART", "PROJECT", "FLY_IN_FLY_OUT", "SIDE_JOB"]
       },
 
       "WorkFormat": {
         "type": "string",
-        "enum": [
-          "REMOTE",
-          "FIELD_WORK",
-          "HYBRID",
-          "ON_SITE"
-        ]
+        "enum": ["REMOTE", "FIELD_WORK", "HYBRID", "ON_SITE"]
       },
 
       "Currency": {
@@ -595,23 +603,17 @@
         "type": "object",
         "properties": {
           "id": { "type": "number" },
-
           "userId": { "type": "number" },
-
           "jobId": { "type": "string" },
-
           "title": { "type": "string" },
-
           "company": { "type": "string" },
-
           "salaryFrom": { "type": "number", "nullable": true },
-
           "salaryTo": { "type": "number", "nullable": true },
-
           "currency": { "type": "string", "nullable": true },
-
           "experience": { "type": "string", "nullable": true },
-
+          "publishedAt": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string" },
+          "statusId": { "type": "number", "nullable": true },
           "url": { "type": "string" }
         }
       },
@@ -619,7 +621,8 @@
       "FavoritesSort": {
         "type": "string",
         "enum": [
-          "date",
+          "created_desc",
+          "published_desc",
           "salary_asc",
           "salary_desc",
           "status"
@@ -705,13 +708,10 @@
 
       "FavoriteCreate": {
         "type": "object",
-        "required": ["userId", "job"],
+        "required": ["userId", "jobId"],
         "properties": {
           "userId": { "type": "number" },
-
-          "job": {
-            "$ref": "#/components/schemas/Job"
-          }
+          "jobId": { "type": "string" }
         }
       },
 
