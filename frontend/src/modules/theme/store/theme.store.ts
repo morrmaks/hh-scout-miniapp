@@ -14,8 +14,6 @@ export const useThemeStore = defineStore('theme', () => {
 
   function resolveScheme(): 'dark' | 'light' {
     if (mode.value === 'system') return scheme;
-    console.log('theme', mode.value);
-
     return mode.value;
   }
 

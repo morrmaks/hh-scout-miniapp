@@ -480,7 +480,19 @@
             }
           }
         },
-        "responses": { "200": { "description": "Status created" } }
+        "responses": { 
+          "200": { 
+            "description": "Status created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Status" }
+                }
+              }
+            }
+          }
+        }
       }
     },
 
@@ -620,13 +632,7 @@
 
       "FavoritesSort": {
         "type": "string",
-        "enum": [
-          "created_desc",
-          "published_desc",
-          "salary_asc",
-          "salary_desc",
-          "status"
-        ]
+        "enum": ["created_desc", "published_desc", "salary_asc", "salary_desc", "status"]
       },
 
       "StatusColor": {

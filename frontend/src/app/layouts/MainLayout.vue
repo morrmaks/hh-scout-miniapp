@@ -1,13 +1,20 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { usePageTransition } from '@/common/composables/usePageTransition';
 import BottomNav from '@/common/ui/layout-parts/BottomNav.vue';
 import Header from '@/common/ui/layout-parts/Header.vue';
+import { useFavoritesStore } from '@/modules/favorites';
 
 const route = useRoute();
+const favorites = useFavoritesStore();
 
 const { transitionName, appear } = usePageTransition();
+
+onMounted(() => {
+  favorites.fetchIds();
+});
 </script>
 
 <template>

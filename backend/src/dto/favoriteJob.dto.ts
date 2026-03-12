@@ -7,7 +7,7 @@ export interface FavoriteJobDTO {
   experience?: string;
   id: string;
 
-  publishedAt?: string;
+  publishedAt?: Date;
   salaryFrom?: number;
   salaryTo?: number;
 
@@ -29,6 +29,6 @@ export function toFavoriteJob(job: JobDTO): FavoriteJobDTO {
 
     experience: job.experience,
 
-    publishedAt: job.publishedAt
+    publishedAt: job.publishedAt ? new Date(job.publishedAt) : undefined
   };
 }

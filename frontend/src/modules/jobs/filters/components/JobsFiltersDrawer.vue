@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Drawer from '@/common/ui/Drawer.vue';
 
-import type { JobsFiltersType } from '../types/jobs.types';
+import type { JobsFiltersType } from '../../types/jobs.types';
 
-import { useJobsStore } from '../store/jobs.store';
+import { useJobsStore } from '../../store/jobs.store';
 import JobsFilters from './JobsFilters.vue';
 
 interface Props {

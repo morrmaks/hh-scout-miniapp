@@ -1,28 +1,36 @@
 <script setup lang="ts" generic="T extends string | number">
-import { computed } from 'vue';
+import { computed, provide, shallowRef } from 'vue';
 
-import Button from './Button.vue';
+import type { ToggleGroupContext } from './toggleGroup.context';
 
-interface Option<T> {
-  label: string;
-  value: T;
-}
+import { toggleGroupKey } from './toggleGroup.context';
 
-interface Props<T> {
-  mode?: 'multiple' | 'single';
-  modelValue?: T | T[];
-  options: Option<T>[];
-  variant?: 'ghost' | 'outline';
-}
+type Mode = 'multiple' | 'single';
 
-const props = withDefaults(defineProps<Props<T>>(), {
-  mode: 'multiple',
-  variant: 'ghost'
-});
+const props = withDefaults(
+  defineProps<{
+    modelValue?: T | T[];
+    mode?: Mode;
+  }>(),
+  {
+    mode: 'multiple'
+  }
+);
 
 const emit = defineEmits<{
   'update:modelValue': [T | T[]];
 }>();
+
+/* registry */
+
+const items = shallowRef<T[]>([]);
+
+function register(value: T) {
+  if (items.value.includes(value)) return;
+  items.value = [...items.value, value];
+}
+
+/* selection */
 
 const selected = computed(() => {
   if (props.mode === 'single') {
@@ -30,9 +38,11 @@ const selected = computed(() => {
     return new Set(value ? [value] : []);
   }
 
-  const values = props.modelValue as T[] | undefined;
-  return new Set(values ?? []);
+  const values = Array.isArray(props.modelValue) ? props.modelValue : [];
+  return new Set(values);
 });
+
+/* toggle */
 
 function toggle(value: T) {
   if (props.mode === 'single') {
@@ -41,7 +51,6 @@ function toggle(value: T) {
   }
 
   const current = Array.isArray(props.modelValue) ? props.modelValue : [];
-
   const next = new Set(current);
 
   if (next.has(value)) next.delete(value);
@@ -49,20 +58,20 @@ function toggle(value: T) {
 
   emit('update:modelValue', Array.from(next));
 }
+
+const context: ToggleGroupContext<T> = {
+  selected,
+  toggle,
+  register,
+  items
+};
+
+provide(toggleGroupKey, context);
 </script>
 
 <template>
   <div class="group">
-    <Button
-      v-for="o in options"
-      :key="o.value"
-      :variant="variant"
-      size="sm"
-      :active="selected.has(o.value)"
-      @click="toggle(o.value)"
-    >
-      {{ o.label }}
-    </Button>
+    <slot />
   </div>
 </template>
 

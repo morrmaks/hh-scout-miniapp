@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
-import type { Favorite, FavoritesResponse } from '@/common/api/generated';
+import type { Favorite, Status } from '@/common/api/generated';
 
+import { useTelegramStore } from '@/app/integrations/telegram';
 import {
   deleteFavoriteByJobId,
   getFavorites,
@@ -10,6 +11,8 @@ import {
   patchFavoriteByJobIdStatus,
   postFavorites
 } from '@/common/api/generated';
+import { optimistic } from '@/common/lib/optimistic';
+import { equalObjects } from '@/common/utils/object';
 
 import type { FavoritesFilters } from '../types/favorites.types';
 
@@ -17,16 +20,21 @@ const DEFAULT_FILTERS: FavoritesFilters = {
   experience: [],
   company: [],
   status: [],
-  sort: ''
+  sort: 'created_desc'
 };
 
 export const useFavoritesStore = defineStore('favorites', () => {
-  const userId = ref<number | null>(null);
+  const telegram = useTelegramStore();
+
+  const userId = computed(() => telegram.user?.id ?? null);
 
   const items = ref<Favorite[]>([]);
   const ids = ref<Set<string>>(new Set());
 
   const filters = ref<FavoritesFilters>({ ...DEFAULT_FILTERS });
+
+  const companies = ref<string[]>([]);
+  const statuses = ref<Status[]>([]);
 
   const page = ref(1);
   const pages = ref(0);
@@ -34,11 +42,17 @@ export const useFavoritesStore = defineStore('favorites', () => {
 
   const loading = ref(false);
   const loadingMore = ref(false);
+  const invalidated = ref(true);
 
   const hasMore = computed(() => page.value < pages.value);
 
-  function setUser(id: number) {
-    userId.value = id;
+  const hasFilters = computed(() => !equalObjects(filters.value, DEFAULT_FILTERS));
+
+  function resetState() {
+    page.value = 1;
+    pages.value = 0;
+    total.value = 0;
+    items.value = [];
   }
 
   async function fetchIds() {
@@ -51,12 +65,15 @@ export const useFavoritesStore = defineStore('favorites', () => {
     ids.value = new Set(data.ids ?? []);
   }
 
-  async function fetchFavorites(reset = false) {
+  async function fetchFavorites() {
     if (!userId.value) return;
+    if (loading.value) return;
 
-    if (reset) {
-      page.value = 1;
-      items.value = [];
+    if (!invalidated.value && items.value.length) return;
+
+    if (invalidated.value) {
+      resetState();
+      invalidated.value = false;
     }
 
     loading.value = true;
@@ -70,23 +87,22 @@ export const useFavoritesStore = defineStore('favorites', () => {
         }
       });
 
-      const response = data as FavoritesResponse;
+      items.value = data.items ?? [];
 
-      if (reset) {
-        items.value = response.items ?? [];
-      } else {
-        items.value = [...items.value, ...(response.items ?? [])];
+      pages.value = data.meta?.pages ?? 0;
+      total.value = data.meta?.total ?? 0;
+
+      if (data.filters) {
+        companies.value = data.filters.companies ?? [];
+        statuses.value = data.filters.statuses ?? [];
       }
-
-      total.value = response.meta?.total ?? 0;
-      pages.value = response.meta?.pages ?? 0;
     } finally {
       loading.value = false;
     }
   }
 
   async function loadMore() {
-    if (!hasMore.value || loadingMore.value) return;
+    if (!userId.value || loading.value || loadingMore.value || !hasMore.value) return;
 
     loadingMore.value = true;
 
@@ -95,49 +111,61 @@ export const useFavoritesStore = defineStore('favorites', () => {
 
       const { data } = await getFavorites({
         query: {
-          userId: userId.value!,
+          userId: userId.value,
           page: page.value,
           ...filters.value
         }
       });
 
-      items.value = [...items.value, ...(data.items ?? [])];
+      items.value.push(...(data.items ?? []));
     } finally {
       loadingMore.value = false;
     }
   }
 
-  async function addFavorite(job: Favorite['job']) {
+  async function toggleFavorite(jobId: string) {
     if (!userId.value) return;
 
-    await postFavorites({
-      body: {
-        userId: userId.value,
-        job
+    const wasFavorite = ids.value.has(jobId);
+
+    await optimistic({
+      scope: 'favorites',
+      key: jobId,
+
+      apply() {
+        if (wasFavorite) {
+          ids.value.delete(jobId);
+          items.value = items.value.filter((i) => i.jobId !== jobId);
+        } else {
+          ids.value.add(jobId);
+          invalidated.value = true;
+        }
+      },
+
+      rollback() {
+        if (wasFavorite) {
+          ids.value.add(jobId);
+        } else {
+          ids.value.delete(jobId);
+        }
+      },
+
+      async run() {
+        if (wasFavorite) {
+          return deleteFavoriteByJobId({
+            path: { jobId },
+            query: { userId: userId.value! }
+          });
+        }
+
+        return postFavorites({
+          body: {
+            userId: userId.value!,
+            jobId
+          }
+        });
       }
     });
-
-    ids.value.add(job.id);
-  }
-
-  async function removeFavorite(jobId: string) {
-    if (!userId.value) return;
-
-    await deleteFavoriteByJobId({
-      path: { jobId },
-      query: { userId: userId.value }
-    });
-
-    ids.value.delete(jobId);
-    items.value = items.value.filter((j) => j.jobId !== jobId);
-  }
-
-  async function toggleFavorite(job: Favorite['job']) {
-    if (ids.value.has(job.id)) {
-      await removeFavorite(job.id);
-    } else {
-      await addFavorite(job);
-    }
   }
 
   async function setStatus(jobId: string, statusId: number | null) {
@@ -153,29 +181,48 @@ export const useFavoritesStore = defineStore('favorites', () => {
 
     const item = items.value.find((i) => i.jobId === jobId);
 
-    if (item) {
-      (item as any).statusId = statusId;
-    }
+    if (item) item.statusId = statusId;
   }
 
   function setFilters(next: FavoritesFilters) {
-    filters.value = {
-      ...DEFAULT_FILTERS,
-      ...next
-    };
+    const merged = { ...DEFAULT_FILTERS, ...next };
 
-    fetchFavorites(true);
+    if (equalObjects(filters.value, merged)) return;
+
+    filters.value = merged;
+    invalidated.value = true;
+
+    fetchFavorites();
   }
 
   function resetFilters() {
+    if (!hasFilters.value) return;
+
     filters.value = { ...DEFAULT_FILTERS };
-    fetchFavorites(true);
+    invalidated.value = true;
+
+    fetchFavorites();
   }
+
+  watch(
+    userId,
+    (id) => {
+      if (!id) return;
+
+      fetchIds();
+      invalidated.value = true;
+      fetchFavorites();
+    },
+    { immediate: true }
+  );
 
   return {
     items,
     ids,
+
     filters,
+    companies,
+    statuses,
 
     page,
     pages,
@@ -185,16 +232,13 @@ export const useFavoritesStore = defineStore('favorites', () => {
     loadingMore,
 
     hasMore,
+    hasFilters,
 
-    setUser,
     fetchFavorites,
     fetchIds,
     loadMore,
 
-    addFavorite,
-    removeFavorite,
     toggleFavorite,
-
     setStatus,
 
     setFilters,

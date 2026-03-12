@@ -8,6 +8,8 @@ import type { Job } from '@/common/api/generated';
 import Badge from '@/common/ui/Badge.vue';
 import Button from '@/common/ui/Button.vue';
 import Card from '@/common/ui/Card.vue';
+import { formatDate } from '@/common/utils/date';
+import { FavoritesToggleButton } from '@/modules/favorites';
 
 import { useViewedJobs } from '../composables/useViewedJobs';
 
@@ -62,9 +64,8 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
 
 <template>
   <Card v-if="job" class="viewer" :class="{ expanded }">
-    <!-- <div v-if="job" class="viewer" :class="{ expanded }"> -->
     <span v-if="!isViewed(job.id)" class="viewed" />
-    <span class="public-date" v-text="job.publishedAt" />
+    <span class="public-date" v-text="formatDate(job.publishedAt ?? '')" />
     <span class="position" v-text="position" />
 
     <header class="header">
@@ -128,11 +129,12 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
         <ArrowLeft :size="16" />
       </Button>
 
+      <FavoritesToggleButton class="favorite" :job-id="job.id" />
+
       <Button variant="ghost" :disabled="disableNext" @click="$emit('next')">
         <ArrowRight :size="16" />
       </Button>
     </div>
-    <!-- </div> -->
   </Card>
 </template>
 
@@ -325,7 +327,11 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
 .nav {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 48px;
+}
+
+.favorite {
+  margin-left: 1px;
 }
 
 /* MOBILE */

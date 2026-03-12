@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import Drawer from '@/common/ui/Drawer.vue';
 
-import type { JobsFiltersType } from '../types/jobs.types';
-
-import { useJobsStore } from '../store/jobs.store';
-import JobsFilters from './JobsFilters.vue';
+import { useFavoritesStore } from '../../store/favorites.store';
+import FavoritesFilters from './FavoritesFilters.vue';
 
 interface Props {
   open: boolean;
@@ -16,9 +14,9 @@ const emit = defineEmits<{
   'update:open': [boolean];
 }>();
 
-const store = useJobsStore();
+const store = useFavoritesStore();
 
-function apply(filters: JobsFiltersType) {
+function apply(filters: any) {
   store.setFilters(filters);
   emit('update:open', false);
 }
@@ -26,6 +24,6 @@ function apply(filters: JobsFiltersType) {
 
 <template>
   <Drawer :open="open" @update:open="emit('update:open', $event)">
-    <JobsFilters :model-value="store.filters" @apply="apply" />
+    <FavoritesFilters :model-value="store.filters" @apply="apply" />
   </Drawer>
 </template>

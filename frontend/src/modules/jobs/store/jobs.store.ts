@@ -5,13 +5,13 @@ import { useRoute, useRouter } from 'vue-router';
 import type { Job } from '@/common/api/generated';
 
 import { getJobs, getJobsPrefetch } from '@/common/api/generated';
+import { equalObjects } from '@/common/utils/object';
 
 import type { JobsQueryParams } from '../types/jobs.types';
 
 import { useJobsPosition } from '../composables/useJobsPosition';
 import { useViewedJobs } from '../composables/useViewedJobs';
 import { buildApiQuery, buildUrlQuery, resolveSearchState } from '../lib/search';
-import { equalFilters } from '../utils/equalFilters';
 
 const STEP = 10;
 const PREFETCH_TRIGGER = 7;
@@ -56,7 +56,7 @@ export const useJobsStore = defineStore('jobs', () => {
   const hasData = computed(() => items.value.length > 0);
   const currentJob = computed(() => items.value[index.value] ?? null);
 
-  const hasFilters = computed(() => !equalFilters(filters.value, DEFAULT_FILTERS));
+  const hasFilters = computed(() => !equalObjects(filters.value, DEFAULT_FILTERS));
 
   const pagePosition = computed(() => {
     if (!pageItems.value) return '0 / 0';
@@ -181,7 +181,7 @@ export const useJobsStore = defineStore('jobs', () => {
   }
 
   function setFilters(next: JobsQueryParams) {
-    if (equalFilters(filters.value, next)) return;
+    if (equalObjects(filters.value, next)) return;
 
     filters.value = { ...DEFAULT_FILTERS, ...next };
 

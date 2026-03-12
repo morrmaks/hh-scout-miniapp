@@ -240,10 +240,12 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
 }
 
 export async function setFavoriteStatus(userId: number, jobId: string, statusId: number | null) {
-  return prisma.favorite.updateMany({
+  return prisma.favorite.update({
     where: {
-      userId,
-      jobId
+      userId_jobId: {
+        userId,
+        jobId
+      }
     },
     data: {
       statusId

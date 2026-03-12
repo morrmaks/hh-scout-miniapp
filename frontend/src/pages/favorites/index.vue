@@ -1,18 +1,33 @@
 <script setup lang="ts">
-// import { onMounted } from 'vue';
+import { ref } from 'vue';
 
-// import { useTelegramStore } from '@/app/integrations/telegram';
-// import { FavoritesList, useFavoritesStore } from '@/modules/favorites';
+import {
+  FavoritesFiltersDrawer,
+  FavoritesFiltersToggle,
+  FavoritesList,
+  useStatusesStore
+} from '@/modules/favorites';
 
-// const favoritesStore = useFavoritesStore();
-// const telegramStore = useTelegramStore();
+const filtersOpen = ref(false);
 
-// onMounted(() => {
-//   if (!telegramStore.user) return;
-//   favoritesStore.fetchFavorites(telegramStore.user.id);
-// });
+const statuses = useStatusesStore();
+
+statuses.init();
 </script>
 
 <template>
-  <FavoritesList />
+  <div class="favorites-page">
+    <FavoritesFiltersToggle :open="filtersOpen" @toggle="filtersOpen = !filtersOpen" />
+    <FavoritesFiltersDrawer v-model:open="filtersOpen" />
+    <FavoritesList />
+  </div>
 </template>
+
+<style scoped>
+.favorites-page {
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+</style>

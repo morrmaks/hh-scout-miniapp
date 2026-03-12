@@ -7,10 +7,10 @@ import FilterGroup from '@/common/ui/FilterGroup.vue';
 import InputNumber from '@/common/ui/InputNumber.vue';
 import Select from '@/common/ui/Select.vue';
 import Separator from '@/common/ui/Separator.vue';
-import ToggleGroup from '@/common/ui/ToggleGroup.vue';
+import { ToggleGroup, ToggleGroupItem } from '@/common/ui/ToggleGroup';
 import { AreaSelect, useAreasStore } from '@/modules/areas';
 
-import type { JobsFilters, JobsQueryParams } from '../types/jobs.types';
+import type { JobsFilters, JobsQueryParams } from '../../types/jobs.types';
 
 import {
   currencyOptions,
@@ -95,20 +95,31 @@ const areasStore = useAreasStore();
 
     <Separator />
 
-    <!-- Требования -->
     <FilterGroup label="Опыт">
-      <ToggleGroup v-model="local.experience" :options="experienceOptions" />
+      <ToggleGroup v-model="local.experience">
+        <ToggleGroupItem v-for="o in experienceOptions" :key="o.value" :value="o.value">
+          {{ o.label }}
+        </ToggleGroupItem>
+      </ToggleGroup>
     </FilterGroup>
 
     <FilterGroup label="Тип занятости">
-      <ToggleGroup v-model="local.employment_form" :options="employmentOptions" />
+      <ToggleGroup v-model="local.employment_form">
+        <ToggleGroupItem v-for="o in employmentOptions" :key="o.value" :value="o.value">
+          {{ o.label }}
+        </ToggleGroupItem>
+      </ToggleGroup>
     </FilterGroup>
 
     <Separator />
 
     <!-- Формат -->
     <FilterGroup label="Формат работы">
-      <ToggleGroup v-model="local.work_format" :options="workFormatOptions" />
+      <ToggleGroup v-model="local.work_format">
+        <ToggleGroupItem v-for="o in workFormatOptions" :key="o.value" :value="o.value">
+          {{ o.label }}
+        </ToggleGroupItem>
+      </ToggleGroup>
     </FilterGroup>
 
     <Separator />

@@ -10,7 +10,7 @@ import type {
   JobsSearchState
 } from '../types/jobs.types';
 
-import { parseFilters } from './filters';
+import { parseFilters } from '../filters';
 
 export function buildUrlQuery(
   query: string,

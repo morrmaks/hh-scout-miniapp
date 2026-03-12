@@ -3,7 +3,7 @@ import { ChevronDown, SlidersHorizontal, X } from 'lucide-vue-next';
 
 import Button from '@/common/ui/Button.vue';
 
-import { useJobsStore } from '../store/jobs.store';
+import { useJobsStore } from '../../store/jobs.store';
 
 interface Props {
   open: boolean;

@@ -35,18 +35,26 @@ export interface Job {
 
 export interface Favorite {
   company?: string;
+  createdAt?: string;
   currency?: string | null;
   experience?: string | null;
   id?: number;
   jobId?: string;
+  publishedAt?: string | null;
   salaryFrom?: number | null;
   salaryTo?: number | null;
+  statusId?: number | null;
   title?: string;
   url?: string;
   userId?: number;
 }
 
-export type FavoritesSort = 'date' | 'salary_asc' | 'salary_desc' | 'status';
+export type FavoritesSort =
+  | 'created_desc'
+  | 'published_desc'
+  | 'salary_asc'
+  | 'salary_desc'
+  | 'status';
 
 export type StatusColor =
   | 'blue'
@@ -92,7 +100,7 @@ export interface FavoritesResponse {
 }
 
 export interface FavoriteCreate {
-  job: Job;
+  jobId: string;
   userId: number;
 }
 

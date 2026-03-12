@@ -1,6 +1,6 @@
 import { parseStringArray } from '@/common/utils/query';
 
-import type { JobsFilters, JobsQueryParams } from '../types/jobs.types';
+import type { JobsFilters, JobsQueryParams } from '../../types/jobs.types';
 
 function emptyToUndefined<T>(arr?: T[]) {
   return arr?.length ? arr : undefined;

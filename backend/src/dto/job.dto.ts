@@ -1,7 +1,6 @@
-import type { VacancyFull } from '../types/jobs.types';
+import type { HHVacancyFull } from '../integrations/hh';
 
 import { formatDescription } from '../utils/format';
-import { formatJobDate } from '../utils/formatJobDate';
 import { mapNames } from '../utils/mapNames';
 
 export interface JobDTO {
@@ -23,14 +22,14 @@ export interface JobDTO {
   workSchedule?: string[];
 }
 
-export function toJobDTO(job: VacancyFull): JobDTO {
+export function toJobDTO(job: HHVacancyFull): JobDTO {
   return {
     id: job.id,
     title: job.name,
     company: job.employer?.name ?? 'Unknown',
     url: job.alternate_url,
     description: formatDescription(job.description),
-    publishedAt: formatJobDate(job.published_at),
+    publishedAt: job.published_at,
     salaryFrom: job.salary?.from,
     salaryTo: job.salary?.to,
     currency: job.salary?.currency,

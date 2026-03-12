@@ -1,22 +1,77 @@
 <script setup lang="ts">
-import { useFavoritesStore } from '../store/favorites.store';
-import FavoritesListItem from './FavoritesListItem.vue';
+import { useIntersectionObserver } from '@vueuse/core';
+import { onMounted, ref } from 'vue';
 
-const store = useFavoritesStore();
+import { useFavoritesStore } from '../store/favorites.store';
+import FavoriteListItem from './FavoritesListItem.vue';
+import FavoritesListSkeleton from './FavoritesListSkeleton.vue';
+
+const favorites = useFavoritesStore();
+
+const sentinel = ref<HTMLElement | null>(null);
+
+useIntersectionObserver(
+  sentinel,
+  ([entry]) => {
+    if (!entry?.isIntersecting) return;
+
+    if (favorites.loading || favorites.loadingMore || !favorites.hasMore) return;
+
+    favorites.loadMore();
+  },
+  {
+    rootMargin: '200px'
+  }
+);
+
+onMounted(() => {
+  favorites.fetchFavorites();
+});
 </script>
 
 <template>
   <div class="favorites-list">
-    <FavoritesListItem v-for="job in store.items" :key="job.id" :job="job" />
+    <FavoritesListSkeleton v-if="favorites.loading && !favorites.items.length" :count="5" />
 
-    <div v-if="store.loadingMore" class="loading">Загрузка...</div>
+    <FavoriteListItem v-for="job in favorites.items" :key="job.jobId" :job="job" />
+
+    <FavoritesListSkeleton v-if="favorites.loadingMore" :count="3" />
+
+    <!-- sentinel -->
+    <div ref="sentinel" class="sentinel" />
+
+    <div v-if="!favorites.loading && favorites.items.length === 0" class="empty">
+      Избранного нет
+    </div>
   </div>
 </template>
 
 <style scoped>
+.sentinel {
+  height: 1px;
+}
 .favorites-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+
+  height: 100%;
+  overflow-y: auto;
+
+  padding-bottom: 20px;
+}
+
+.empty {
+  text-align: center;
+  padding: 48px 16px;
+
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+@media (max-width: 640px) {
+  .favorites-list {
+    gap: 8px;
+  }
 }
 </style>

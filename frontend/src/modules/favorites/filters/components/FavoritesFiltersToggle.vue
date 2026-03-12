@@ -3,7 +3,7 @@ import { ChevronDown, SlidersHorizontal, X } from 'lucide-vue-next';
 
 import Button from '@/common/ui/Button.vue';
 
-import { useJobsStore } from '../store/jobs.store';
+import { useFavoritesStore } from '../../store/favorites.store';
 
 interface Props {
   open: boolean;
@@ -15,7 +15,7 @@ defineEmits<{
   toggle: [];
 }>();
 
-const store = useJobsStore();
+const store = useFavoritesStore();
 </script>
 
 <template>
@@ -46,16 +46,5 @@ const store = useJobsStore();
 
 .arrow.open {
   transform: rotate(180deg);
-}
-
-@media (max-width: 640px) {
-  .filters-toggle :deep(svg) {
-    width: 14px;
-    height: 14px;
-  }
-
-  .filters-toggle :deep(.btn) {
-    gap: 4px;
-  }
 }
 </style>

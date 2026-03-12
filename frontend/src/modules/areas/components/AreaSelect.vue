@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { Minus, Plus } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 import type { Area } from '@/common/api/generated';
 
-import Button from '@/common/ui/Button.vue';
+import { ToggleGroup, ToggleGroupCollapse, ToggleGroupItem } from '@/common/ui/ToggleGroup';
 
 interface Props {
   areas: Area[];
@@ -17,89 +16,56 @@ const emit = defineEmits<{
   'update:modelValue': [string[]];
 }>();
 
-const expanded = ref(false);
-
-const selectedSet = computed(() => new Set(props.modelValue ?? []));
-
-const visibleAreas = computed(() => {
-  const selected: Area[] = [];
-  const rest: Area[] = [];
-
-  for (const area of props.areas) {
-    if (selectedSet.value.has(area.id)) {
-      selected.push(area);
-    } else {
-      rest.push(area);
-    }
-  }
-
-  if (expanded.value) {
-    return [...selected, ...rest];
-  }
-
-  if (selected.length > 5) {
-    return selected;
-  }
-
-  const limit = 5 - selected.length;
-
-  return [...selected, ...rest.slice(0, limit)];
+const value = computed({
+  get: () => props.modelValue ?? [],
+  set: (v) => emit('update:modelValue', v)
 });
+</script>
 
-function toggle(id: string) {
-  const set = new Set(props.modelValue ?? []);
+<template>
+  <ToggleGroup v-model="value">
+    <ToggleGroupCollapse :limit="5">
+      <ToggleGroupItem v-for="area in areas" :key="area.id" :value="area.id">
+        {{ area.name }}
+      </ToggleGroupItem>
+    </ToggleGroupCollapse>
+  </ToggleGroup>
+</template>
 
-  if (set.has(id)) {
-    set.delete(id);
-  } else {
-    set.add(id);
-  }
+<!-- <script setup lang="ts">
+import { computed } from 'vue'
+import ToggleGroup from '@/common/ui/ToggleGroup.vue'
 
-  emit('update:modelValue', [...set]);
+import type { Area } from '@/common/api/generated'
+
+interface Props {
+  areas: Area[]
+  modelValue?: string[]
 }
 
-function toggleExpanded() {
-  expanded.value = !expanded.value;
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  'update:modelValue': [string[]]
+}>()
+
+const options = computed(() =>
+  props.areas.map(a => ({
+    label: a.name,
+    value: a.id
+  }))
+)
+
+function update(v: string | string[]) {
+  emit('update:modelValue', Array.isArray(v) ? v : [v])
 }
 </script>
 
 <template>
-  <div class="areas">
-    <Button
-      v-if="areas.length > 5"
-      size="sm"
-      variant="primary"
-      class="toggle"
-      @click="toggleExpanded"
-    >
-      <component :is="expanded ? Minus : Plus" :size="16" />
-    </Button>
-
-    <Button
-      v-for="area in visibleAreas"
-      :key="area.id"
-      size="sm"
-      variant="ghost"
-      :active="selectedSet.has(area.id)"
-      @click="toggle(area.id)"
-    >
-      {{ area.name }}
-    </Button>
-  </div>
-</template>
-
-<style scoped>
-.toggle {
-  position: sticky;
-  top: -6px;
-}
-
-.areas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  background: var(--bg-soft);
-  padding: 8px;
-  border-radius: 8px;
-}
-</style>
+  <ToggleGroup
+    :options="options"
+    :model-value="modelValue"
+    collapsible
+    @update:modelValue="update"
+  />
+</template> -->
