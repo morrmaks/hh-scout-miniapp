@@ -355,8 +355,10 @@ export interface CreateStatusResponses {
   /**
    * Status created
    */
-  200: unknown;
+  200: Array<Status>;
 }
+
+export type CreateStatusResponse = CreateStatusResponses[keyof CreateStatusResponses];
 
 export interface DeleteStatusData {
   body?: never;

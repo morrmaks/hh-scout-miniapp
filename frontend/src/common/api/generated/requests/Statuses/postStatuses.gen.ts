@@ -2,14 +2,14 @@
 
 import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
-import type { CreateStatusData } from '../../types.gen';
+import type { CreateStatusData, CreateStatusResponse } from '../../types.gen';
 
 import { instance } from '../../../client';
 
 export type PostStatusesRequestParams = FetchesRequestParams<CreateStatusData>;
 
 export const postStatuses = ({ config, body }: PostStatusesRequestParams) =>
-  instance.call('POST', '/statuses', {
+  instance.call<CreateStatusResponse>('POST', '/statuses', {
     body,
     ...config
   });

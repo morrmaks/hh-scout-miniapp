@@ -480,15 +480,12 @@
             }
           }
         },
-        "responses": { 
-          "200": { 
+        "responses": {
+          "200": {
             "description": "Status created",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/Status" }
-                }
+                "schema": { "$ref": "#/components/schemas/Status" }
               }
             }
           }
