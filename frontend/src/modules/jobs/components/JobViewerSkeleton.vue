@@ -4,11 +4,8 @@ import Skeleton from '@/common/ui/Skeleton.vue';
 
 <template>
   <div class="viewer">
-    <div class="position">
-      <Skeleton width="52px" height="22px" />
-    </div>
-
-    <span class="viewed" />
+    <Skeleton width="52px" height="22px" radius="0 19px 0 6px" class="position" />
+    <Skeleton width="20px" height="20px" radius="19px 0 6px 0" class="viewed" />
 
     <header class="header">
       <div class="title-row">
@@ -33,15 +30,16 @@ import Skeleton from '@/common/ui/Skeleton.vue';
     <Skeleton width="110px" height="14px" />
 
     <div class="description">
-      <Skeleton height="12px" />
-      <Skeleton height="12px" />
-      <Skeleton height="12px" />
-      <Skeleton height="12px" />
-      <Skeleton height="12px" />
-      <Skeleton height="12px" width="80%" />
+      <Skeleton height="12px" color="glow" />
+      <Skeleton height="12px" color="glow" />
+      <Skeleton height="12px" color="glow" />
+      <Skeleton height="12px" color="glow" />
+      <Skeleton height="12px" color="glow" />
+      <Skeleton height="12px" width="80%" color="glow" />
     </div>
 
     <div class="nav">
+      <Skeleton height="36px" width="40px" radius="10px" />
       <Skeleton height="36px" width="40px" radius="10px" />
       <Skeleton height="36px" width="40px" radius="10px" />
     </div>
@@ -53,7 +51,7 @@ import Skeleton from '@/common/ui/Skeleton.vue';
   position: relative;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 18px;
 
   padding: clamp(16px, 3vw, 24px);
 
@@ -84,26 +82,14 @@ import Skeleton from '@/common/ui/Skeleton.vue';
 
 .viewed {
   position: absolute;
-
-  height: 20px;
-  width: 20px;
-
   top: 0;
   left: 0;
-
-  border-bottom-right-radius: 6px;
-  border-top-left-radius: 14px;
-
-  background: var(--bg-soft);
 }
 
 .position {
   position: absolute;
-  overflow: hidden;
   top: 0;
   right: 0;
-  border-bottom-left-radius: 6px;
-  border-top-right-radius: 14px;
 }
 
 .info-row {
@@ -168,7 +154,7 @@ import Skeleton from '@/common/ui/Skeleton.vue';
 .nav {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 48px;
 }
 
 /* MOBILE */

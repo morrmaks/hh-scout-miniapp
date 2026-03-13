@@ -2,10 +2,17 @@ import type { Prisma } from '@prisma/client';
 
 import XLSX from 'xlsx';
 
-import type { FavoritesResponse, LoadFavoritesQuery } from '../types/favorites.types';
+import type {
+  FavoritesLabel,
+  FavoritesResponse,
+  LoadFavoritesQuery
+} from '../types/favorites.types';
 
+import { pushAnd } from '../db';
 import { prisma } from '../db/prisma';
 import { toFavoriteJob } from '../dto/favoriteJob.dto';
+import { getCurrencyRates } from '../integrations/currency';
+import { convertCurrency } from '../utils/convertCurrency';
 import { getJobById } from './jobs.service';
 
 const DEFAULT_PER_PAGE = 20;
@@ -136,6 +143,14 @@ export async function loadFavoriteIds(userId: number) {
 }
 
 export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
+  const labels: FavoritesLabel[] = query.label
+    ? Array.isArray(query.label)
+      ? query.label
+      : [query.label]
+    : [];
+
+  const currency = query.currency;
+
   const page = Number(query.page ?? 1);
   const perPage = Math.min(Number(query.per_page ?? DEFAULT_PER_PAGE), 100);
 
@@ -143,37 +158,83 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
 
   const where: Prisma.FavoriteWhereInput = { userId };
 
-  if (query.salary_from) {
-    where.salaryFrom = {
-      gte: Number(query.salary_from)
-    };
+  /* text search */
+
+  if (query.text) {
+    const text = query.text.trim();
+
+    pushAnd(where, {
+      OR: [
+        { title: { contains: text, mode: 'insensitive' } },
+        { company: { contains: text, mode: 'insensitive' } },
+        { url: { contains: text, mode: 'insensitive' } }
+      ]
+    });
   }
+
+  /* salary presence + threshold */
+
+  const salaryFilter: Prisma.IntNullableFilter = {};
+
+  if (labels.includes('with_salary')) {
+    salaryFilter.not = null;
+  }
+
+  if (query.salary_from) {
+    const salary = Number(query.salary_from);
+
+    if (currency && !labels.includes('same_currency')) {
+      const rates = await getCurrencyRates();
+
+      const usd = convertCurrency(salary, currency, 'USD', rates);
+      const eur = convertCurrency(salary, currency, 'EUR', rates);
+      const rub = convertCurrency(salary, currency, 'RUR', rates);
+
+      where.OR = [
+        { currency: 'USD', salaryFrom: { gte: usd } },
+        { currency: 'EUR', salaryFrom: { gte: eur } },
+        { currency: 'RUR', salaryFrom: { gte: rub } }
+      ];
+    } else {
+      salaryFilter.gte = salary;
+
+      if (currency && labels.includes('same_currency')) {
+        where.currency = currency;
+      }
+    }
+  }
+
+  if (Object.keys(salaryFilter).length) {
+    where.salaryFrom = salaryFilter;
+  }
+
+  /* company */
 
   if (query.company) {
     const companies = Array.isArray(query.company) ? query.company : [query.company];
 
-    where.company = {
-      in: companies
-    };
+    where.company = { in: companies };
   }
+
+  /* experience */
 
   if (query.experience) {
     const exp = Array.isArray(query.experience) ? query.experience : [query.experience];
 
-    where.experience = {
-      in: exp
-    };
+    where.experience = { in: exp };
   }
+
+  /* status */
 
   if (query.status) {
     const statuses = Array.isArray(query.status)
       ? query.status.map(Number)
       : [Number(query.status)];
 
-    where.statusId = {
-      in: statuses
-    };
+    where.statusId = { in: statuses };
   }
+
+  /* sorting */
 
   const orderBy: Prisma.FavoriteOrderByWithRelationInput = (() => {
     switch (query.sort) {
@@ -186,9 +247,16 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
       case 'status':
         return { statusId: 'asc' };
 
+      case 'published_asc':
+        return { publishedAt: 'asc' };
+
       case 'published_desc':
         return { publishedAt: 'desc' };
 
+      case 'created_asc':
+        return { createdAt: 'asc' };
+
+      case 'created_desc':
       default:
         return { createdAt: 'desc' };
     }
@@ -216,6 +284,8 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
       pages: Math.ceil(total / perPage)
     }
   };
+
+  /* filters */
 
   if (page === 1) {
     const [companies, statuses] = await Promise.all([

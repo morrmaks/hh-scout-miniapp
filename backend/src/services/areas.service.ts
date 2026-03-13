@@ -1,6 +1,6 @@
 import type { FlatArea } from '../utils/flattenAreas';
 
-import { areasCache } from '../cache/areasCache';
+import { areasCache } from '../cache/areas.cache';
 import { getAreas as getAreasFromHh } from '../integrations/hh';
 import { flattenAreas } from '../utils/flattenAreas';
 

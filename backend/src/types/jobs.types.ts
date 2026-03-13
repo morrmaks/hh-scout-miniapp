@@ -1,5 +1,8 @@
 import type { HHVacancyShort } from '../integrations/hh';
 
+export type JobLabel = 'with_salary';
+export type Currency = 'EUR' | 'RUR' | 'USD';
+
 export interface SearchSession {
   found: number;
   pages: HHVacancyShort[][];
@@ -9,11 +12,11 @@ export interface SearchSession {
 
 export interface JobFilters {
   area?: string[];
-  currency?: string;
+  currency?: Currency;
   employment_form?: string[];
   experience?: string[];
   index?: number;
-  label?: string[];
+  label?: JobLabel | JobLabel[];
   order_by?: string;
   page?: number;
   per_page?: number;

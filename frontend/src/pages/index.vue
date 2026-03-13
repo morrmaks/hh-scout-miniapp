@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
-import PaginationSkeleton from '@/common/ui/PaginationSkeleton.vue';
 import { useAreasStore } from '@/modules/areas';
 import {
   JobsFiltersDrawer,
   JobsFiltersToggle,
   JobsPagination,
+  JobsPaginationSkeleton,
   JobsSearch,
   JobsSearchHistory,
-  JobViewer,
-  JobViewerSkeleton,
+  JobsViewer,
+  JobsViewerSkeleton,
   useJobsStore
 } from '@/modules/jobs';
 
@@ -71,12 +71,12 @@ onMounted(() => {
     </div>
 
     <template v-if="showSkeleton">
-      <JobViewerSkeleton />
-      <PaginationSkeleton />
+      <JobsViewerSkeleton />
+      <JobsPaginationSkeleton />
     </template>
 
     <div v-else class="content" :class="{ disabled: searchState === 'refreshing' }">
-      <JobViewer
+      <JobsViewer
         :job="store.currentJob"
         :position="store.pagePosition"
         :disable-prev="store.index === 0"

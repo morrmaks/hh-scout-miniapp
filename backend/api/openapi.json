@@ -313,9 +313,15 @@
         "summary": "Get favorites with filters",
         "parameters": [
           { "name": "userId", "in": "query", "required": true, "schema": { "type": "number" } },
+          { "name": "text", "in": "query", "schema": { "type": "string" } },
           { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
           { "name": "per_page", "in": "query", "schema": { "type": "number", "default": 20 } },
           { "name": "salary_from", "in": "query", "schema": { "type": "number" } },
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/Currency" }
+          },
           {
             "name": "company",
             "in": "query",
@@ -329,6 +335,16 @@
             "style": "form",
             "explode": true,
             "schema": { "type": "array", "items": { "type": "number" } }
+          },
+          {
+            "name": "label",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/FavoritesLabel" }
+            }
           },
           {
             "name": "experience",
@@ -627,9 +643,17 @@
         }
       },
 
+      "FavoritesLabel": {
+        "type": "string",
+        "enum": [
+          "with_salary",
+          "same_currency"
+        ]
+      },
+
       "FavoritesSort": {
         "type": "string",
-        "enum": ["created_desc", "published_desc", "salary_asc", "salary_desc", "status"]
+        "enum": ["created_asc", "created_desc", "published_asc", "published_desc", "salary_asc", "salary_desc", "status"]
       },
 
       "StatusColor": {

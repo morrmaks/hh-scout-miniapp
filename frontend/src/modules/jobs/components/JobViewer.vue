@@ -139,20 +139,12 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
 </template>
 
 <style scoped>
-.pagination-test {
-  margin-top: 40px;
-
-  width: 100%;
-  max-width: 420px;
-
-  display: flex;
-  justify-content: center;
-}
 .viewer {
   position: relative;
   height: 80vh;
   transition: height 0.2s ease;
   --card-padding: clamp(16px, 3vw, 24px);
+  border-radius: 18px;
 }
 
 .viewer.expanded {
@@ -189,8 +181,7 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
   top: 0;
   left: 0;
 
-  border-bottom-right-radius: 6px;
-  border-top-left-radius: 14px;
+  border-radius: 18px 0 6px 0;
 
   background: var(--primary);
 }
@@ -209,18 +200,12 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
 
 .position {
   position: absolute;
-
   top: 0;
   right: 0;
-
   font-size: 12px;
   font-weight: 600;
-
   padding: 2px 8px;
-
-  border-bottom-left-radius: 6px;
-  border-top-right-radius: 14px;
-
+  border-radius: 0 18px 0 6px;
   background: var(--bg-soft);
   color: var(--text-muted);
 }

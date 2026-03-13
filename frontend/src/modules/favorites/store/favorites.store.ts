@@ -43,16 +43,18 @@ export const useFavoritesStore = defineStore('favorites', () => {
   const loading = ref(false);
   const loadingMore = ref(false);
   const invalidated = ref(true);
+  const initialized = ref(false);
 
+  const showSkeleton = computed(() => loading.value && !initialized.value);
+  const contentDisabled = computed(() => loading.value && initialized.value);
   const hasMore = computed(() => page.value < pages.value);
-
   const hasFilters = computed(() => !equalObjects(filters.value, DEFAULT_FILTERS));
 
   function resetState() {
     page.value = 1;
     pages.value = 0;
     total.value = 0;
-    items.value = [];
+    // items.value = [];
   }
 
   async function fetchIds() {
@@ -66,10 +68,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
   }
 
   async function fetchFavorites() {
-    if (!userId.value) return;
-    if (loading.value) return;
-
-    if (!invalidated.value && items.value.length) return;
+    if (!userId.value || loading.value || (!invalidated.value && items.value.length)) return;
 
     if (invalidated.value) {
       resetState();
@@ -96,6 +95,8 @@ export const useFavoritesStore = defineStore('favorites', () => {
         companies.value = data.filters.companies ?? [];
         statuses.value = data.filters.statuses ?? [];
       }
+
+      initialized.value = true;
     } finally {
       loading.value = false;
     }
@@ -230,7 +231,10 @@ export const useFavoritesStore = defineStore('favorites', () => {
 
     loading,
     loadingMore,
+    initialized,
 
+    showSkeleton,
+    contentDisabled,
     hasMore,
     hasFilters,
 

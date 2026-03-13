@@ -1,8 +1,9 @@
 import cors from 'cors';
 import express from 'express';
 
-import { areasCache } from './cache/areasCache';
-import { searchSessions, vacancyCache } from './cache/jobsCache';
+import { areasCache } from './cache/areas.cache';
+import { currencyRatesCache } from './cache/currency.cache';
+import { searchSessions, vacancyCache } from './cache/jobs.cache';
 import { errorMiddleware } from './middleware/error.middleware';
 import { router } from './router/index';
 
@@ -23,6 +24,7 @@ setInterval(
     vacancyCache.cleanup();
     searchSessions.cleanup();
     areasCache.cleanup();
+    currencyRatesCache.cleanup();
 
     console.log(
       'Cache cleanup',
@@ -31,7 +33,9 @@ setInterval(
       'vacancies:',
       vacancyCache.size(),
       'areas:',
-      areasCache.size()
+      areasCache.size(),
+      'currency:',
+      currencyRatesCache.size()
     );
   },
   24 * 60 * 60 * 1000

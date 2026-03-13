@@ -30,14 +30,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="favorites-list">
-    <FavoritesListSkeleton v-if="favorites.loading && !favorites.items.length" :count="5" />
+  <FavoritesListSkeleton v-if="favorites.showSkeleton" :count="5" />
 
+  <div v-else class="content" :class="{ disabled: favorites.contentDisabled }">
     <FavoriteListItem v-for="job in favorites.items" :key="job.jobId" :job="job" />
 
     <FavoritesListSkeleton v-if="favorites.loadingMore" :count="3" />
 
-    <!-- sentinel -->
     <div ref="sentinel" class="sentinel" />
 
     <div v-if="!favorites.loading && favorites.items.length === 0" class="empty">
@@ -47,10 +46,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.sentinel {
-  height: 1px;
-}
-.favorites-list {
+.content {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -59,6 +55,15 @@ onMounted(() => {
   overflow-y: auto;
 
   padding-bottom: 20px;
+}
+
+.content.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.sentinel {
+  height: 1px;
 }
 
 .empty {

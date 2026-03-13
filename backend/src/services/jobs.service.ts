@@ -2,7 +2,7 @@ import type { SearchResultDTO } from '../dto/searchResult.dto';
 import type { HHVacancyShort } from '../integrations/hh';
 import type { JobFilters } from '../types/jobs.types';
 
-import { inFlightSearch, inFlightVacancy, searchSessions, vacancyCache } from '../cache/jobsCache';
+import { inFlightSearch, inFlightVacancy, searchSessions, vacancyCache } from '../cache/jobs.cache';
 import { toJobDTO } from '../dto/job.dto';
 import { getVacancies, getVacancyById } from '../integrations/hh';
 import { enqueue } from '../queue/queue';

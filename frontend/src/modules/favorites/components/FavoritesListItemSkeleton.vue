@@ -7,16 +7,15 @@ import Skeleton from '@/common/ui/Skeleton.vue';
   <Card class="favorite-card">
     <div class="left">
       <div class="title-row">
-        <Skeleton width="16px" height="16px" radius="4px" />
+        <Skeleton width="16px" height="18px" radius="4px" />
 
-        <Skeleton width="70%" height="18px" />
+        <Skeleton width="70%" height="21px" />
       </div>
 
-      <Skeleton width="40%" height="14px" />
+      <Skeleton width="40%" height="18px" />
 
       <div class="meta">
-        <Skeleton width="80px" height="22px" radius="999px" />
-        <Skeleton width="100px" height="22px" radius="999px" />
+        <Skeleton width="80px" height="20px" radius="999px" />
       </div>
     </div>
 
@@ -35,7 +34,7 @@ import Skeleton from '@/common/ui/Skeleton.vue';
   justify-content: space-between;
   gap: 16px;
 
-  padding: 16px;
+  padding: 12px;
 }
 
 .left {
@@ -56,6 +55,7 @@ import Skeleton from '@/common/ui/Skeleton.vue';
   margin-top: auto;
 
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 

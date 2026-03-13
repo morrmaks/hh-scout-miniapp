@@ -355,7 +355,7 @@ export interface CreateStatusResponses {
   /**
    * Status created
    */
-  200: Array<Status>;
+  200: Status;
 }
 
 export type CreateStatusResponse = CreateStatusResponses[keyof CreateStatusResponses];
