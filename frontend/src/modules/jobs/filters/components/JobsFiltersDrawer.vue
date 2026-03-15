@@ -1,31 +1,45 @@
 <script setup lang="ts">
-import Drawer from '@/common/ui/Drawer.vue';
+import { SlidersHorizontal } from 'lucide-vue-next';
+import { ref } from 'vue';
+
+import Button from '@/common/ui/Button.vue';
+import { Drawer, DrawerContent, DrawerTrigger } from '@/common/ui/Drawer';
 
 import type { JobsFiltersType } from '../../types/jobs.types';
 
 import { useJobsStore } from '../../store/jobs.store';
 import JobsFilters from './JobsFilters.vue';
 
-interface Props {
-  open: boolean;
-}
-
-defineProps<Props>();
-
-const emit = defineEmits<{
-  'update:open': [boolean];
-}>();
-
 const store = useJobsStore();
+
+const open = ref(false);
+
+function reset() {
+  open.value = false;
+}
 
 function apply(filters: JobsFiltersType) {
   store.setFilters(filters);
-  emit('update:open', false);
+  open.value = false;
 }
 </script>
 
 <template>
-  <Drawer :open="open" @update:open="emit('update:open', $event)">
-    <JobsFilters :model-value="store.filters" @apply="apply" />
+  <Drawer v-model:open="open">
+    <DrawerTrigger>
+      <Button variant="outline" class="toggle-button">
+        <SlidersHorizontal :size="14" />
+      </Button>
+    </DrawerTrigger>
+
+    <DrawerContent>
+      <JobsFilters @apply="apply" @reset="reset" />
+    </DrawerContent>
   </Drawer>
 </template>
+
+<style scoped>
+.toggle-button {
+  padding: 9px 14px;
+}
+</style>

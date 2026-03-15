@@ -42,7 +42,7 @@ function select(option: Option<T>, close: () => void) {
       </template>
 
       <span v-else class="placeholder">
-        {{ props.placeholder ?? 'Select' }}
+        {{ props.placeholder ?? 'Выберите' }}
       </span>
     </DropdownTrigger>
 
@@ -70,6 +70,7 @@ function select(option: Option<T>, close: () => void) {
 
 .option {
   width: 100%;
+  border-radius: 8px;
   justify-content: start;
 }
 </style>

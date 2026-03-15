@@ -45,7 +45,7 @@
           {
             "name": "currency",
             "in": "query",
-            "schema": { "$ref": "#/components/schemas/Currency" }
+            "schema": { "$ref": "#/components/schemas/CurrencyQuery" }
           },
 
           {
@@ -151,7 +151,7 @@
           {
             "name": "currency",
             "in": "query",
-            "schema": { "$ref": "#/components/schemas/Currency" }
+            "schema": { "$ref": "#/components/schemas/CurrencyQuery" }
           },
 
           {
@@ -320,7 +320,7 @@
           {
             "name": "currency",
             "in": "query",
-            "schema": { "$ref": "#/components/schemas/Currency" }
+            "schema": { "$ref": "#/components/schemas/CurrencyQuery" }
           },
           {
             "name": "company",
@@ -418,7 +418,15 @@
         ],
         "responses": {
           "200": {
-            "description": "Excel file"
+            "description": "Excel file",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
           }
         }
       }
@@ -560,9 +568,14 @@
         "enum": ["REMOTE", "FIELD_WORK", "HYBRID", "ON_SITE"]
       },
 
-      "Currency": {
+      "CurrencyQuery": {
         "type": "string",
         "enum": ["RUR", "USD", "EUR"]
+      },
+
+      "JobCurrency": {
+        "type": "string",
+        "enum": ["RUR", "USD", "EUR", "UAH", "KZT", "KGS", "GEL", "AZN", "UZS", "BYN"]
       },
 
       "JobLabel": {
@@ -579,44 +592,29 @@
         "required": ["id", "title", "company", "url", "description"],
         "properties": {
           "id": { "type": "string" },
-
           "title": { "type": "string" },
-
           "company": { "type": "string" },
-
           "url": { "type": "string" },
-
           "description": { "type": "string" },
-
           "publishedAt": { "type": "string" },
-
           "salaryFrom": { "type": "number", "nullable": true },
-
           "salaryTo": { "type": "number", "nullable": true },
-
-          "currency": { "type": "string", "nullable": true },
-
+          "currency": { "$ref": "#/components/schemas/JobCurrency", "nullable": true },
           "experience": { "type": "string", "nullable": true },
-
           "employmentForm": { "type": "string", "nullable": true },
-
           "workFormat": {
             "type": "array",
             "items": { "type": "string" }
           },
-
           "workSchedule": {
             "type": "array",
             "items": { "type": "string" }
           },
-
           "workingHours": {
             "type": "array",
             "items": { "type": "string" }
           },
-
           "city": { "type": "string", "nullable": true },
-
           "skills": {
             "type": "array",
             "items": { "type": "string" }
@@ -634,7 +632,7 @@
           "company": { "type": "string" },
           "salaryFrom": { "type": "number", "nullable": true },
           "salaryTo": { "type": "number", "nullable": true },
-          "currency": { "type": "string", "nullable": true },
+          "currency": { "$ref": "#/components/schemas/JobCurrency", "nullable": true },
           "experience": { "type": "string", "nullable": true },
           "publishedAt": { "type": "string", "nullable": true },
           "createdAt": { "type": "string" },
@@ -645,15 +643,20 @@
 
       "FavoritesLabel": {
         "type": "string",
-        "enum": [
-          "with_salary",
-          "same_currency"
-        ]
+        "enum": ["with_salary", "same_currency"]
       },
 
       "FavoritesSort": {
         "type": "string",
-        "enum": ["created_asc", "created_desc", "published_asc", "published_desc", "salary_asc", "salary_desc", "status"]
+        "enum": [
+          "created_asc",
+          "created_desc",
+          "published_asc",
+          "published_desc",
+          "salary_asc",
+          "salary_desc",
+          "status"
+        ]
       },
 
       "StatusColor": {
@@ -712,7 +715,8 @@
           "meta": {
             "type": "object",
             "properties": {
-              "total": { "type": "number" },
+              "totalAll": { "type": "number" },
+              "totalFound": { "type": "number" },
               "page": { "type": "number" },
               "pages": { "type": "number" }
             }

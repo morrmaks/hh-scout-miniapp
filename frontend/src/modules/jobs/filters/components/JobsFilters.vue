@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue';
+import { X } from 'lucide-vue-next';
+import { computed, reactive, watch } from 'vue';
 
 import Button from '@/common/ui/Button.vue';
 import Checkbox from '@/common/ui/Checkbox.vue';
@@ -8,46 +9,48 @@ import InputNumber from '@/common/ui/InputNumber.vue';
 import Select from '@/common/ui/Select.vue';
 import Separator from '@/common/ui/Separator.vue';
 import { ToggleGroup, ToggleGroupItem } from '@/common/ui/ToggleGroup';
+import { equalObjects } from '@/common/utils/object';
 import { AreaSelect, useAreasStore } from '@/modules/areas';
 
-import type { JobsFilters, JobsQueryParams } from '../../types/jobs.types';
+import type { JobsFiltersType, JobsQueryParams } from '../../types/jobs.types';
 
+import { useJobsStore } from '../../store/jobs.store';
+import { DEFAULT_FILTERS } from '../config/jobsFilters.default';
 import {
   currencyOptions,
   employmentOptions,
   experienceOptions,
-  orderByOptions,
   periodOptions,
-  perPageOptions,
   workFormatOptions
 } from '../config/jobsFilters.options';
-import { toApiFilters, toLocalFilters } from '../lib/filters';
-
-interface Props {
-  modelValue: JobsQueryParams;
-}
-
-const props = defineProps<Props>();
-
 const emit = defineEmits<{
   apply: [JobsQueryParams];
+  reset: [];
 }>();
 
-const local = reactive<JobsFilters>(toLocalFilters(props.modelValue));
+const store = useJobsStore();
+const local = reactive<JobsFiltersType>({
+  ...store.filters
+});
+
+const hasLocalChanges = computed(() => !equalObjects(local, DEFAULT_FILTERS));
+
+function reset() {
+  Object.assign(local, DEFAULT_FILTERS);
+  store.resetFilters();
+  emit('reset');
+}
 
 watch(
-  () => props.modelValue,
-  (v) => {
-    const mapped = toLocalFilters(v);
-    Object.assign(local, mapped);
-  }
+  () => store.filters,
+  (v) => Object.assign(local, v)
 );
 
 function apply() {
-  emit('apply', toApiFilters(local));
+  emit('apply', { ...local });
 }
 
-function toggleSalary(enabled: boolean) {
+function toggleSalaryLabel(enabled: boolean) {
   const labels = new Set(local.label ?? []);
 
   if (enabled) labels.add('with_salary');
@@ -61,15 +64,6 @@ const areasStore = useAreasStore();
 
 <template>
   <div class="filters">
-    <!-- Результаты -->
-    <FilterGroup label="Показывать на странице">
-      <Select v-model="local.per_page" :options="perPageOptions" />
-    </FilterGroup>
-
-    <FilterGroup label="Сортировка">
-      <Select v-model="local.order_by" :options="orderByOptions" />
-    </FilterGroup>
-
     <FilterGroup label="Период">
       <Select v-model="local.period" :options="periodOptions" />
     </FilterGroup>
@@ -82,13 +76,13 @@ const areasStore = useAreasStore();
         <div class="salaryRow">
           <InputNumber v-model="local.salary" placeholder="100000" />
 
-          <Select v-model="local.currency" :options="currencyOptions" />
+          <Select v-model="local.currency" :options="currencyOptions" class="currency" />
         </div>
 
         <Checkbox
           :model-value="local.label?.includes('with_salary')"
           label="Только с зарплатой"
-          @update:model-value="toggleSalary"
+          @update:model-value="toggleSalaryLabel"
         />
       </div>
     </FilterGroup>
@@ -131,6 +125,11 @@ const areasStore = useAreasStore();
   </div>
 
   <div class="footer">
+    <Button v-if="hasLocalChanges" variant="destructive" @click="reset">
+      <X :size="14" />
+      Сбросить
+    </Button>
+
     <Button class="applyButton" @click="apply"> Применить фильтры </Button>
   </div>
 </template>
@@ -154,10 +153,16 @@ const areasStore = useAreasStore();
   gap: 10px;
 }
 
+.currency {
+  display: flex;
+  align-items: stretch;
+}
+
 .footer {
   margin-top: 20px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  gap: 8px;
 }
 
 @media (max-width: 640px) {

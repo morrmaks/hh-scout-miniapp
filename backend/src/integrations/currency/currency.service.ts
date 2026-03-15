@@ -1,7 +1,20 @@
-import type { CurrencyApiResponse, CurrencyRates } from './currency.types';
+import type { ApiCurrency, CurrencyApiResponse, CurrencyRates } from './currency.types';
 
 import { currencyRatesCache } from '../../cache/currency.cache';
 import { fetchCurrencyRates } from './currency.client';
+
+const CURRENCIES: readonly ApiCurrency[] = [
+  'USD',
+  'EUR',
+  'RUB',
+  'UAH',
+  'KZT',
+  'KGS',
+  'GEL',
+  'AZN',
+  'UZS',
+  'BYN'
+];
 
 export async function getCurrencyRates(): Promise<CurrencyRates> {
   const cached = currencyRatesCache.get('latest');
@@ -9,11 +22,11 @@ export async function getCurrencyRates(): Promise<CurrencyRates> {
 
   const data = await fetchCurrencyRates<CurrencyApiResponse>('/live', {
     source: 'USD',
-    currencies: 'USD,EUR,RUB'
+    currencies: CURRENCIES.join(',')
   });
 
   if (!data.success) {
-    throw new Error('Currency API error');
+    throw new Error(`Currency API error: ${JSON.stringify(data)}`);
   }
 
   const rates: CurrencyRates = {
@@ -21,7 +34,14 @@ export async function getCurrencyRates(): Promise<CurrencyRates> {
     rates: {
       USD: 1,
       EUR: data.quotes.USDEUR,
-      RUB: data.quotes.USDRUB
+      RUB: data.quotes.USDRUB,
+      UAH: data.quotes.USDUAH,
+      KZT: data.quotes.USDKZT,
+      KGS: data.quotes.USDKGS,
+      GEL: data.quotes.USDGEL,
+      AZN: data.quotes.USDAZN,
+      UZS: data.quotes.USDUZS,
+      BYN: data.quotes.USDBYN
     }
   };
 

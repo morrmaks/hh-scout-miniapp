@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
 import {
-  FavoritesFiltersDrawer,
-  FavoritesFiltersToggle,
+  FavoritesFiltersRow,
   FavoritesList,
+  FavoritesSearch,
   useStatusesStore
 } from '@/modules/favorites';
-
-const filtersOpen = ref(false);
 
 const statuses = useStatusesStore();
 
@@ -17,8 +13,8 @@ statuses.init();
 
 <template>
   <div class="favorites-page">
-    <FavoritesFiltersToggle :open="filtersOpen" @toggle="filtersOpen = !filtersOpen" />
-    <FavoritesFiltersDrawer v-model:open="filtersOpen" />
+    <FavoritesSearch />
+    <FavoritesFiltersRow />
     <FavoritesList />
   </div>
 </template>

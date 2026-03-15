@@ -8,6 +8,8 @@ interface FloatingOptions {
   padding?: number;
 }
 
+const MIN_SPACE = 120;
+
 export function useFloatingPosition(
   triggerRef: Ref<HTMLElement | null>,
   contentRef: Ref<HTMLElement | null>,
@@ -35,21 +37,19 @@ export function useFloatingPosition(
     const triggerRect = trigger.getBoundingClientRect();
     const contentRect = content.getBoundingClientRect();
 
-    const contentHeight = content.scrollHeight || contentRect.height;
     const contentWidth = contentRect.width;
-
     // ширина ≥ trigger
     minWidth.value = triggerRect.width;
 
     const spaceBelow = windowHeight.value - triggerRect.bottom;
     const spaceAbove = triggerRect.top;
 
-    const placeTop = spaceBelow < contentHeight && spaceAbove > spaceBelow;
+    const placeTop = spaceBelow < MIN_SPACE && spaceAbove > spaceBelow;
 
     // вертикаль
-    top.value = placeTop ? triggerRect.top - contentHeight - gap : triggerRect.bottom + gap;
-
     maxHeight.value = placeTop ? spaceAbove - padding : spaceBelow - padding;
+
+    top.value = placeTop ? triggerRect.top - contentRect.height - gap : triggerRect.bottom + gap;
 
     // горизонталь
     let x = triggerRect.left;

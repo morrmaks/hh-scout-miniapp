@@ -1,9 +1,10 @@
+import type { HHCurrency } from '../integrations/hh';
 import type { JobDTO } from './job.dto';
 
 export interface FavoriteJobDTO {
   company: string;
 
-  currency?: string;
+  currency?: HHCurrency;
   experience?: string;
   id: string;
 

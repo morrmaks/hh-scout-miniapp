@@ -1,4 +1,4 @@
-import type { VacancyShort } from '../types/jobs.types';
+import type { HHVacancyShort } from '../integrations/hh';
 
 export interface JobPreviewDTO {
   company: string;
@@ -7,7 +7,7 @@ export interface JobPreviewDTO {
   url: string;
 }
 
-export function toJobPreviewDTO(job: VacancyShort): JobPreviewDTO {
+export function toJobPreviewDTO(job: HHVacancyShort): JobPreviewDTO {
   return {
     id: job.id,
     title: job.name,

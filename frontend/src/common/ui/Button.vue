@@ -45,7 +45,7 @@ const classes = computed(() => [
   justify-content: center;
   gap: 6px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 14px;
   cursor: pointer;
   transition:
@@ -116,7 +116,7 @@ const classes = computed(() => [
 /* outline */
 
 .btn-outline {
-  background: var(--bg-soft);
+  background: var(--button-bg-soft);
   color: var(--text);
   border: 1px solid var(--border);
 }
@@ -139,12 +139,12 @@ const classes = computed(() => [
 /* destructive */
 
 .btn-destructive {
-  background: var(--destructive);
+  background: var(--button-destructive-bg);
   color: #fff;
 }
 
 .btn-destructive:hover:not(:disabled) {
-  background: var(--destructive-hover);
+  background: var(--button-destructive-bg-hover);
 }
 
 /* link */

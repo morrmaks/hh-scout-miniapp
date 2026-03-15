@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useEventListener } from '@vueuse/core';
 import { inject, watchEffect } from 'vue';
 
 import { useFloatingPosition } from '@/common/composables/useFloatingPosition';
@@ -19,6 +20,11 @@ useLockScrollParents(dropdown.triggerRef, dropdown.open);
 watchEffect(() => {
   if (dropdown.open.value) update();
 });
+
+if (window.visualViewport) {
+  useEventListener(window.visualViewport, 'resize', update);
+  useEventListener(window.visualViewport, 'scroll', update);
+}
 </script>
 
 <template>
@@ -54,7 +60,7 @@ watchEffect(() => {
 
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
 
   overflow-y: auto;
   overflow-x: hidden;

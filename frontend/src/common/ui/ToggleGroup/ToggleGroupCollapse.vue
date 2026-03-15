@@ -107,6 +107,6 @@ provide(toggleCollapseKey, context);
 
 .toggle {
   position: sticky;
-  top: -6px;
+  top: 6px;
 }
 </style>

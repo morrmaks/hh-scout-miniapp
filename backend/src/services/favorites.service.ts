@@ -12,10 +12,11 @@ import { pushAnd } from '../db';
 import { prisma } from '../db/prisma';
 import { toFavoriteJob } from '../dto/favoriteJob.dto';
 import { getCurrencyRates } from '../integrations/currency';
-import { convertCurrency } from '../utils/convertCurrency';
+import { convertCurrency } from '../utils/currency';
 import { getJobById } from './jobs.service';
 
 const DEFAULT_PER_PAGE = 20;
+
 export const DEFAULT_STATUSES = [
   { name: 'Отклик', color: 'blue' },
   { name: 'Собеседование', color: 'purple' },
@@ -45,26 +46,30 @@ export async function saveFavorite(userId: number, jobId: string) {
   await ensureDefaultStatuses(userId);
 
   const job = await getJobById(jobId);
-
   const fav = toFavoriteJob(job);
+
+  const rates = await getCurrencyRates();
+
+  const salaryValue = fav.salaryTo ?? fav.salaryFrom ?? null;
+
+  const salaryBase =
+    salaryValue && fav.currency
+      ? Math.round(convertCurrency(salaryValue, fav.currency, 'RUR', rates))
+      : null;
 
   const favorite = await prisma.favorite.upsert({
     where: {
-      userId_jobId: {
-        userId,
-        jobId
-      }
+      userId_jobId: { userId, jobId }
     },
 
     update: {
       title: fav.title,
       company: fav.company,
       url: fav.url,
-
       salaryFrom: fav.salaryFrom,
       salaryTo: fav.salaryTo,
       currency: fav.currency,
-
+      salaryBase,
       experience: fav.experience,
       publishedAt: fav.publishedAt
     },
@@ -72,15 +77,13 @@ export async function saveFavorite(userId: number, jobId: string) {
     create: {
       userId,
       jobId,
-
       title: fav.title,
       company: fav.company,
       url: fav.url,
-
       salaryFrom: fav.salaryFrom,
       salaryTo: fav.salaryTo,
       currency: fav.currency,
-
+      salaryBase,
       experience: fav.experience,
       publishedAt: fav.publishedAt
     }
@@ -134,31 +137,33 @@ export async function deleteFavorite(userId: number, jobId: string) {
 }
 
 export async function loadFavoriteIds(userId: number) {
-  return prisma.favorite
-    .findMany({
-      where: { userId },
-      select: { jobId: true }
-    })
-    .then((rows) => rows.map((r) => r.jobId));
+  const rows = await prisma.favorite.findMany({
+    where: { userId },
+    select: { jobId: true }
+  });
+
+  return rows.map((r) => r.jobId);
 }
 
-export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
+export async function loadFavorites(
+  userId: number,
+  query: LoadFavoritesQuery
+): Promise<FavoritesResponse> {
+  const hasSalary = query.salary_from && Number(query.salary_from) > 0;
+
   const labels: FavoritesLabel[] = query.label
     ? Array.isArray(query.label)
       ? query.label
       : [query.label]
     : [];
 
-  const currency = query.currency;
+  const effectiveLabels = hasSalary ? labels : labels.filter((l) => l !== 'same_currency');
 
   const page = Number(query.page ?? 1);
   const perPage = Math.min(Number(query.per_page ?? DEFAULT_PER_PAGE), 100);
-
   const skip = (page - 1) * perPage;
 
   const where: Prisma.FavoriteWhereInput = { userId };
-
-  /* text search */
 
   if (query.text) {
     const text = query.text.trim();
@@ -172,43 +177,28 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
     });
   }
 
-  /* salary presence + threshold */
-
   const salaryFilter: Prisma.IntNullableFilter = {};
 
-  if (labels.includes('with_salary')) {
+  if (effectiveLabels.includes('with_salary')) {
     salaryFilter.not = null;
   }
 
-  if (query.salary_from) {
+  if (hasSalary) {
     const salary = Number(query.salary_from);
+    const rates = await getCurrencyRates();
 
-    if (currency && !labels.includes('same_currency')) {
-      const rates = await getCurrencyRates();
+    const baseSalary = Math.round(convertCurrency(salary, query.currency ?? 'RUR', 'RUR', rates));
 
-      const usd = convertCurrency(salary, currency, 'USD', rates);
-      const eur = convertCurrency(salary, currency, 'EUR', rates);
-      const rub = convertCurrency(salary, currency, 'RUR', rates);
-
-      where.OR = [
-        { currency: 'USD', salaryFrom: { gte: usd } },
-        { currency: 'EUR', salaryFrom: { gte: eur } },
-        { currency: 'RUR', salaryFrom: { gte: rub } }
-      ];
-    } else {
-      salaryFilter.gte = salary;
-
-      if (currency && labels.includes('same_currency')) {
-        where.currency = currency;
-      }
-    }
+    salaryFilter.gte = baseSalary;
   }
 
   if (Object.keys(salaryFilter).length) {
-    where.salaryFrom = salaryFilter;
+    where.salaryBase = salaryFilter;
   }
 
-  /* company */
+  if (effectiveLabels.includes('same_currency') && query.currency) {
+    where.currency = query.currency;
+  }
 
   if (query.company) {
     const companies = Array.isArray(query.company) ? query.company : [query.company];
@@ -216,15 +206,11 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
     where.company = { in: companies };
   }
 
-  /* experience */
-
   if (query.experience) {
     const exp = Array.isArray(query.experience) ? query.experience : [query.experience];
 
     where.experience = { in: exp };
   }
-
-  /* status */
 
   if (query.status) {
     const statuses = Array.isArray(query.status)
@@ -234,15 +220,25 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
     where.statusId = { in: statuses };
   }
 
-  /* sorting */
-
-  const orderBy: Prisma.FavoriteOrderByWithRelationInput = (() => {
+  const orderBy:
+    | Prisma.FavoriteOrderByWithRelationInput
+    | Prisma.FavoriteOrderByWithRelationInput[] = (() => {
     switch (query.sort) {
       case 'salary_asc':
-        return { salaryFrom: 'asc' };
+        return {
+          salaryBase: {
+            sort: 'asc',
+            nulls: 'first'
+          }
+        };
 
       case 'salary_desc':
-        return { salaryFrom: 'desc' };
+        return {
+          salaryBase: {
+            sort: 'desc',
+            nulls: 'last'
+          }
+        };
 
       case 'status':
         return { statusId: 'asc' };
@@ -262,7 +258,7 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
     }
   })();
 
-  const [items, total] = await Promise.all([
+  const [items, totalFound, totalAll] = await Promise.all([
     prisma.favorite.findMany({
       where,
       skip,
@@ -273,19 +269,22 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
       }
     }),
 
-    prisma.favorite.count({ where })
+    prisma.favorite.count({ where }),
+
+    prisma.favorite.count({
+      where: { userId }
+    })
   ]);
 
   const result: FavoritesResponse = {
     items,
     meta: {
-      total,
+      totalAll,
+      totalFound,
       page,
-      pages: Math.ceil(total / perPage)
+      pages: Math.ceil(totalFound / perPage)
     }
   };
-
-  /* filters */
 
   if (page === 1) {
     const [companies, statuses] = await Promise.all([
@@ -312,14 +311,9 @@ export async function loadFavorites(userId: number, query: LoadFavoritesQuery) {
 export async function setFavoriteStatus(userId: number, jobId: string, statusId: number | null) {
   return prisma.favorite.update({
     where: {
-      userId_jobId: {
-        userId,
-        jobId
-      }
+      userId_jobId: { userId, jobId }
     },
-    data: {
-      statusId
-    }
+    data: { statusId }
   });
 }
 
@@ -344,10 +338,8 @@ export async function exportExcel(userId: number) {
 
   XLSX.utils.book_append_sheet(wb, ws, 'Favorites');
 
-  const buffer = XLSX.write(wb, {
+  return XLSX.write(wb, {
     type: 'buffer',
     bookType: 'xlsx'
   });
-
-  return buffer;
 }

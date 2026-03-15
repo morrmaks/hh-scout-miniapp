@@ -59,7 +59,7 @@ const value = computed({
 <style scoped>
 .input {
   width: 120px;
-  background: var(--bg-soft);
+  background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 8px 12px;

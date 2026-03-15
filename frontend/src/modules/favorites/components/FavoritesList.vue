@@ -9,6 +9,11 @@ import FavoritesListSkeleton from './FavoritesListSkeleton.vue';
 const favorites = useFavoritesStore();
 
 const sentinel = ref<HTMLElement | null>(null);
+const expanded = ref(false);
+
+function toggle() {
+  expanded.value = !expanded.value;
+}
 
 useIntersectionObserver(
   sentinel,
@@ -33,14 +38,18 @@ onMounted(() => {
   <FavoritesListSkeleton v-if="favorites.showSkeleton" :count="5" />
 
   <div v-else class="content" :class="{ disabled: favorites.contentDisabled }">
+    <p class="results" :class="{ expanded }" @click="toggle">
+      {{ favorites.resultsMessage }}
+    </p>
+
     <FavoriteListItem v-for="job in favorites.items" :key="job.jobId" :job="job" />
 
     <FavoritesListSkeleton v-if="favorites.loadingMore" :count="3" />
 
     <div ref="sentinel" class="sentinel" />
 
-    <div v-if="!favorites.loading && favorites.items.length === 0" class="empty">
-      Избранного нет
+    <div v-if="favorites.isEmpty && !favorites.loading" class="empty">
+      {{ favorites.emptyMessage }}
     </div>
   </div>
 </template>
@@ -55,6 +64,23 @@ onMounted(() => {
   overflow-y: auto;
 
   padding-bottom: 20px;
+}
+
+.results {
+  font-size: 13px;
+  color: var(--text-muted);
+
+  cursor: pointer;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.results.expanded {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
 }
 
 .content.disabled {

@@ -1,14 +1,27 @@
-import type { FavoritesSort } from '@/common/api/generated';
+import type { Component } from 'vue';
+
+import { DollarSign, Euro, RussianRuble } from 'lucide-vue-next';
+
+import type { Currency, FavoritesSort } from '@/common/api/generated';
 
 interface Option<T extends number | string> {
+  icon?: Component;
   label: string;
   value: T;
 }
 
 export const sortOptions: Option<FavoritesSort>[] = [
-  { label: 'По дате добавления', value: 'created_desc' },
-  { label: 'По дате публикации', value: 'published_desc' },
-  { label: 'Зарплата ↑', value: 'salary_asc' },
-  { label: 'Зарплата ↓', value: 'salary_desc' },
+  { label: 'Добавлены недавно', value: 'created_desc' },
+  { label: 'Добавлены давно', value: 'created_asc' },
+  { label: 'Опубликованы недавно', value: 'published_desc' },
+  { label: 'Опубликованы давно', value: 'published_asc' },
+  { label: 'Высокая зарплата', value: 'salary_desc' },
+  { label: 'Низкая зарплата', value: 'salary_asc' },
   { label: 'По статусу', value: 'status' }
+];
+
+export const currencyOptions: Option<Currency>[] = [
+  { label: '', value: 'RUR', icon: RussianRuble },
+  { label: '', value: 'USD', icon: DollarSign },
+  { label: '', value: 'EUR', icon: Euro }
 ];

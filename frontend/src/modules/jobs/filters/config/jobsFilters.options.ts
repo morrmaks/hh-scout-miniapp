@@ -26,8 +26,8 @@ export const perPageOptions: Option<number>[] = [
 export const orderByOptions: Option<JobsOrderBy>[] = [
   { label: 'По соответствию', value: 'relevance' },
   { label: 'По дате', value: 'publication_time' },
-  { label: 'Зарплата ↑', value: 'salary_asc' },
-  { label: 'Зарплата ↓', value: 'salary_desc' }
+  { label: 'Низкая зарплата', value: 'salary_asc' },
+  { label: 'Высокая зарплата', value: 'salary_desc' }
 ];
 
 export const periodOptions: Option<JobPeriod>[] = [

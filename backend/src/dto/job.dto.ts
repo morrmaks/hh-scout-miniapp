@@ -1,4 +1,4 @@
-import type { HHVacancyFull } from '../integrations/hh';
+import type { HHCurrency, HHVacancyFull } from '../integrations/hh';
 
 import { formatDescription } from '../utils/format';
 import { mapNames } from '../utils/mapNames';
@@ -6,7 +6,7 @@ import { mapNames } from '../utils/mapNames';
 export interface JobDTO {
   city?: string;
   company: string;
-  currency?: string;
+  currency?: HHCurrency;
   description: string;
   employmentForm?: string;
   experience?: string;

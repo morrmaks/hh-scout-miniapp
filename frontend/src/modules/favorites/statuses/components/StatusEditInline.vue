@@ -104,4 +104,10 @@ onMounted(async () => {
   transform: translateY(0);
   max-height: 200px;
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .input {
+    font-size: 16px;
+  }
+}
 </style>

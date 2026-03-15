@@ -4,7 +4,19 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+enum Currency {
+  UZS 
+  USD 
+  UAH 
+  RUR 
+  KZT 
+  KGS 
+  GEL 
+  EUR 
+  BYR 
+  AZN
 }
 
 model Company {
@@ -29,27 +41,28 @@ model Status {
 }
 
 model Favorite {
-  id Int @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  jobId      String
 
-  userId Int
-  jobId  String
-
-  title   String
-  company String
-  url     String
+  title      String
+  company    String
+  url        String
 
   salaryFrom Int?
   salaryTo   Int?
-  currency   String?
+  currency   Currency?
+
+  salaryBase Int?
 
   experience String?
-
   publishedAt DateTime?
-  createdAt DateTime @default(now())
 
-  statusId Int?
-  status   Status? @relation(fields: [statusId], references: [id])
+  statusId   Int?
+  status     Status? @relation(fields: [statusId], references: [id])
+
+  createdAt  DateTime @default(now())
 
   @@unique([userId, jobId])
-  @@index([userId])
+  @@index([salaryBase])
 }

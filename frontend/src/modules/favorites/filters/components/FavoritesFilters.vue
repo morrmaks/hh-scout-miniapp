@@ -1,42 +1,68 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue';
+import { X } from 'lucide-vue-next';
+import { computed, reactive, watch } from 'vue';
 
 import Button from '@/common/ui/Button.vue';
+import Checkbox from '@/common/ui/Checkbox.vue';
 import FilterGroup from '@/common/ui/FilterGroup.vue';
 import InputNumber from '@/common/ui/InputNumber.vue';
 import Select from '@/common/ui/Select.vue';
 import Separator from '@/common/ui/Separator.vue';
 import { ToggleGroup, ToggleGroupCollapse, ToggleGroupItem } from '@/common/ui/ToggleGroup';
+import { equalObjects } from '@/common/utils/object';
 
-import type { FavoritesFilters } from '../../types/favorites.types';
+import type { FavoritesFiltersType } from '../../types/favorites.types';
 
 import { StatusBadge, useStatusesStore } from '../../statuses';
 import { useFavoritesStore } from '../../store/favorites.store';
-import { sortOptions } from '../config/favoritesFilters.options';
-
-interface Props {
-  modelValue: FavoritesFilters;
-}
-
-const props = defineProps<Props>();
+import { DEFAULT_FILTERS } from '../config/favoritesFilters.default';
+import { currencyOptions } from '../config/favoritesFilters.options';
 
 const emit = defineEmits<{
-  apply: [FavoritesFilters];
+  apply: [FavoritesFiltersType];
+  reset: [];
 }>();
 
 const store = useFavoritesStore();
 const statuses = useStatusesStore();
 
-const local = reactive<FavoritesFilters>({
-  ...props.modelValue
+const local = reactive<FavoritesFiltersType>({
+  ...store.filters,
+  company: store.filters.company ?? [],
+  status: store.filters.status ?? [],
+  label: store.filters.label ?? []
 });
 
+const hasLocalFilters = computed(() => !equalObjects(local, DEFAULT_FILTERS));
+
 watch(
-  () => props.modelValue,
-  (v) => {
-    Object.assign(local, v);
-  }
+  () => store.filters,
+  (v) => Object.assign(local, v)
 );
+
+function toggleSalaryLabel(enabled: boolean) {
+  const labels = new Set(local.label ?? []);
+
+  if (enabled) labels.add('with_salary');
+  else labels.delete('with_salary');
+
+  local.label = Array.from(labels);
+}
+
+function toggleCurrencyLabel(enabled: boolean) {
+  const labels = new Set(local.label ?? []);
+
+  if (enabled) labels.add('same_currency');
+  else labels.delete('same_currency');
+
+  local.label = Array.from(labels);
+}
+
+function reset() {
+  Object.assign(local, DEFAULT_FILTERS);
+  store.resetFilters();
+  emit('reset');
+}
 
 function apply() {
   emit('apply', { ...local });
@@ -45,14 +71,25 @@ function apply() {
 
 <template>
   <div class="filters">
-    <FilterGroup label="Сортировка">
-      <Select v-model="local.sort" :options="sortOptions" />
-    </FilterGroup>
-
-    <Separator />
-
     <FilterGroup label="Зарплата от">
-      <InputNumber v-model="local.salary_from" placeholder="100000" />
+      <div class="salary">
+        <div class="salaryRow">
+          <InputNumber v-model="local.salary_from" placeholder="100000" />
+
+          <Select v-model="local.currency" :options="currencyOptions" />
+        </div>
+
+        <Checkbox
+          :model-value="local.label?.includes('with_salary')"
+          label="Только с зарплатой"
+          @update:model-value="toggleSalaryLabel"
+        />
+        <Checkbox
+          :model-value="local.label?.includes('same_currency')"
+          label="Только с выбранной валютой"
+          @update:model-value="toggleCurrencyLabel"
+        />
+      </div>
     </FilterGroup>
 
     <Separator />
@@ -90,6 +127,10 @@ function apply() {
   </div>
 
   <div class="footer">
+    <Button v-if="hasLocalFilters" variant="destructive" @click="reset">
+      <X :size="14" />
+      Сбросить
+    </Button>
     <Button class="applyButton" @click="apply"> Применить фильтры </Button>
   </div>
 </template>
@@ -100,10 +141,24 @@ function apply() {
   gap: 18px;
 }
 
+.salary {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: start;
+}
+
+.salaryRow {
+  display: grid;
+  grid-template-columns: 1fr 70px;
+  gap: 10px;
+}
+
 .footer {
   margin-top: 20px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  gap: 8px;
 }
 
 @media (max-width: 640px) {

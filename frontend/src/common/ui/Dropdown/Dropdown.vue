@@ -32,6 +32,8 @@ watch(open, (v) => {
 });
 
 function toggle() {
+  console.log('dsfsdf');
+
   open.value = !open.value;
 }
 

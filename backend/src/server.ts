@@ -7,6 +7,9 @@ import { searchSessions, vacancyCache } from './cache/jobs.cache';
 import { errorMiddleware } from './middleware/error.middleware';
 import { router } from './router/index';
 
+import 'dotenv/config';
+import './jobs/scheduler';
+
 const app = express();
 
 app.use(cors());
@@ -21,22 +24,26 @@ app.listen(3000, () => {
 
 setInterval(
   () => {
-    vacancyCache.cleanup();
-    searchSessions.cleanup();
-    areasCache.cleanup();
-    currencyRatesCache.cleanup();
+    try {
+      vacancyCache.cleanup();
+      searchSessions.cleanup();
+      areasCache.cleanup();
+      currencyRatesCache.cleanup();
 
-    console.log(
-      'Cache cleanup',
-      'search:',
-      searchSessions.size(),
-      'vacancies:',
-      vacancyCache.size(),
-      'areas:',
-      areasCache.size(),
-      'currency:',
-      currencyRatesCache.size()
-    );
+      console.log(
+        'Cache cleanup',
+        'search:',
+        searchSessions.size(),
+        'vacancies:',
+        vacancyCache.size(),
+        'areas:',
+        areasCache.size(),
+        'currency:',
+        currencyRatesCache.size()
+      );
+    } catch (e) {
+      console.error('Cache cleanup error', e);
+    }
   },
   24 * 60 * 60 * 1000
 );

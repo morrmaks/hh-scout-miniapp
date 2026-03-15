@@ -58,7 +58,7 @@ const onEnter = () => {
 <style scoped>
 .input {
   flex: 1;
-  background: var(--bg-soft);
+  background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 14px;

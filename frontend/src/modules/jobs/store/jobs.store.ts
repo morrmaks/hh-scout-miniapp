@@ -2,30 +2,20 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import type { Job } from '@/common/api/generated';
+import type { Job, JobsOrderBy } from '@/common/api/generated';
 
 import { getJobs, getJobsPrefetch } from '@/common/api/generated';
 import { equalObjects } from '@/common/utils/object';
 
-import type { JobsQueryParams } from '../types/jobs.types';
+import type { JobsFiltersType, JobsQueryParams } from '../types/jobs.types';
 
 import { useJobsPosition } from '../composables/useJobsPosition';
 import { useViewedJobs } from '../composables/useViewedJobs';
+import { DEFAULT_FILTERS } from '../filters';
 import { buildApiQuery, buildUrlQuery, resolveSearchState } from '../lib/search';
 
 const STEP = 10;
 const PREFETCH_TRIGGER = 7;
-
-const DEFAULT_FILTERS: JobsQueryParams = {
-  per_page: 100,
-  order_by: 'relevance',
-  currency: 'RUR',
-  area: [],
-  employment_form: [],
-  work_format: [],
-  experience: [],
-  label: []
-};
 
 export const useJobsStore = defineStore('jobs', () => {
   const router = useRouter();
@@ -37,7 +27,11 @@ export const useJobsStore = defineStore('jobs', () => {
 
   const query = ref('');
   const lastSearchQuery = ref('');
-  const filters = ref<JobsQueryParams>({ ...DEFAULT_FILTERS });
+
+  const filters = ref<JobsFiltersType>({ ...DEFAULT_FILTERS });
+
+  const orderBy = ref<JobsOrderBy>('relevance');
+  const perPage = ref(100);
 
   const page = ref(1);
   const index = ref(0);
@@ -45,7 +39,6 @@ export const useJobsStore = defineStore('jobs', () => {
   const items = ref<Job[]>([]);
   const found = ref(0);
   const pages = ref(0);
-  const perPage = ref(0);
   const pageItems = ref(0);
 
   const loading = ref(false);
@@ -56,12 +49,19 @@ export const useJobsStore = defineStore('jobs', () => {
   const hasData = computed(() => items.value.length > 0);
   const currentJob = computed(() => items.value[index.value] ?? null);
 
-  const hasFilters = computed(() => !equalObjects(filters.value, DEFAULT_FILTERS));
-
   const pagePosition = computed(() => {
     if (!pageItems.value) return '0 / 0';
     return `${index.value + 1} / ${pageItems.value}`;
   });
+
+  const apiQuery = computed<JobsQueryParams>(() => ({
+    text: query.value,
+    page: page.value,
+    ...(restoreMode.value && index.value > 0 ? { index: index.value } : {}),
+    order_by: orderBy.value,
+    per_page: perPage.value,
+    ...filters.value
+  }));
 
   let requestId = 0;
 
@@ -69,7 +69,6 @@ export const useJobsStore = defineStore('jobs', () => {
     items.value = [];
     found.value = 0;
     pages.value = 0;
-    perPage.value = 0;
     pageItems.value = 0;
   }
 
@@ -84,7 +83,7 @@ export const useJobsStore = defineStore('jobs', () => {
 
     try {
       const { data } = await getJobs({
-        query: buildApiQuery(query.value, page.value, index.value, filters.value, restoreMode.value)
+        query: buildApiQuery(apiQuery.value)
       });
 
       if (id !== requestId) return;
@@ -94,7 +93,7 @@ export const useJobsStore = defineStore('jobs', () => {
       items.value = data.items ?? [];
       found.value = data.found ?? 0;
       pages.value = data.pages ?? 0;
-      perPage.value = data.perPage ?? 0;
+      perPage.value = data.perPage ?? perPage.value;
       pageItems.value = data.pageItems ?? 0;
 
       if (index.value >= items.value.length) index.value = 0;
@@ -114,10 +113,10 @@ export const useJobsStore = defineStore('jobs', () => {
 
     try {
       const { data } = await getJobsPrefetch({
-        query: {
-          ...buildApiQuery(query.value, page.value, index.value, filters.value, restoreMode.value),
+        query: buildApiQuery({
+          ...apiQuery.value,
           index: indexValue
-        }
+        })
       });
 
       if (!data?.items?.length) return;
@@ -180,7 +179,19 @@ export const useJobsStore = defineStore('jobs', () => {
     commitNavigation();
   }
 
-  function setFilters(next: JobsQueryParams) {
+  function setSort(value: JobsOrderBy) {
+    orderBy.value = value;
+    fetchJobs();
+    commitNavigation();
+  }
+
+  function setPerPage(value: number) {
+    perPage.value = value;
+    fetchJobs();
+    commitNavigation();
+  }
+
+  function setFilters(next: JobsFiltersType) {
     if (equalObjects(filters.value, next)) return;
 
     filters.value = { ...DEFAULT_FILTERS, ...next };
@@ -214,10 +225,10 @@ export const useJobsStore = defineStore('jobs', () => {
   }
 
   function commitNavigation() {
-    save(query.value, page.value, index.value, filters.value);
+    save(query.value, page.value, index.value, orderBy.value, perPage.value, filters.value);
 
     router.replace({
-      query: buildUrlQuery(query.value, page.value, index.value, filters.value)
+      query: buildUrlQuery(apiQuery.value)
     });
   }
 
@@ -233,6 +244,8 @@ export const useJobsStore = defineStore('jobs', () => {
     page.value = state.page;
     index.value = state.index;
     filters.value = state.filters;
+    orderBy.value = state.orderBy;
+    perPage.value = state.perPage;
 
     restoreMode.value = true;
 
@@ -243,6 +256,8 @@ export const useJobsStore = defineStore('jobs', () => {
     query,
     lastSearchQuery,
     filters,
+    orderBy,
+    perPage,
 
     found,
     page,
@@ -250,11 +265,9 @@ export const useJobsStore = defineStore('jobs', () => {
     index,
 
     items,
-    perPage,
     pageItems,
 
     currentJob,
-    hasFilters,
     pagePosition,
 
     loading,
@@ -263,6 +276,8 @@ export const useJobsStore = defineStore('jobs', () => {
 
     fetchJobs,
     setQuery,
+    setSort,
+    setPerPage,
     setFilters,
     resetFilters,
     setPage,

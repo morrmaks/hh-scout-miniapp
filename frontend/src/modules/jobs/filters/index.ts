@@ -1,3 +1,4 @@
 export { default as JobsFiltersDrawer } from './components/JobsFiltersDrawer.vue';
-export { default as JobsFiltersToggle } from './components/JobsFiltersToggle.vue';
+export { default as JobsFiltersRow } from './components/JobsFiltersRow.vue';
+export { DEFAULT_FILTERS } from './config/jobsFilters.default';
 export * from './lib/filters';

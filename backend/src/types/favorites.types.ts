@@ -10,13 +10,13 @@ export type FavoriteSort =
   | 'status';
 
 export type FavoritesLabel = 'same_currency' | 'with_salary';
-export type Currency = 'EUR' | 'RUR' | 'USD';
+export type FavoriteCurrency = 'EUR' | 'RUR' | 'USD';
 
 export interface LoadFavoritesQuery {
   company?: string | string[];
-  currency?: Currency;
+  currency?: FavoriteCurrency;
   experience?: string[];
-  label?: FavoritesLabel | FavoritesLabel[];
+  label?: FavoritesLabel[];
   page?: string;
   per_page?: string;
   salary_from?: string;
@@ -34,7 +34,8 @@ export interface FavoritesResponse {
   items: (Favorite & { status: Status | null })[];
 
   meta: {
-    total: number;
+    totalAll: number;
+    totalFound: number;
     page: number;
     pages: number;
   };

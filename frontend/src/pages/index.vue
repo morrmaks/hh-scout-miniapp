@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 
 import { useAreasStore } from '@/modules/areas';
 import {
-  JobsFiltersDrawer,
-  JobsFiltersToggle,
+  JobsFiltersRow,
   JobsPagination,
   JobsPaginationSkeleton,
   JobsSearch,
@@ -16,8 +15,6 @@ import {
 
 const store = useJobsStore();
 const areasStore = useAreasStore();
-
-const filtersOpen = ref(false);
 
 const searchState = computed(() => {
   if (!store.lastSearchQuery) return store.initialized ? 'idle' : 'initial';
@@ -46,9 +43,7 @@ onMounted(() => {
 
     <JobsSearchHistory @select="store.setQuery" />
 
-    <JobsFiltersToggle :open="filtersOpen" @toggle="filtersOpen = !filtersOpen" />
-
-    <JobsFiltersDrawer v-model:open="filtersOpen" />
+    <JobsFiltersRow />
 
     <div v-if="searchState === 'initial'" class="search-idle">Начните искать вакансии</div>
 

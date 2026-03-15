@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
 
-import type { Favorite, Status } from '@/common/api/generated';
+import type { Favorite, FavoritesSort, Status } from '@/common/api/generated';
 
 import { useTelegramStore } from '@/app/integrations/telegram';
 import {
   deleteFavoriteByJobId,
   getFavorites,
+  getFavoritesExport,
   getFavoritesIds,
   patchFavoriteByJobIdStatus,
   postFavorites
@@ -14,14 +15,9 @@ import {
 import { optimistic } from '@/common/lib/optimistic';
 import { equalObjects } from '@/common/utils/object';
 
-import type { FavoritesFilters } from '../types/favorites.types';
+import type { FavoritesFiltersType } from '../types/favorites.types';
 
-const DEFAULT_FILTERS: FavoritesFilters = {
-  experience: [],
-  company: [],
-  status: [],
-  sort: 'created_desc'
-};
+import { DEFAULT_FILTERS } from '../filters';
 
 export const useFavoritesStore = defineStore('favorites', () => {
   const telegram = useTelegramStore();
@@ -31,14 +27,18 @@ export const useFavoritesStore = defineStore('favorites', () => {
   const items = ref<Favorite[]>([]);
   const ids = ref<Set<string>>(new Set());
 
-  const filters = ref<FavoritesFilters>({ ...DEFAULT_FILTERS });
+  const filters = ref<FavoritesFiltersType>({ ...DEFAULT_FILTERS });
+  const sort = ref<FavoritesSort>('created_desc');
 
   const companies = ref<string[]>([]);
   const statuses = ref<Status[]>([]);
 
+  const query = ref('');
+  const lastSearchQuery = ref('');
   const page = ref(1);
   const pages = ref(0);
-  const total = ref(0);
+  const totalFound = ref(0);
+  const totalAll = ref(0);
 
   const loading = ref(false);
   const loadingMore = ref(false);
@@ -48,13 +48,29 @@ export const useFavoritesStore = defineStore('favorites', () => {
   const showSkeleton = computed(() => loading.value && !initialized.value);
   const contentDisabled = computed(() => loading.value && initialized.value);
   const hasMore = computed(() => page.value < pages.value);
+  const isEmpty = computed(() => initialized.value && totalFound.value === 0);
   const hasFilters = computed(() => !equalObjects(filters.value, DEFAULT_FILTERS));
+
+  const emptyMessage = computed(() => {
+    if (!isEmpty.value) return null;
+
+    return hasFilters.value ? 'По выбранным фильтрам ничего не найдено' : 'Избранного пока нет';
+  });
+
+  const resultsMessage = computed(() => {
+    if (!initialized.value) return '';
+
+    if (!hasFilters.value && !query.value) return `Всего ${totalAll.value} вакансий`;
+
+    if (query.value)
+      return `Найдено ${totalFound.value} из ${totalAll.value} вакансий по запросу "${query.value}"`;
+
+    return `Найдено ${totalFound.value} из ${totalAll.value} вакансий`;
+  });
 
   function resetState() {
     page.value = 1;
     pages.value = 0;
-    total.value = 0;
-    // items.value = [];
   }
 
   async function fetchIds() {
@@ -82,6 +98,8 @@ export const useFavoritesStore = defineStore('favorites', () => {
         query: {
           userId: userId.value,
           page: page.value,
+          text: query.value || undefined,
+          sort: sort.value,
           ...filters.value
         }
       });
@@ -89,7 +107,8 @@ export const useFavoritesStore = defineStore('favorites', () => {
       items.value = data.items ?? [];
 
       pages.value = data.meta?.pages ?? 0;
-      total.value = data.meta?.total ?? 0;
+      totalFound.value = data.meta?.totalFound ?? 0;
+      totalAll.value = data.meta?.totalAll ?? 0;
 
       if (data.filters) {
         companies.value = data.filters.companies ?? [];
@@ -114,6 +133,8 @@ export const useFavoritesStore = defineStore('favorites', () => {
         query: {
           userId: userId.value,
           page: page.value,
+          text: query.value || undefined,
+          sort: sort.value,
           ...filters.value
         }
       });
@@ -169,6 +190,26 @@ export const useFavoritesStore = defineStore('favorites', () => {
     });
   }
 
+  async function exportExcel() {
+    if (!userId.value) return;
+
+    const { data } = await getFavoritesExport({
+      query: { userId: userId.value },
+      config: {
+        parse: 'blob'
+      }
+    });
+
+    const url = URL.createObjectURL(data);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `favorites_${userId.value}.xlsx`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+
   async function setStatus(jobId: string, statusId: number | null) {
     if (!userId.value) return;
 
@@ -185,7 +226,16 @@ export const useFavoritesStore = defineStore('favorites', () => {
     if (item) item.statusId = statusId;
   }
 
-  function setFilters(next: FavoritesFilters) {
+  function setSort(value: FavoritesSort) {
+    if (sort.value === value) return;
+
+    sort.value = value;
+    invalidated.value = true;
+
+    fetchFavorites();
+  }
+
+  function setFilters(next: FavoritesFiltersType) {
     const merged = { ...DEFAULT_FILTERS, ...next };
 
     if (equalObjects(filters.value, merged)) return;
@@ -200,6 +250,18 @@ export const useFavoritesStore = defineStore('favorites', () => {
     if (!hasFilters.value) return;
 
     filters.value = { ...DEFAULT_FILTERS };
+
+    invalidated.value = true;
+    fetchFavorites();
+  }
+
+  function setQuery(text: string) {
+    const value = text.trim();
+
+    if (value === lastSearchQuery.value) return;
+    lastSearchQuery.value = value;
+
+    query.value = value;
     invalidated.value = true;
 
     fetchFavorites();
@@ -225,9 +287,11 @@ export const useFavoritesStore = defineStore('favorites', () => {
     companies,
     statuses,
 
+    query,
+    lastSearchQuery,
     page,
     pages,
-    total,
+    sort,
 
     loading,
     loadingMore,
@@ -237,13 +301,19 @@ export const useFavoritesStore = defineStore('favorites', () => {
     contentDisabled,
     hasMore,
     hasFilters,
+    isEmpty,
+    emptyMessage,
+    resultsMessage,
 
     fetchFavorites,
     fetchIds,
     loadMore,
-
+    exportExcel,
     toggleFavorite,
+
     setStatus,
+    setQuery,
+    setSort,
 
     setFilters,
     resetFilters

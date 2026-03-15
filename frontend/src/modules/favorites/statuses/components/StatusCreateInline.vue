@@ -65,4 +65,10 @@ function create() {
 .save-button {
   font-size: 14px;
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .input {
+    font-size: 16px;
+  }
+}
 </style>

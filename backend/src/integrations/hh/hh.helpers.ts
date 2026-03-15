@@ -25,7 +25,9 @@ export function buildSearchParams(filters: JobFilters) {
   filters.employment_form?.forEach((v) => params.append('employment_form', v));
   filters.work_format?.forEach((v) => params.append('work_format', v));
   filters.area?.forEach((v) => params.append('area', v));
-  filters.label?.forEach((v) => params.append('label', v));
+  Array.isArray(filters.label)
+    ? filters.label.forEach((v) => params.append('label', v))
+    : filters.label && params.append('label', filters.label);
 
   return params;
 }

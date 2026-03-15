@@ -5,9 +5,7 @@ import { computed, ref, watch } from 'vue';
 import type { StatusColor } from '@/common/api/generated';
 
 import Button from '@/common/ui/Button.vue';
-import Dropdown from '@/common/ui/Dropdown/Dropdown.vue';
-import DropdownContent from '@/common/ui/Dropdown/DropdownContent.vue';
-import DropdownTrigger from '@/common/ui/Dropdown/DropdownTrigger.vue';
+import { Drawer, DrawerContent, DrawerTrigger } from '@/common/ui/Drawer';
 import Separator from '@/common/ui/Separator.vue';
 
 import StatusBadge from './StatusBadge.vue';
@@ -89,18 +87,18 @@ function updateStatus(id: number, name: string, color: StatusColor) {
 </script>
 
 <template>
-  <Dropdown v-model:open="open">
-    <DropdownTrigger v-slot="{ toggle }" as-child>
-      <button class="trigger" @click="toggle">
+  <Drawer v-model:open="open">
+    <DrawerTrigger>
+      <button class="trigger">
         <StatusBadge v-if="current" :name="current.name" :color="current.color" variant="filled" />
 
         <span v-else class="placeholder">
           <PlusIcon :size="14" />
         </span>
       </button>
-    </DropdownTrigger>
+    </DrawerTrigger>
 
-    <DropdownContent>
+    <DrawerContent>
       <div class="list">
         <div v-if="modelValue !== null" class="reset-badge" @click="select(null)">Без статуса</div>
 
@@ -139,14 +137,14 @@ function updateStatus(id: number, name: string, color: StatusColor) {
       <Separator class="separator" />
 
       <div class="footer">
-        <Button size="sm" variant="ghost" @click="startCreate"> Создать </Button>
+        <Button size="lg" variant="ghost" @click="startCreate"> Создать </Button>
 
-        <Button size="sm" variant="ghost" @click="toggleManage">
+        <Button size="lg" variant="ghost" @click="toggleManage">
           {{ manage ? 'Готово' : 'Редактировать' }}
         </Button>
       </div>
-    </DropdownContent>
-  </Dropdown>
+    </DrawerContent>
+  </Drawer>
 </template>
 
 <style scoped>
@@ -157,7 +155,7 @@ function updateStatus(id: number, name: string, color: StatusColor) {
 }
 
 .list {
-  width: 240px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -169,6 +167,7 @@ function updateStatus(id: number, name: string, color: StatusColor) {
   border-radius: 999px;
   font-size: 12px;
   font-weight: 500;
+  text-align: center;
   border: 2px solid var(--border);
 }
 
@@ -181,11 +180,6 @@ function updateStatus(id: number, name: string, color: StatusColor) {
 .row.pending {
   opacity: 0.5;
   pointer-events: none;
-}
-
-.status {
-  flex: 1;
-  min-width: 0;
 }
 
 .row.manage .status {
@@ -210,7 +204,7 @@ function updateStatus(id: number, name: string, color: StatusColor) {
 }
 
 .separator {
-  margin: 4px 0;
+  margin: 16px 0;
 }
 
 .footer {

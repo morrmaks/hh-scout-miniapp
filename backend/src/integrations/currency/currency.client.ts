@@ -10,9 +10,7 @@ export async function fetchCurrencyRates<T>(
 ): Promise<T> {
   const url = new URL(BASE + path);
 
-  if (ACCESS_KEY) {
-    url.searchParams.set('access_key', ACCESS_KEY);
-  }
+  if (ACCESS_KEY) url.searchParams.set('access_key', ACCESS_KEY);
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {

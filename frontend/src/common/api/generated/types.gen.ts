@@ -49,8 +49,12 @@ export interface Favorite {
   userId?: number;
 }
 
+export type FavoritesLabel = 'same_currency' | 'with_salary';
+
 export type FavoritesSort =
+  | 'created_asc'
   | 'created_desc'
+  | 'published_asc'
   | 'published_desc'
   | 'salary_asc'
   | 'salary_desc'
@@ -219,11 +223,14 @@ export interface GetFavoritesData {
   path?: never;
   query: {
     userId: number;
+    text?: string;
     page?: number;
     per_page?: number;
     salary_from?: number;
+    currency?: Currency;
     company?: Array<string>;
     status?: Array<number>;
+    label?: Array<FavoritesLabel>;
     experience?: Array<JobsExperience>;
     sort?: FavoritesSort;
   };

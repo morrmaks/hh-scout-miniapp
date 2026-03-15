@@ -1,20 +1,27 @@
-import type { SearchJobsData } from '@/common/api/generated';
+import type { JobsOrderBy, SearchJobsData } from '@/common/api/generated';
 
 export type JobsQueryParams = NonNullable<SearchJobsData['query']>;
 export type JobsQueryParamsKeys = keyof JobsQueryParams;
 
-export type JobsFilters = Omit<JobsQueryParams, 'index' | 'page' | 'text'>;
+export type JobsFiltersType = Omit<
+  JobsQueryParams,
+  'index' | 'order_by' | 'page' | 'per_page' | 'text'
+>;
 
 export interface JobsPosition {
-  filters: JobsFilters;
+  filters: JobsFiltersType;
   index: number;
+  orderBy: JobsOrderBy;
   page: number;
+  perPage: number;
   query: string;
 }
 
 export interface JobsSearchState {
-  filters: JobsFilters;
+  filters: JobsFiltersType;
   index: number;
+  orderBy: JobsOrderBy;
   page: number;
+  perPage: number;
   query: string;
 }

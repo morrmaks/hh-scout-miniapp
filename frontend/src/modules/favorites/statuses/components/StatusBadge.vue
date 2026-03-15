@@ -57,6 +57,7 @@ const style = computed(() => {
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
+  text-align: center;
 }
 
 .badge.outline {

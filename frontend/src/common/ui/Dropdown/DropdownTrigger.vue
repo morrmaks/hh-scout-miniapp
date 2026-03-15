@@ -10,25 +10,30 @@ interface Props {
 }
 
 defineProps<Props>();
-defineSlots<{
-  default: (props: { toggle: () => void; open: boolean }) => any;
-}>();
 
 const dropdown = inject(dropdownKey)!;
 
-const el = ref<HTMLElement>();
+const el = ref<HTMLElement | null>(null);
+
+function getElement(el: any): HTMLElement | null {
+  return el?.$el ?? el;
+}
 
 onMounted(() => {
-  if (!el.value) return;
-  dropdown.triggerRef.value = el.value instanceof HTMLElement ? el.value : (el.value as any).$el;
+  const element = getElement(el.value);
+  if (!element) return;
+
+  dropdown.triggerRef.value = element;
 });
 </script>
 
 <template>
-  <span v-if="asChild" ref="el" class="anchor">
-    <slot :toggle="dropdown.toggle" :open="dropdown.open.value" />
+  <!-- custom trigger -->
+  <span v-if="asChild" ref="el" class="anchor" @click="dropdown.toggle">
+    <slot />
   </span>
 
+  <!-- default trigger -->
   <Button
     v-else
     ref="el"
@@ -39,7 +44,7 @@ onMounted(() => {
     @click="dropdown.toggle"
   >
     <span class="content">
-      <slot :toggle="dropdown.toggle" :open="dropdown.open.value" />
+      <slot />
     </span>
 
     <ChevronDown class="chevron" :size="14" />

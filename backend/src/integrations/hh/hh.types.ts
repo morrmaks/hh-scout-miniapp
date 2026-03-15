@@ -1,3 +1,15 @@
+export type HHCurrency =
+  | 'AZN'
+  | 'BYR'
+  | 'EUR'
+  | 'GEL'
+  | 'KGS'
+  | 'KZT'
+  | 'RUR'
+  | 'UAH'
+  | 'USD'
+  | 'UZS';
+
 export interface HHVacancyShort {
   alternate_url: string;
   employer?: {
@@ -42,7 +54,7 @@ export interface HHVacancyFull {
   salary?: {
     from?: number;
     to?: number;
-    currency?: string;
+    currency?: HHCurrency;
   };
 
   work_format?: {

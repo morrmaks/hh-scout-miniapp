@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { useEventListener, useScrollLock } from '@vueuse/core';
-import { ref, watch } from 'vue';
+import { inject, ref, watch } from 'vue';
 
-interface Props {
-  open: boolean;
+import { DrawerContextKey } from './drawer.context';
+
+const ctx = inject(DrawerContextKey);
+
+if (!ctx) {
+  throw new Error('DrawerContent must be used inside Drawer');
 }
-
-const props = defineProps<Props>();
-
-const emit = defineEmits<{
-  'update:open': [boolean];
-}>();
 
 const bodyScrollLock = useScrollLock(document.body);
 
@@ -27,12 +25,13 @@ const CLOSE_THRESHOLD = 120;
 const DRAG_DAMPING = 0.6;
 
 watch(
-  () => props.open,
+  () => ctx.open.value,
   (open) => {
     bodyScrollLock.value = open;
 
     if (open) {
       visible.value = true;
+
       requestAnimationFrame(() => {
         state.value = 'open';
       });
@@ -44,7 +43,7 @@ watch(
 );
 
 function close() {
-  emit('update:open', false);
+  ctx?.setOpen(false);
 }
 
 function setTransform(y: number) {
@@ -71,9 +70,11 @@ function onPointerDown(e: PointerEvent) {
 
 function onPointerMove(e: PointerEvent) {
   if (!dragging.value) return;
+
   const diff = e.clientY - startY.value;
 
   if (diff <= 0) return;
+
   offset = diff * DRAG_DAMPING;
   setTransform(offset);
 }

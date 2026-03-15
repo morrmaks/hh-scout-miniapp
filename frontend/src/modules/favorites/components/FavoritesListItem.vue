@@ -8,7 +8,7 @@ import Badge from '@/common/ui/Badge.vue';
 import Button from '@/common/ui/Button.vue';
 import Card from '@/common/ui/Card.vue';
 
-import { StatusSelector, useStatusesStore } from '../statuses';
+import { StatusDrawer, useStatusesStore } from '../statuses';
 import { useFavoritesStore } from '../store/favorites.store';
 
 const props = defineProps<{
@@ -77,7 +77,7 @@ function remove() {
         <Trash2Icon :size="12" />
       </Button>
 
-      <StatusSelector
+      <StatusDrawer
         :statuses="statuses.statuses"
         :model-value="job.statusId"
         @update:model-value="favorites.setStatus(job.jobId!, $event)"
@@ -155,6 +155,7 @@ function remove() {
 .company {
   font-size: 14px;
   color: var(--text-muted);
+  cursor: pointer;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;

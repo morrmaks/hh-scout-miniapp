@@ -194,7 +194,7 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
   transform: translateX(-50%);
 
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-muted);
 }
 
@@ -203,7 +203,7 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
   top: 0;
   right: 0;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   padding: 2px 8px;
   border-radius: 0 18px 0 6px;
   background: var(--bg-soft);
