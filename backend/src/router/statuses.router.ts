@@ -12,7 +12,7 @@ const router = Router();
 // список статусов пользователя
 router.get('/', async (req, res, next) => {
   try {
-    const userId = Number(req.query.userId);
+    const userId = req.telegramUser!.id;
 
     const statuses = await getStatuses(userId);
 
@@ -25,7 +25,8 @@ router.get('/', async (req, res, next) => {
 // создать статус
 router.post('/', async (req, res, next) => {
   try {
-    const { userId, name, color } = req.body;
+    const userId = req.telegramUser!.id;
+    const { name, color } = req.body;
 
     const status = await createStatus(userId, name, color);
 
@@ -56,7 +57,7 @@ router.delete('/:id', async (req, res, next) => {
 
     await deleteStatus(id);
 
-    res.json({ ok: true });
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

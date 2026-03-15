@@ -8,7 +8,19 @@ export type EmploymentForm = 'FLY_IN_FLY_OUT' | 'FULL' | 'PART' | 'PROJECT' | 'S
 
 export type WorkFormat = 'FIELD_WORK' | 'HYBRID' | 'ON_SITE' | 'REMOTE';
 
-export type Currency = 'EUR' | 'RUR' | 'USD';
+export type CurrencyQuery = 'EUR' | 'RUR' | 'USD';
+
+export type JobCurrency =
+  | 'AZN'
+  | 'BYN'
+  | 'EUR'
+  | 'GEL'
+  | 'KGS'
+  | 'KZT'
+  | 'RUR'
+  | 'UAH'
+  | 'USD'
+  | 'UZS';
 
 export type JobLabel = 'with_salary';
 
@@ -17,7 +29,7 @@ export type JobPeriod = 0 | 1 | 3 | 30 | 7;
 export interface Job {
   city?: string | null;
   company: string;
-  currency?: string | null;
+  currency?: JobCurrency;
   description: string;
   employmentForm?: string | null;
   experience?: string | null;
@@ -36,7 +48,7 @@ export interface Job {
 export interface Favorite {
   company?: string;
   createdAt?: string;
-  currency?: string | null;
+  currency?: JobCurrency;
   experience?: string | null;
   id?: number;
   jobId?: string;
@@ -97,7 +109,8 @@ export interface FavoritesResponse {
   };
   items: Array<Favorite>;
   meta: {
-    total?: number;
+    totalAll?: number;
+    totalFound?: number;
     page?: number;
     pages?: number;
   };
@@ -132,7 +145,7 @@ export interface SearchJobsData {
     index?: number;
     order_by?: JobsOrderBy;
     salary?: number;
-    currency?: Currency;
+    currency?: CurrencyQuery;
     experience?: Array<JobsExperience>;
     employment_form?: Array<EmploymentForm>;
     work_format?: Array<WorkFormat>;
@@ -162,7 +175,7 @@ export interface PrefetchJobsData {
     index?: number;
     order_by?: JobsOrderBy;
     salary?: number;
-    currency?: Currency;
+    currency?: CurrencyQuery;
     experience?: Array<JobsExperience>;
     employment_form?: Array<EmploymentForm>;
     work_format?: Array<WorkFormat>;
@@ -227,7 +240,7 @@ export interface GetFavoritesData {
     page?: number;
     per_page?: number;
     salary_from?: number;
-    currency?: Currency;
+    currency?: CurrencyQuery;
     company?: Array<string>;
     status?: Array<number>;
     label?: Array<FavoritesLabel>;
@@ -293,8 +306,11 @@ export interface ExportFavoritesExcelResponses {
   /**
    * Excel file
    */
-  200: unknown;
+  200: Blob | File;
 }
+
+export type ExportFavoritesExcelResponse =
+  ExportFavoritesExcelResponses[keyof ExportFavoritesExcelResponses];
 
 export interface DeleteFavoriteData {
   body?: never;

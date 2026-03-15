@@ -5,6 +5,12 @@ export function getTelegram(): TelegramWebApp | null {
   return window?.Telegram?.WebApp ?? null;
 }
 
+export function getTelegramInitData(): string | null {
+  const tg = getTelegram();
+  if (!tg) return null;
+  return tg.initData ?? null;
+}
+
 export function getTelegramUser(): TelegramUser | null {
   const tg = getTelegram();
   if (!tg) return null;

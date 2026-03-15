@@ -2,14 +2,14 @@
 
 import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
-import type { ExportFavoritesExcelData } from '../../types.gen';
+import type { ExportFavoritesExcelData, ExportFavoritesExcelResponse } from '../../types.gen';
 
 import { instance } from '../../../client';
 
 export type GetFavoritesExportRequestParams = FetchesRequestParams<ExportFavoritesExcelData>;
 
 export const getFavoritesExport = ({ config, query }: GetFavoritesExportRequestParams) =>
-  instance.call('GET', '/favorites/export', {
+  instance.call<ExportFavoritesExcelResponse>('GET', '/favorites/export', {
     query,
     ...config
   });

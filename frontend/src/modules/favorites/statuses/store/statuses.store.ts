@@ -18,7 +18,6 @@ type StatusWithMeta = Status & {
 
 export const useStatusesStore = defineStore('statuses', () => {
   const telegram = useTelegramStore();
-
   const userId = computed(() => telegram.user?.id ?? null);
 
   const statuses = ref<StatusWithMeta[]>([]);
@@ -40,9 +39,7 @@ export const useStatusesStore = defineStore('statuses', () => {
     loading.value = true;
 
     try {
-      const { data } = await getStatuses({
-        query: { userId: userId.value }
-      });
+      const { data } = await getStatuses();
 
       statuses.value = data ?? [];
     } finally {
@@ -78,7 +75,6 @@ export const useStatusesStore = defineStore('statuses', () => {
       async run() {
         const { data } = await postStatuses({
           body: {
-            userId: userId.value!,
             name,
             color
           }
@@ -97,9 +93,6 @@ export const useStatusesStore = defineStore('statuses', () => {
   async function updateStatus(id: number, payload: { name?: string; color?: StatusColor }) {
     const status = statuses.value.find((s) => s.id === id);
     if (!status) return;
-    console.log(payload.name);
-    console.log(status.name);
-    console.log(payload.color === status.color);
 
     if (payload.name === status.name && payload.color === status.color) return;
 

@@ -1,11 +1,6 @@
-export interface TelegramUser {
-  first_name: string;
-  id: number;
-  language_code?: string;
-  last_name?: string;
-  photo_url?: string;
-  username?: string;
-}
+import type { User } from '@telegram-apps/init-data-node';
+
+export type TelegramUser = User;
 
 export interface TelegramThemeParams {
   bg_color?: string;
@@ -19,6 +14,8 @@ export interface TelegramThemeParams {
 export interface TelegramWebApp {
   colorScheme: 'dark' | 'light';
 
+  initData?: string;
+
   initDataUnsafe?: {
     user?: TelegramUser;
   };
@@ -27,6 +24,15 @@ export interface TelegramWebApp {
 
   expand: () => void;
   onEvent: (event: 'themeChanged', cb: () => void) => void;
-
   ready: () => void;
+}
+
+export {};
+
+declare global {
+  interface Window {
+    Telegram?: {
+      WebApp?: TelegramWebApp;
+    };
+  }
 }

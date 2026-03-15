@@ -74,11 +74,11 @@ export const useFavoritesStore = defineStore('favorites', () => {
   }
 
   async function fetchIds() {
-    if (!userId.value) return;
+    console.log('fetchIds');
 
-    const { data } = await getFavoritesIds({
-      query: { userId: userId.value }
-    });
+    if (!userId.value) return;
+    console.log('fetchIds with user id');
+    const { data } = await getFavoritesIds();
 
     ids.value = new Set(data.ids ?? []);
   }
@@ -96,7 +96,6 @@ export const useFavoritesStore = defineStore('favorites', () => {
     try {
       const { data } = await getFavorites({
         query: {
-          userId: userId.value,
           page: page.value,
           text: query.value || undefined,
           sort: sort.value,
@@ -131,7 +130,6 @@ export const useFavoritesStore = defineStore('favorites', () => {
 
       const { data } = await getFavorites({
         query: {
-          userId: userId.value,
           page: page.value,
           text: query.value || undefined,
           sort: sort.value,
@@ -175,14 +173,12 @@ export const useFavoritesStore = defineStore('favorites', () => {
       async run() {
         if (wasFavorite) {
           return deleteFavoriteByJobId({
-            path: { jobId },
-            query: { userId: userId.value! }
+            path: { jobId }
           });
         }
 
         return postFavorites({
           body: {
-            userId: userId.value!,
             jobId
           }
         });
@@ -193,21 +189,9 @@ export const useFavoritesStore = defineStore('favorites', () => {
   async function exportExcel() {
     if (!userId.value) return;
 
-    const { data } = await getFavoritesExport({
-      query: { userId: userId.value },
-      config: {
-        parse: 'blob'
-      }
-    });
+    await getFavoritesExport();
 
-    const url = URL.createObjectURL(data);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `favorites_${userId.value}.xlsx`;
-    a.click();
-
-    URL.revokeObjectURL(url);
+    // toast.success("Excel файл отправлен в чат");
   }
 
   async function setStatus(jobId: string, statusId: number | null) {
@@ -216,7 +200,6 @@ export const useFavoritesStore = defineStore('favorites', () => {
     await patchFavoriteByJobIdStatus({
       path: { jobId },
       body: {
-        userId: userId.value,
         statusId
       }
     });

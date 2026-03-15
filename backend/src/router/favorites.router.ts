@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import { bot } from '../integrations/telegram';
 import {
   deleteFavorite,
   exportExcel,
@@ -14,7 +15,8 @@ const router = Router();
 // добавить в избранное
 router.post('/', async (req, res, next) => {
   try {
-    const { userId, jobId } = req.body;
+    const userId = req.telegramUser!.id;
+    const { jobId } = req.body;
 
     await saveFavorite(Number(userId), String(jobId));
 
@@ -27,7 +29,7 @@ router.post('/', async (req, res, next) => {
 // получить список избранного (с фильтрами и пагинацией)
 router.get('/', async (req, res, next) => {
   try {
-    const userId = Number(req.query.userId);
+    const userId = req.telegramUser!.id;
 
     const result = await loadFavorites(userId, req.query);
 
@@ -39,7 +41,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/ids', async (req, res, next) => {
   try {
-    const userId = Number(req.query.userId);
+    const userId = req.telegramUser!.id;
 
     const ids = await loadFavoriteIds(userId);
 
@@ -50,20 +52,26 @@ router.get('/ids', async (req, res, next) => {
 });
 
 // экспорт excel
+
 router.get('/export', async (req, res, next) => {
   try {
-    const userId = Number(req.query.userId);
+    const userId = req.telegramUser!.id;
 
     const buffer = await exportExcel(userId);
 
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    await bot.sendDocument(
+      userId,
+      buffer,
+      {
+        caption: 'Ваши избранные вакансии'
+      },
+      {
+        filename: `favorites_${userId}.xlsx`,
+        contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      }
     );
 
-    res.setHeader('Content-Disposition', `attachment; filename=favorites_${userId}.xlsx`);
-
-    res.send(buffer);
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }
@@ -72,12 +80,12 @@ router.get('/export', async (req, res, next) => {
 // удалить из избранного
 router.delete('/:jobId', async (req, res, next) => {
   try {
-    const userId = Number(req.query.userId);
+    const userId = req.telegramUser!.id;
     const jobId = req.params.jobId;
 
     await deleteFavorite(userId, jobId);
 
-    res.json({ ok: true });
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }
@@ -86,11 +94,12 @@ router.delete('/:jobId', async (req, res, next) => {
 router.patch('/:jobId/status', async (req, res, next) => {
   try {
     const jobId = req.params.jobId;
-    const { userId, statusId } = req.body;
+    const userId = req.telegramUser!.id;
+    const { statusId } = req.body;
 
     await setFavoriteStatus(Number(userId), jobId, statusId !== null ? Number(statusId) : null);
 
-    res.json({ ok: true });
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

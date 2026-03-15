@@ -3,6 +3,10 @@ import { EllipsisVerticalIcon } from 'lucide-vue-next';
 
 import Button from '@/common/ui/Button.vue';
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from '@/common/ui/Dropdown';
+
+import { useFavoritesStore } from '../store/favorites.store';
+
+const store = useFavoritesStore();
 </script>
 
 <template>
@@ -13,7 +17,9 @@ import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from '@/comm
       </Button>
     </DropdownTrigger>
     <DropdownContent>
-      <DropdownItem variant="success" class="favorites-export"> Экспорт в XLCX </DropdownItem>
+      <DropdownItem variant="success" class="favorites-export" @click="store.exportExcel">
+        Экспорт в XLCX
+      </DropdownItem>
       <DropdownItem variant="destructive" class="favorites-clean">
         Очистить избранное
       </DropdownItem>

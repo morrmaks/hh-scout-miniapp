@@ -1,2 +1,2 @@
-export { getTelegram, getTelegramUser } from './telegram';
+export { getTelegram, getTelegramInitData, getTelegramUser } from './telegram';
 export { useTelegramStore } from './telegram.store';

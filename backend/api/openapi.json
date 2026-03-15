@@ -296,6 +296,9 @@
         "operationId": "saveFavorite",
         "tags": ["Favorites"],
         "summary": "Save favorite job",
+        "security": [
+          { "telegramInitData": [] }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -304,15 +307,30 @@
             }
           }
         },
-        "responses": { "200": { "description": "Favorite saved" } }
+        "responses": { 
+          "200": {
+            "description": "Favorite saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          } 
+        }
       },
-
       "get": {
         "operationId": "getFavorites",
         "tags": ["Favorites"],
         "summary": "Get favorites with filters",
+        "security": [
+          { "telegramInitData": [] }
+        ],
         "parameters": [
-          { "name": "userId", "in": "query", "required": true, "schema": { "type": "number" } },
           { "name": "text", "in": "query", "schema": { "type": "string" } },
           { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
           { "name": "per_page", "in": "query", "schema": { "type": "number", "default": 20 } },
@@ -384,8 +402,10 @@
         "operationId": "getFavoriteIds",
         "tags": ["Favorites"],
         "summary": "Get all favorite job ids",
+        "security": [
+          { "telegramInitData": [] }
+        ],
         "parameters": [
-          { "name": "userId", "in": "query", "required": true, "schema": { "type": "number" } }
         ],
         "responses": {
           "200": {
@@ -413,17 +433,21 @@
         "operationId": "exportFavoritesExcel",
         "tags": ["Favorites"],
         "summary": "Export favorites to Excel",
+        "security": [
+          { "telegramInitData": [] }
+        ],
         "parameters": [
-          { "name": "userId", "in": "query", "required": true, "schema": { "type": "number" } }
         ],
         "responses": {
           "200": {
-            "description": "Excel file",
+            "description": "Excel sent to Telegram chat",
             "content": {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+              "application/json": {
                 "schema": {
-                  "type": "string",
-                  "format": "binary"
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
                 }
               }
             }
@@ -436,11 +460,27 @@
       "delete": {
         "operationId": "deleteFavorite",
         "tags": ["Favorites"],
-        "parameters": [
-          { "name": "jobId", "in": "path", "required": true, "schema": { "type": "string" } },
-          { "name": "userId", "in": "query", "required": true, "schema": { "type": "number" } }
+        "security": [
+          { "telegramInitData": [] }
         ],
-        "responses": { "200": { "description": "Favorite removed" } }
+        "parameters": [
+          { "name": "jobId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {           
+          "200": {
+            "description": "Favorite removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }  
+        }
       }
     },
 
@@ -449,6 +489,9 @@
         "operationId": "setFavoriteStatus",
         "tags": ["Favorites"],
         "summary": "Change favorite status",
+        "security": [
+          { "telegramInitData": [] }
+        ],
         "parameters": [
           { "name": "jobId", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
@@ -458,16 +501,29 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["userId"],
+                "required": [],
                 "properties": {
-                  "userId": { "type": "number" },
                   "statusId": { "type": "number", "nullable": true }
                 }
               }
             }
           }
         },
-        "responses": { "200": { "description": "Status updated" } }
+        "responses": {           
+          "200": {
+            "description": "Status updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          } 
+        }
       }
     },
 
@@ -475,8 +531,10 @@
       "get": {
         "operationId": "getStatuses",
         "tags": ["Statuses"],
+        "security": [
+          { "telegramInitData": [] }
+        ],
         "parameters": [
-          { "name": "userId", "in": "query", "required": true, "schema": { "type": "number" } }
         ],
         "responses": {
           "200": {
@@ -492,10 +550,12 @@
           }
         }
       },
-
       "post": {
         "operationId": "createStatus",
         "tags": ["Statuses"],
+        "security": [
+          { "telegramInitData": [] }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -521,6 +581,9 @@
       "patch": {
         "operationId": "updateStatus",
         "tags": ["Statuses"],
+        "security": [
+          { "telegramInitData": [] }
+        ],
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "number" } }
         ],
@@ -534,19 +597,42 @@
         },
         "responses": { "200": { "description": "Status updated" } }
       },
-
       "delete": {
         "operationId": "deleteStatus",
         "tags": ["Statuses"],
+        "security": [
+          { "telegramInitData": [] }
+        ],
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "number" } }
         ],
-        "responses": { "200": { "description": "Status deleted" } }
+        "responses": { 
+          "200": {
+            "description": "Status deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
 
   "components": {
+    "securitySchemes": {
+      "telegramInitData": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-telegram-init-data"
+      }
+    },
     "schemas": {
       "JobsOrderBy": {
         "type": "string",
@@ -677,20 +763,17 @@
 
       "Status": {
         "type": "object",
-        "required": ["id", "userId", "name", "color"],
+        "required": ["id", "name", "color"],
         "properties": {
           "id": { "type": "number" },
-          "userId": { "type": "number" },
           "name": { "type": "string" },
           "color": { "$ref": "#/components/schemas/StatusColor" }
         }
       },
-
       "StatusCreate": {
         "type": "object",
-        "required": ["userId", "name", "color"],
+        "required": ["name", "color"],
         "properties": {
-          "userId": { "type": "number" },
           "name": { "type": "string" },
           "color": { "$ref": "#/components/schemas/StatusColor" }
         }
@@ -739,9 +822,8 @@
 
       "FavoriteCreate": {
         "type": "object",
-        "required": ["userId", "jobId"],
+        "required": ["jobId"],
         "properties": {
-          "userId": { "type": "number" },
           "jobId": { "type": "string" }
         }
       },
