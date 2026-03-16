@@ -6,8 +6,7 @@ export type FavoriteSort =
   | 'published_asc'
   | 'published_desc'
   | 'salary_asc'
-  | 'salary_desc'
-  | 'status';
+  | 'salary_desc';
 
 export type FavoritesLabel = 'same_currency' | 'with_salary';
 export type FavoriteCurrency = 'EUR' | 'RUR' | 'USD';
@@ -31,7 +30,7 @@ export interface FavoritesResponse {
     statuses: Status[];
   };
 
-  items: (Favorite & { status: Status | null })[];
+  items: (Favorite & { statusId: number | null })[];
 
   meta: {
     totalAll: number;

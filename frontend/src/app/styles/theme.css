@@ -17,6 +17,18 @@
   --destructive-text: #fa2f2f;
   --destructive-bg: #fa2f2f14;
 
+  --toast-success-text: #59f3a6;
+  --toast-success-bg: #001f0f;
+  --toast-success-border: #003d1c;
+
+  --toast-error-text: #ff9ea1;
+  --toast-error-bg: #2d0607;
+  --toast-error-border: #4d0408;
+
+  --toast-warning-text: #f3cf58;
+  --toast-warning-bg: #1d1f00;
+  --toast-warning-border: #2e2e00;
+
   --button-destructive-bg: #b91c1c;
   --button-destructive-bg-hover: #dc2626;
 
@@ -54,6 +66,24 @@
 
   --destructive-text: #ef4444;
   --destructive-bg: #ef444414;
+
+  --toast-success-text: #22c55e;
+  --toast-success-bg: #0b401f;
+
+  --toast-destructive-text: #ef4444;
+  --toast-destructive-bg: #3a1111;
+
+  --toast-success-text: #59f3a6;
+  --toast-success-bg: #001f0f;
+  --toast-success-border: #003d1c;
+
+  --toast-error-text: #ff9ea1;
+  --toast-error-bg: #2d0607;
+  --toast-error-border: #4d0408;
+
+  --toast-warning-text: #f3cf58;
+  --toast-warning-bg: #1d1f00;
+  --toast-warning-border: #2e2e00;
 
   --button-destructive-bg: #ef4444;
   --button-destructive-bg-hover: #ff5c5c;
@@ -93,6 +123,18 @@
   --destructive-text: #ef4444;
   --destructive-bg: #ef444414;
 
+  --toast-success-text: #59f3a6;
+  --toast-success-bg: #001f0f;
+  --toast-success-border: #003d1c;
+
+  --toast-error-text: #ff9ea1;
+  --toast-error-bg: #2d0607;
+  --toast-error-border: #4d0408;
+
+  --toast-warning-text: #f3cf58;
+  --toast-warning-bg: #1d1f00;
+  --toast-warning-border: #2e2e00;
+
   --button-destructive-bg: #ef4444;
   --button-destructive-bg-hover: #ff6b6b;
 
@@ -130,6 +172,18 @@
 
   --destructive-text: #ef4444;
   --destructive-bg: #ef444414;
+
+  --toast-success-text: #59f3a6;
+  --toast-success-bg: #001f0f;
+  --toast-success-border: #003d1c;
+
+  --toast-error-text: #ff9ea1;
+  --toast-error-bg: #2d0607;
+  --toast-error-border: #4d0408;
+
+  --toast-warning-text: #f3cf58;
+  --toast-warning-bg: #1d1f00;
+  --toast-warning-border: #2e2e00;
 
   --button-destructive-bg: #ef4444;
   --button-destructive-bg-hover: #ff6b6b;
@@ -169,6 +223,18 @@
   --destructive-text: #ef4444;
   --destructive-bg: #ef444414;
 
+  --toast-success-text: #59f3a6;
+  --toast-success-bg: #001f0f;
+  --toast-success-border: #003d1c;
+
+  --toast-error-text: #ff9ea1;
+  --toast-error-bg: #2d0607;
+  --toast-error-border: #4d0408;
+
+  --toast-warning-text: #f3cf58;
+  --toast-warning-bg: #1d1f00;
+  --toast-warning-border: #2e2e00;
+
   --button-destructive-bg: #ef4444;
   --button-destructive-bg-hover: #ff6b6b;
 
@@ -206,6 +272,18 @@
 
   --destructive-text: #fa2f2f;
   --destructive-bg: #fa2f2f14;
+
+  --toast-success-text: #59f3a6;
+  --toast-success-bg: #001f0f;
+  --toast-success-border: #003d1c;
+
+  --toast-error-text: #ff9ea1;
+  --toast-error-bg: #2d0607;
+  --toast-error-border: #4d0408;
+
+  --toast-warning-text: #f3cf58;
+  --toast-warning-bg: #1d1f00;
+  --toast-warning-border: #2e2e00;
 
   --button-destructive-bg: #b91c1c;
   --button-destructive-bg-hover: #dc2626;
@@ -245,6 +323,18 @@
   --destructive-text: #ef4444;
   --destructive-bg: #ff333314;
 
+  --toast-success-text: #59f3a6;
+  --toast-success-bg: #001f0f;
+  --toast-success-border: #003d1c;
+
+  --toast-error-text: #ff9ea1;
+  --toast-error-bg: #2d0607;
+  --toast-error-border: #4d0408;
+
+  --toast-warning-text: #f3cf58;
+  --toast-warning-bg: #1d1f00;
+  --toast-warning-border: #2e2e00;
+
   --button-destructive-bg: #ef4444;
   --button-destructive-bg-hover: #ff6b6b;
 
@@ -282,6 +372,18 @@
 
   --destructive-text: #dc2626;
   --destructive-bg: #dc262621;
+
+  --toast-success-text: #008a2e;
+  --toast-success-bg: #ecfdf3;
+  --toast-success-border: #bffcd9;
+
+  --toast-error-text: #e60000;
+  --toast-error-bg: #fff0f0;
+  --toast-error-border: #ffe0e1;
+
+  --toast-warning-text: #dc7609;
+  --toast-warning-bg: #fffcf0;
+  --toast-warning-border: #fbeeb1;
 
   --button-destructive-bg: #dc2626;
   --button-destructive-bg-hover: #ef4444;
@@ -323,6 +425,18 @@
   --destructive-text: #dc2626;
   --destructive-bg: #dc262621;
 
+  --toast-success-text: #008a2e;
+  --toast-success-bg: #ecfdf3;
+  --toast-success-border: #bffcd9;
+
+  --toast-error-text: #e60000;
+  --toast-error-bg: #fff0f0;
+  --toast-error-border: #ffe0e1;
+
+  --toast-warning-text: #dc7609;
+  --toast-warning-bg: #fffcf0;
+  --toast-warning-border: #fbeeb1;
+
   --button-destructive-bg: #dc2626;
   --button-destructive-bg-hover: #ef4444;
 
@@ -360,6 +474,18 @@
 
   --destructive-text: #dc2626;
   --destructive-bg: #dc262621;
+
+  --toast-success-text: #008a2e;
+  --toast-success-bg: #ecfdf3;
+  --toast-success-border: #bffcd9;
+
+  --toast-error-text: #e60000;
+  --toast-error-bg: #fff0f0;
+  --toast-error-border: #ffe0e1;
+
+  --toast-warning-text: #dc7609;
+  --toast-warning-bg: #fffcf0;
+  --toast-warning-border: #fbeeb1;
 
   --button-destructive-bg: #dc2626;
   --button-destructive-bg-hover: #ef4444;
@@ -399,6 +525,18 @@
   --destructive-text: #dc2626;
   --destructive-bg: #dc262621;
 
+  --toast-success-text: #008a2e;
+  --toast-success-bg: #ecfdf3;
+  --toast-success-border: #bffcd9;
+
+  --toast-error-text: #e60000;
+  --toast-error-bg: #fff0f0;
+  --toast-error-border: #ffe0e1;
+
+  --toast-warning-text: #dc7609;
+  --toast-warning-bg: #fffcf0;
+  --toast-warning-border: #fbeeb1;
+
   --button-destructive-bg: #dc2626;
   --button-destructive-bg-hover: #ef4444;
 
@@ -436,6 +574,18 @@
 
   --destructive-text: #dc2626;
   --destructive-bg: #dc262621;
+
+  --toast-success-text: #008a2e;
+  --toast-success-bg: #ecfdf3;
+  --toast-success-border: #bffcd9;
+
+  --toast-error-text: #e60000;
+  --toast-error-bg: #fff0f0;
+  --toast-error-border: #ffe0e1;
+
+  --toast-warning-text: #dc7609;
+  --toast-warning-bg: #fffcf0;
+  --toast-warning-border: #fbeeb1;
 
   --button-destructive-bg: #dc2626;
   --button-destructive-bg-hover: #ef4444;
@@ -475,6 +625,18 @@
   --destructive-text: #dc2626;
   --destructive-bg: #dc262621;
 
+  --toast-success-text: #008a2e;
+  --toast-success-bg: #ecfdf3;
+  --toast-success-border: #bffcd9;
+
+  --toast-error-text: #e60000;
+  --toast-error-bg: #fff0f0;
+  --toast-error-border: #ffe0e1;
+
+  --toast-warning-text: #dc7609;
+  --toast-warning-bg: #fffcf0;
+  --toast-warning-border: #fbeeb1;
+
   --button-destructive-bg: #dc2626;
   --button-destructive-bg-hover: #ef4444;
 
@@ -512,6 +674,18 @@
 
   --destructive-text: #dc2626;
   --destructive-bg: #dc262621;
+
+  --toast-success-text: #008a2e;
+  --toast-success-bg: #ecfdf3;
+  --toast-success-border: #bffcd9;
+
+  --toast-error-text: #e60000;
+  --toast-error-bg: #fff0f0;
+  --toast-error-border: #ffe0e1;
+
+  --toast-warning-text: #dc7609;
+  --toast-warning-bg: #fffcf0;
+  --toast-warning-border: #fbeeb1;
 
   --button-destructive-bg: #dc2626;
   --button-destructive-bg-hover: #ef4444;

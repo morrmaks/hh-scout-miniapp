@@ -2,7 +2,7 @@
 
 import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
-import type { SetFavoriteStatusData } from '../../types.gen';
+import type { SetFavoriteStatusData, SetFavoriteStatusResponse } from '../../types.gen';
 
 import { instance } from '../../../client';
 
@@ -13,7 +13,7 @@ export const patchFavoriteByJobIdStatus = ({
   body,
   path
 }: PatchFavoriteByJobIdStatusRequestParams) =>
-  instance.call('PATCH', `/favorites/${path.jobId}/status`, {
+  instance.call<SetFavoriteStatusResponse>('PATCH', `/favorites/${path.jobId}/status`, {
     body,
     ...config
   });

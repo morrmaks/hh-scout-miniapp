@@ -14,6 +14,7 @@ import {
 } from '@/common/api/generated';
 import { optimistic } from '@/common/lib/optimistic';
 import { equalObjects } from '@/common/utils/object';
+import { toast } from '@/modules/toast';
 
 import type { FavoritesFiltersType } from '../types/favorites.types';
 
@@ -74,10 +75,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
   }
 
   async function fetchIds() {
-    console.log('fetchIds');
-
     if (!userId.value) return;
-    console.log('fetchIds with user id');
     const { data } = await getFavoritesIds();
 
     ids.value = new Set(data.ids ?? []);
@@ -191,7 +189,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
 
     await getFavoritesExport();
 
-    // toast.success("Excel файл отправлен в чат");
+    toast.success('Excel файл отправлен в чат');
   }
 
   async function setStatus(jobId: string, statusId: number | null) {

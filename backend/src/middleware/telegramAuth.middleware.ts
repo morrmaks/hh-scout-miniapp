@@ -3,6 +3,8 @@ import type { NextFunction, Request, Response } from 'express';
 import { parse, validate } from '@telegram-apps/init-data-node';
 import process from 'node:process';
 
+import 'dotenv/config';
+
 const BOT_TOKEN = process.env.BOT_TOKEN!;
 
 export function telegramAuthMiddleware(req: Request, res: Response, next: NextFunction) {

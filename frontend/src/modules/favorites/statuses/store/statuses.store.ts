@@ -34,7 +34,7 @@ export const useStatusesStore = defineStore('statuses', () => {
   }
 
   async function fetchStatuses() {
-    if (!userId.value) return;
+    if (!userId.value || initialized.value) return;
 
     loading.value = true;
 
@@ -54,7 +54,6 @@ export const useStatusesStore = defineStore('statuses', () => {
 
     const temp: StatusWithMeta = {
       id: tempId,
-      userId: userId.value,
       name,
       color,
       pending: true
@@ -157,7 +156,6 @@ export const useStatusesStore = defineStore('statuses', () => {
     loading,
 
     init,
-    fetchStatuses,
     createStatus,
     updateStatus,
     deleteStatus

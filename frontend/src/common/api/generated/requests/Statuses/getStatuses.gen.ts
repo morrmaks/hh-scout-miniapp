@@ -8,8 +8,7 @@ import { instance } from '../../../client';
 
 export type GetStatusesRequestParams = FetchesRequestParams<GetStatusesData>;
 
-export const getStatuses = ({ config, query }: GetStatusesRequestParams) =>
+export const getStatuses = ({ config }: GetStatusesRequestParams = {}) =>
   instance.call<GetStatusesResponse>('GET', '/statuses', {
-    query,
     ...config
   });

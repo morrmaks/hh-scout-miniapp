@@ -2,13 +2,13 @@
 
 import type { FetchesRequestParams } from '@siberiacancode/apicraft';
 
-import type { DeleteStatusData } from '../../types.gen';
+import type { DeleteStatusData, DeleteStatusResponse } from '../../types.gen';
 
 import { instance } from '../../../client';
 
 export type DeleteStatuseByIdRequestParams = FetchesRequestParams<DeleteStatusData>;
 
 export const deleteStatuseById = ({ config, path }: DeleteStatuseByIdRequestParams) =>
-  instance.call('DELETE', `/statuses/${path.id}`, {
+  instance.call<DeleteStatusResponse>('DELETE', `/statuses/${path.id}`, {
     ...config
   });

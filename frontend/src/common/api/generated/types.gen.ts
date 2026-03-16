@@ -88,13 +88,11 @@ export interface Status {
   color: StatusColor;
   id: number;
   name: string;
-  userId: number;
 }
 
 export interface StatusCreate {
   color: StatusColor;
   name: string;
-  userId: number;
 }
 
 export interface StatusUpdate {
@@ -118,7 +116,6 @@ export interface FavoritesResponse {
 
 export interface FavoriteCreate {
   jobId: string;
-  userId: number;
 }
 
 export interface SearchResult {
@@ -234,8 +231,7 @@ export type GetAreasResponse = GetAreasResponses[keyof GetAreasResponses];
 export interface GetFavoritesData {
   body?: never;
   path?: never;
-  query: {
-    userId: number;
+  query?: {
     text?: string;
     page?: number;
     per_page?: number;
@@ -270,15 +266,17 @@ export interface SaveFavoriteResponses {
   /**
    * Favorite saved
    */
-  200: unknown;
+  200: {
+    success?: boolean;
+  };
 }
+
+export type SaveFavoriteResponse = SaveFavoriteResponses[keyof SaveFavoriteResponses];
 
 export interface GetFavoriteIdsData {
   body?: never;
   path?: never;
-  query: {
-    userId: number;
-  };
+  query?: never;
   url: '/favorites/ids';
 }
 
@@ -296,17 +294,17 @@ export type GetFavoriteIdsResponse = GetFavoriteIdsResponses[keyof GetFavoriteId
 export interface ExportFavoritesExcelData {
   body?: never;
   path?: never;
-  query: {
-    userId: number;
-  };
+  query?: never;
   url: '/favorites/export';
 }
 
 export interface ExportFavoritesExcelResponses {
   /**
-   * Excel file
+   * Excel sent to Telegram chat
    */
-  200: Blob | File;
+  200: {
+    success?: boolean;
+  };
 }
 
 export type ExportFavoritesExcelResponse =
@@ -317,9 +315,7 @@ export interface DeleteFavoriteData {
   path: {
     jobId: string;
   };
-  query: {
-    userId: number;
-  };
+  query?: never;
   url: '/favorites/{jobId}';
 }
 
@@ -327,12 +323,15 @@ export interface DeleteFavoriteResponses {
   /**
    * Favorite removed
    */
-  200: unknown;
+  200: {
+    success?: boolean;
+  };
 }
+
+export type DeleteFavoriteResponse = DeleteFavoriteResponses[keyof DeleteFavoriteResponses];
 
 export interface SetFavoriteStatusData {
   body: {
-    userId: number;
     statusId?: number | null;
   };
   path: {
@@ -346,15 +345,18 @@ export interface SetFavoriteStatusResponses {
   /**
    * Status updated
    */
-  200: unknown;
+  200: {
+    success?: boolean;
+  };
 }
+
+export type SetFavoriteStatusResponse =
+  SetFavoriteStatusResponses[keyof SetFavoriteStatusResponses];
 
 export interface GetStatusesData {
   body?: never;
   path?: never;
-  query: {
-    userId: number;
-  };
+  query?: never;
   url: '/statuses';
 }
 
@@ -396,8 +398,12 @@ export interface DeleteStatusResponses {
   /**
    * Status deleted
    */
-  200: unknown;
+  200: {
+    success?: boolean;
+  };
 }
+
+export type DeleteStatusResponse = DeleteStatusResponses[keyof DeleteStatusResponses];
 
 export interface UpdateStatusData {
   body: StatusUpdate;

@@ -6,6 +6,7 @@ import { usePageTransition } from '@/common/composables/usePageTransition';
 import BottomNav from '@/common/ui/layout-parts/BottomNav.vue';
 import Header from '@/common/ui/layout-parts/Header.vue';
 import { useFavoritesStore } from '@/modules/favorites';
+import { ToastContainer } from '@/modules/toast';
 
 const route = useRoute();
 const favorites = useFavoritesStore();
@@ -18,6 +19,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <ToastContainer />
   <div class="layout">
     <Header />
 

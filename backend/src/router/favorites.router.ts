@@ -16,22 +16,25 @@ const router = Router();
 router.post('/', async (req, res, next) => {
   try {
     const userId = req.telegramUser!.id;
-    const { jobId } = req.body;
 
-    await saveFavorite(Number(userId), String(jobId));
+    const { jobId, resumeIds } = req.body;
 
-    res.json({ ok: true });
+    await saveFavorite(Number(userId), String(jobId), resumeIds.map(Number));
+
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }
 });
 
-// получить список избранного (с фильтрами и пагинацией)
+// получить список избранного
 router.get('/', async (req, res, next) => {
   try {
-    const userId = req.telegramUser!.id;
+    const userId = Number(req.telegramUser!.id);
 
-    const result = await loadFavorites(userId, req.query);
+    const resumeId = Number(req.query.resumeId);
+
+    const result = await loadFavorites(userId, resumeId, req.query);
 
     res.json(result);
   } catch (err) {
@@ -39,11 +42,12 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// получить ids избранных вакансий
 router.get('/ids', async (req, res, next) => {
   try {
     const userId = req.telegramUser!.id;
 
-    const ids = await loadFavoriteIds(userId);
+    const ids = await loadFavoriteIds(Number(userId));
 
     res.json({ ids });
   } catch (err) {
@@ -52,21 +56,20 @@ router.get('/ids', async (req, res, next) => {
 });
 
 // экспорт excel
-
 router.get('/export', async (req, res, next) => {
   try {
     const userId = req.telegramUser!.id;
 
-    const buffer = await exportExcel(userId);
+    const resumeId = Number(req.query.resumeId);
+
+    const buffer = await exportExcel(Number(userId), resumeId);
 
     await bot.sendDocument(
       userId,
       buffer,
+      { caption: 'Ваши избранные вакансии' },
       {
-        caption: 'Ваши избранные вакансии'
-      },
-      {
-        filename: `favorites_${userId}.xlsx`,
+        filename: `favorites_${resumeId}.xlsx`,
         contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       }
     );
@@ -77,13 +80,18 @@ router.get('/export', async (req, res, next) => {
   }
 });
 
-// удалить из избранного
+// удалить из избранного для резюме
 router.delete('/:jobId', async (req, res, next) => {
   try {
-    const userId = req.telegramUser!.id;
+    const userId = Number(req.telegramUser!.id);
     const jobId = req.params.jobId;
+    const resumeIdsRaw = req.query.resumeIds;
 
-    await deleteFavorite(userId, jobId);
+    const resumeIds = Array.isArray(resumeIdsRaw)
+      ? resumeIdsRaw.map(Number)
+      : [Number(resumeIdsRaw)];
+
+    await deleteFavorite(userId, jobId, resumeIds);
 
     res.json({ success: true });
   } catch (err) {
@@ -91,13 +99,21 @@ router.delete('/:jobId', async (req, res, next) => {
   }
 });
 
+// изменить статус
 router.patch('/:jobId/status', async (req, res, next) => {
   try {
-    const jobId = req.params.jobId;
     const userId = req.telegramUser!.id;
-    const { statusId } = req.body;
 
-    await setFavoriteStatus(Number(userId), jobId, statusId !== null ? Number(statusId) : null);
+    const jobId = req.params.jobId;
+
+    const { resumeId, statusId } = req.body;
+
+    await setFavoriteStatus(
+      Number(userId),
+      jobId,
+      Number(resumeId),
+      statusId !== null ? Number(statusId) : null
+    );
 
     res.json({ success: true });
   } catch (err) {

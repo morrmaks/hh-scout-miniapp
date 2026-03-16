@@ -8,8 +8,7 @@ import { instance } from '../../../client';
 
 export type GetFavoritesIdsRequestParams = FetchesRequestParams<GetFavoriteIdsData>;
 
-export const getFavoritesIds = ({ config, query }: GetFavoritesIdsRequestParams) =>
+export const getFavoritesIds = ({ config }: GetFavoritesIdsRequestParams = {}) =>
   instance.call<GetFavoriteIdsResponse>('GET', '/favorites/ids', {
-    query,
     ...config
   });
