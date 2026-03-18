@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { createResume, deleteResume, loadResumes } from '../services/resumes.service';
+import { createResume, deleteResume, loadResumes, updateResume } from '../services/resumes.service';
 
 const router = Router();
 
@@ -25,6 +25,22 @@ router.post('/', async (req, res, next) => {
     const { name } = req.body;
 
     const resume = await createResume(Number(userId), String(name));
+
+    res.json(resume);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// редактировать резюме
+router.patch('/:id', async (req, res, next) => {
+  try {
+    const userId = req.telegramUser!.id;
+    const id = Number(req.params.id);
+
+    const { name } = req.body;
+
+    const resume = await updateResume(Number(userId), id, name);
 
     res.json(resume);
   } catch (err) {

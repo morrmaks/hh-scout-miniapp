@@ -47,7 +47,7 @@ function create() {
 .creator {
   display: flex;
   flex-direction: column;
-  margin-top: 2px;
+  margin-top: 6px;
   gap: 12px;
 }
 

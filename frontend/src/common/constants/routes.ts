@@ -4,6 +4,7 @@ export const ROUTES = {
   FAVORITES: '/favorites',
   SETTINGS: {
     MAIN: '/settings',
-    THEME: '/settings/theme'
+    THEME: '/settings/theme',
+    RESUMES: '/settings/resumes'
   }
 };

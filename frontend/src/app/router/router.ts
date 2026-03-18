@@ -52,6 +52,14 @@ const routes: RouteRecordRaw[] = [
       title: 'Оформление',
       tab: 'settings'
     }
+  },
+  {
+    path: ROUTES.SETTINGS.RESUMES,
+    component: () => import('@/pages/settings/resumes/index.vue'),
+    meta: {
+      title: 'Управление резюме',
+      tab: 'settings'
+    }
   }
 ];
 

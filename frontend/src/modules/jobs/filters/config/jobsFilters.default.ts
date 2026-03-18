@@ -6,5 +6,6 @@ export const DEFAULT_FILTERS: JobsFiltersType = {
   employment_form: [],
   work_format: [],
   experience: [],
-  label: []
+  label: [],
+  period: ''
 };

@@ -59,6 +59,6 @@ export function parseJobFilters(query: ParsedQs): JobFilters {
     area: toArray(query.area),
 
     label: toLabels(query.label),
-    period: toNumber(query.period)
+    period: query.period ? String(query.period) : undefined
   };
 }

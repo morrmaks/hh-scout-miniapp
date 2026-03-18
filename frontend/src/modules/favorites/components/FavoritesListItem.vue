@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { Link, Trash2Icon } from 'lucide-vue-next';
+import { Link } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 import type { Favorite } from '@/common/api/generated';
 
 import Badge from '@/common/ui/Badge.vue';
-import Button from '@/common/ui/Button.vue';
 import Card from '@/common/ui/Card.vue';
 
 import { StatusDrawer, useStatusesStore } from '../statuses';
 import { useFavoritesStore } from '../store/favorites.store';
+import FavoritesListItemDelete from './FavoritesListItemDelete.vue';
 
 const props = defineProps<{
   job: Favorite;
@@ -36,11 +36,6 @@ const salary = computed(() => {
 
 function toggleTitle() {
   expanded.value = !expanded.value;
-}
-
-function remove() {
-  if (!props.job.jobId) return;
-  favorites.toggleFavorite(props.job.jobId);
 }
 </script>
 
@@ -73,9 +68,7 @@ function remove() {
     </div>
 
     <div class="right">
-      <Button size="xs" variant="link" class="remove" @click="remove">
-        <Trash2Icon :size="12" />
-      </Button>
+      <FavoritesListItemDelete :job-id="job.jobId" />
 
       <StatusDrawer
         :statuses="statuses.statuses"
@@ -112,7 +105,7 @@ function remove() {
 
 .title-row {
   display: flex;
-  align-items: center;
+  align-items: start;
 
   gap: 6px;
 
@@ -141,10 +134,9 @@ function remove() {
 
 .link {
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
-
+  margin-top: 4px;
   opacity: 0.6;
 }
 
@@ -173,24 +165,7 @@ function remove() {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-
-  /* overflow-x: auto;
-  overflow-y: hidden;
-
-  flex-wrap: nowrap;
-  min-width: 0;
-
-  scrollbar-width: none; */
 }
-/* 
-.meta::-webkit-scrollbar {
-  display: none;
-}
-
-.meta > * {
-  flex-shrink: 0;
-} */
-/* RIGHT */
 
 .right {
   display: flex;
@@ -201,9 +176,13 @@ function remove() {
   min-width: 120px;
 }
 
-.remove {
+.delete-button {
   margin-right: 4px;
   padding: 4px;
+}
+
+.delete-button:hover:not(:disabled) {
+  color: var(--destructive-text);
 }
 
 /* MOBILE */

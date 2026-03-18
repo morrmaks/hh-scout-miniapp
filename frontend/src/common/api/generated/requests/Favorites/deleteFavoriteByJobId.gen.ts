@@ -8,7 +8,12 @@ import { instance } from '../../../client';
 
 export type DeleteFavoriteByJobIdRequestParams = FetchesRequestParams<DeleteFavoriteData>;
 
-export const deleteFavoriteByJobId = ({ config, path }: DeleteFavoriteByJobIdRequestParams) =>
+export const deleteFavoriteByJobId = ({
+  config,
+  query,
+  path
+}: DeleteFavoriteByJobIdRequestParams) =>
   instance.call<DeleteFavoriteResponse>('DELETE', `/favorites/${path.jobId}`, {
+    query,
     ...config
   });

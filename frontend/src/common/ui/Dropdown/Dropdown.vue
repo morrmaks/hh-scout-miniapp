@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { onClickOutside, useEventListener } from '@vueuse/core';
+import { useEventListener } from '@vueuse/core';
 import { provide, ref, watch } from 'vue';
 
 import { dropdownKey } from './dropdown.context';
 
 const props = defineProps<{
   open?: boolean;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits<{
   'update:open': [boolean];
 }>();
 
-const root = ref<HTMLElement | null>(null);
 const triggerRef = ref<HTMLElement | null>(null);
 const contentRef = ref<HTMLElement | null>(null);
 
@@ -23,6 +23,7 @@ const open = ref(props.open ?? false);
 watch(
   () => props.open,
   (v) => {
+    if (props.disabled) return;
     if (v !== undefined) open.value = v;
   }
 );
@@ -32,6 +33,7 @@ watch(open, (v) => {
 });
 
 function toggle() {
+  if (props.disabled) return;
   open.value = !open.value;
 }
 
@@ -44,12 +46,22 @@ provide(dropdownKey, {
   toggle,
   close,
   triggerRef,
-  contentRef
+  contentRef,
+  disabled: !!props.disabled
 });
 
-onClickOutside(root, close, {
-  ignore: [contentRef]
-});
+function onPointerDown(e: PointerEvent) {
+  const target = e.target as Node;
+
+  const isInsideTrigger = triggerRef.value?.contains(target);
+  const isInsideContent = contentRef.value?.contains(target);
+
+  if (isInsideTrigger || isInsideContent) return;
+
+  close();
+}
+
+useEventListener(window, 'pointerdown', onPointerDown);
 
 useEventListener(window, 'keydown', (e) => {
   if (e.key === 'Escape') close();
@@ -57,7 +69,7 @@ useEventListener(window, 'keydown', (e) => {
 </script>
 
 <template>
-  <div ref="root" class="dropdown">
+  <div class="dropdown">
     <slot />
   </div>
 </template>
@@ -65,5 +77,6 @@ useEventListener(window, 'keydown', (e) => {
 <style scoped>
 .dropdown {
   display: inline-block;
+  pointer-events: auto;
 }
 </style>

@@ -5,8 +5,9 @@ import Button from '@/common/ui/Button.vue';
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from '@/common/ui/Dropdown';
 
 import { useFavoritesStore } from '../store/favorites.store';
+import FavoritesListClear from './FavoritesListClear.vue';
 
-const store = useFavoritesStore();
+const favorites = useFavoritesStore();
 </script>
 
 <template>
@@ -17,11 +18,14 @@ const store = useFavoritesStore();
       </Button>
     </DropdownTrigger>
     <DropdownContent>
-      <DropdownItem variant="success" class="favorites-export" @click="store.exportExcel">
+      <DropdownItem variant="success" class="favorites-export" @click="favorites.exportExcel">
         Экспорт в XLCX
       </DropdownItem>
       <DropdownItem variant="destructive" class="favorites-clean">
         Очистить избранное
+      </DropdownItem>
+      <DropdownItem as-child>
+        <FavoritesListClear />
       </DropdownItem>
     </DropdownContent>
   </Dropdown>

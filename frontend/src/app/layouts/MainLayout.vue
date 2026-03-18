@@ -6,14 +6,17 @@ import { usePageTransition } from '@/common/composables/usePageTransition';
 import BottomNav from '@/common/ui/layout-parts/BottomNav.vue';
 import Header from '@/common/ui/layout-parts/Header.vue';
 import { useFavoritesStore } from '@/modules/favorites';
+import { useResumesStore } from '@/modules/resumes';
 import { ToastContainer } from '@/modules/toast';
 
 const route = useRoute();
+const resumes = useResumesStore();
 const favorites = useFavoritesStore();
 
 const { transitionName, appear } = usePageTransition();
 
 onMounted(() => {
+  resumes.init();
   favorites.fetchIds();
 });
 </script>

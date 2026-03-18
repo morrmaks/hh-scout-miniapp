@@ -1,7 +1,7 @@
 import type { LucideProps } from 'lucide-vue-next';
 import type { FunctionalComponent } from 'vue';
 
-import { Palette } from 'lucide-vue-next';
+import { FileUserIcon, Palette } from 'lucide-vue-next';
 
 import { ROUTES } from '@/common/constants/routes';
 
@@ -19,6 +19,11 @@ export const SETTINGS_GROUPS: SettingsGroupConfig[] = [
       title: 'Тема',
       icon: Palette,
       to: ROUTES.SETTINGS.THEME
+    },
+    {
+      title: 'Резюме',
+      icon: FileUserIcon,
+      to: ROUTES.SETTINGS.RESUMES
     }
   ]
 ];

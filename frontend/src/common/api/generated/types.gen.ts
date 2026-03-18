@@ -45,6 +45,15 @@ export interface Job {
   workSchedule?: Array<string>;
 }
 
+export interface Resume {
+  id: number;
+  name: string;
+}
+
+export interface ResumeCreate {
+  name: string;
+}
+
 export interface Favorite {
   company?: string;
   createdAt?: string;
@@ -69,8 +78,7 @@ export type FavoritesSort =
   | 'published_asc'
   | 'published_desc'
   | 'salary_asc'
-  | 'salary_desc'
-  | 'status';
+  | 'salary_desc';
 
 export type StatusColor =
   | 'blue'
@@ -116,6 +124,10 @@ export interface FavoritesResponse {
 
 export interface FavoriteCreate {
   jobId: string;
+  /**
+   * List of resume IDs this favorite should be linked to
+   */
+  resumeIds: Array<number>;
 }
 
 export interface SearchResult {
@@ -228,10 +240,63 @@ export interface GetAreasResponses {
 
 export type GetAreasResponse = GetAreasResponses[keyof GetAreasResponses];
 
+export interface GetResumesData {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/resumes';
+}
+
+export interface GetResumesResponses {
+  /**
+   * List of resumes
+   */
+  200: Array<Resume>;
+}
+
+export type GetResumesResponse = GetResumesResponses[keyof GetResumesResponses];
+
+export interface CreateResumeData {
+  body: ResumeCreate;
+  path?: never;
+  query?: never;
+  url: '/resumes';
+}
+
+export interface CreateResumeResponses {
+  /**
+   * Resume created
+   */
+  200: Resume;
+}
+
+export type CreateResumeResponse = CreateResumeResponses[keyof CreateResumeResponses];
+
+export interface DeleteResumeData {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: '/resumes/{id}';
+}
+
+export interface DeleteResumeResponses {
+  /**
+   * Resume deleted
+   */
+  200: {
+    success?: boolean;
+  };
+}
+
+export type DeleteResumeResponse = DeleteResumeResponses[keyof DeleteResumeResponses];
+
 export interface GetFavoritesData {
   body?: never;
   path?: never;
-  query?: {
+  query: {
+    resumeId: number;
     text?: string;
     page?: number;
     per_page?: number;
@@ -294,7 +359,12 @@ export type GetFavoriteIdsResponse = GetFavoriteIdsResponses[keyof GetFavoriteId
 export interface ExportFavoritesExcelData {
   body?: never;
   path?: never;
-  query?: never;
+  query: {
+    /**
+     * Export favorites only for a specific resume
+     */
+    resumeId: number;
+  };
   url: '/favorites/export';
 }
 
@@ -315,7 +385,9 @@ export interface DeleteFavoriteData {
   path: {
     jobId: string;
   };
-  query?: never;
+  query: {
+    resumeIds: Array<number>;
+  };
   url: '/favorites/{jobId}';
 }
 
@@ -332,6 +404,7 @@ export type DeleteFavoriteResponse = DeleteFavoriteResponses[keyof DeleteFavorit
 
 export interface SetFavoriteStatusData {
   body: {
+    resumeId: number;
     statusId?: number | null;
   };
   path: {

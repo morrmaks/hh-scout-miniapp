@@ -8,11 +8,11 @@ function normalizeArray(arr?: string[]) {
 export function buildSearchJobsKey(filters: JobFilters) {
   return JSON.stringify({
     text: filters.text ?? '',
-    order: filters.order_by ?? '',
-    salary: filters.salary ?? '',
-    currency: filters.currency ?? '',
+    order: filters.order_by ?? 'relevance',
+    salary: filters.salary ?? '0',
+    currency: filters.currency ?? 'RUR',
     period: filters.period ?? '',
-    perPage: filters.per_page ?? '',
+    perPage: filters.per_page ?? '100',
     experience: normalizeArray(filters.experience),
     employment: normalizeArray(filters.employment_form),
     format: normalizeArray(filters.work_format),

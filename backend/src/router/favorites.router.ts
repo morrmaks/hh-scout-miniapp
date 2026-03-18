@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import { bot } from '../integrations/telegram';
 import {
+  clearFavoritesByResumes,
   deleteFavorite,
   exportExcel,
   loadFavoriteIds,
@@ -50,6 +51,24 @@ router.get('/ids', async (req, res, next) => {
     const ids = await loadFavoriteIds(Number(userId));
 
     res.json({ ids });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/clear', async (req, res, next) => {
+  try {
+    const userId = Number(req.telegramUser!.id);
+
+    const resumeIdsRaw = req.query.resumeIds;
+
+    const resumeIds = Array.isArray(resumeIdsRaw)
+      ? resumeIdsRaw.map(Number)
+      : [Number(resumeIdsRaw)];
+
+    await clearFavoritesByResumes(userId, resumeIds);
+
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

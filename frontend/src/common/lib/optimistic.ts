@@ -1,18 +1,20 @@
 const pending = new Map<string, Set<string>>();
 
+interface OptimisticType<T> {
+  key?: string;
+  scope?: string;
+  apply: () => void;
+  rollback: () => void;
+  run: () => Promise<T>;
+}
+
 export async function optimistic<T>({
   scope = 'default',
   key,
   apply,
   rollback,
   run
-}: {
-  scope?: string;
-  key?: string;
-  apply: () => void;
-  rollback: () => void;
-  run: () => Promise<T>;
-}): Promise<T | undefined> {
+}: OptimisticType<T>): Promise<T | undefined> {
   if (key) {
     if (!pending.has(scope)) pending.set(scope, new Set());
 
@@ -30,9 +32,7 @@ export async function optimistic<T>({
     rollback();
     throw e;
   } finally {
-    if (key) {
-      pending.get(scope)?.delete(key);
-    }
+    if (key) pending.get(scope)?.delete(key);
   }
 }
 

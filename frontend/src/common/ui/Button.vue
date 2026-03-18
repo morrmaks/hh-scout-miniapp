@@ -150,11 +150,12 @@ const classes = computed(() => [
 /* link */
 
 .btn-link {
+  border-radius: 0;
   background: transparent;
   color: var(--text);
 }
 
 .btn-link:hover:not(:disabled) {
-  opacity: 0.7;
+  color: var(--text-muted);
 }
 </style>

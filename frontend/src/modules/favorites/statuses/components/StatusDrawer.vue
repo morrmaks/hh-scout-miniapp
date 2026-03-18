@@ -5,6 +5,7 @@ import { computed, ref, watch } from 'vue';
 import type { StatusColor } from '@/common/api/generated';
 
 import Button from '@/common/ui/Button.vue';
+import ButtonGroup from '@/common/ui/ButtonGroup.vue';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/common/ui/Drawer';
 import Separator from '@/common/ui/Separator.vue';
 
@@ -17,7 +18,6 @@ interface StatusWithMeta {
   id: number;
   name: string;
   pending?: boolean;
-  userId: number;
 }
 
 const props = defineProps<{
@@ -55,8 +55,8 @@ function select(id: number | null) {
   open.value = false;
 }
 
-function startCreate() {
-  creating.value = true;
+function toggleCreate() {
+  creating.value = !creating.value;
   editing.value = null;
   manage.value = false;
 }
@@ -99,49 +99,55 @@ function updateStatus(id: number, name: string, color: StatusColor) {
     </DrawerTrigger>
 
     <DrawerContent>
-      <div class="list">
-        <div v-if="modelValue !== null" class="reset-badge" @click="select(null)">Без статуса</div>
+      <div class="status-wrapper">
+        <div class="list">
+          <div v-if="modelValue !== null" class="reset-badge" @click="select(null)">
+            Без статуса
+          </div>
 
-        <template v-for="s in statuses" :key="s.id">
-          <StatusEditInline
-            v-if="editing === s.id"
-            :name="s.name"
-            :color="s.color"
-            @save="(name, color) => updateStatus(s.id, name, color)"
-          />
-
-          <div v-else class="row" :class="{ manage, pending: s.pending }">
-            <StatusBadge
-              class="status"
-              :name="s.pending ? 'Создание...' : s.name"
+          <template v-for="s in statuses" :key="s.id">
+            <StatusEditInline
+              v-if="editing === s.id"
+              :name="s.name"
               :color="s.color"
-              variant="filled"
-              @click="!s.pending && (manage ? startEdit(s.id) : select(s.id))"
+              @save="(name, color) => updateStatus(s.id, name, color)"
             />
 
-            <Button
-              v-if="manage && !s.pending"
-              size="xs"
-              variant="ghost"
-              class="delete"
-              @click.stop="emit('delete', s.id)"
-            >
-              <Trash2 :size="14" />
-            </Button>
-          </div>
-        </template>
-      </div>
+            <div v-else class="row" :class="{ manage, pending: s.pending }">
+              <StatusBadge
+                class="status"
+                :name="s.pending ? 'Создание...' : s.name"
+                :color="s.color"
+                variant="filled"
+                @click="!s.pending && (manage ? startEdit(s.id) : select(s.id))"
+              />
 
-      <StatusCreateInline v-if="creating" @create="createStatus" />
+              <Button
+                v-if="manage && !s.pending"
+                size="xs"
+                variant="ghost"
+                class="delete"
+                @click.stop="emit('delete', s.id)"
+              >
+                <Trash2 :size="14" />
+              </Button>
+            </div>
+          </template>
+        </div>
 
-      <Separator class="separator" />
+        <StatusCreateInline v-if="creating" @create="createStatus" />
 
-      <div class="footer">
-        <Button size="lg" variant="ghost" @click="startCreate"> Создать </Button>
+        <Separator class="separator" />
 
-        <Button size="lg" variant="ghost" @click="toggleManage">
-          {{ manage ? 'Готово' : 'Редактировать' }}
-        </Button>
+        <ButtonGroup orientation="horizontal" class="footer">
+          <Button size="lg" variant="ghost" @click="toggleCreate">
+            {{ creating ? 'Назад' : 'Создать' }}
+          </Button>
+
+          <Button size="lg" variant="ghost" @click="toggleManage">
+            {{ manage ? 'Назад' : 'Редактировать' }}
+          </Button>
+        </ButtonGroup>
       </div>
     </DrawerContent>
   </Drawer>
@@ -152,6 +158,12 @@ function updateStatus(id: number, name: string, color: StatusColor) {
   border: none;
   background: none;
   cursor: pointer;
+}
+
+.status-wrapper {
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .list {

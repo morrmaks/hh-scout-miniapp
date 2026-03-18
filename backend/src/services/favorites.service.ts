@@ -56,106 +56,132 @@ export async function saveFavorite(userId: number, jobId: string, resumeIds: num
       ? Math.round(convertCurrency(salaryValue, fav.currency, 'RUR', rates))
       : null;
 
-  const favorite = await prisma.favorite.upsert({
-    where: {
-      userId_jobId: { userId, jobId }
-    },
+  return prisma.$transaction(async (tx) => {
+    // 1. upsert favorite
+    const favorite = await tx.favorite.upsert({
+      where: {
+        userId_jobId: { userId, jobId }
+      },
 
-    update: {
-      title: fav.title,
-      company: fav.company,
-      url: fav.url,
-      salaryFrom: fav.salaryFrom,
-      salaryTo: fav.salaryTo,
-      currency: fav.currency,
-      salaryBase,
-      experience: fav.experience,
-      publishedAt: fav.publishedAt
-    },
+      update: {
+        title: fav.title,
+        company: fav.company,
+        url: fav.url,
+        salaryFrom: fav.salaryFrom,
+        salaryTo: fav.salaryTo,
+        currency: fav.currency,
+        salaryBase,
+        experience: fav.experience,
+        publishedAt: fav.publishedAt
+      },
 
-    create: {
-      userId,
-      jobId,
-      title: fav.title,
-      company: fav.company,
-      url: fav.url,
-      salaryFrom: fav.salaryFrom,
-      salaryTo: fav.salaryTo,
-      currency: fav.currency,
-      salaryBase,
-      experience: fav.experience,
-      publishedAt: fav.publishedAt
-    }
-  });
-
-  await prisma.application.createMany({
-    data: resumeIds.map((resumeId) => ({
-      userId,
-      favoriteId: favorite.id,
-      resumeId
-    })),
-    skipDuplicates: true
-  });
-
-  await prisma.company.upsert({
-    where: {
-      userId_name: {
+      create: {
         userId,
-        name: fav.company
+        jobId,
+        title: fav.title,
+        company: fav.company,
+        url: fav.url,
+        salaryFrom: fav.salaryFrom,
+        salaryTo: fav.salaryTo,
+        currency: fav.currency,
+        salaryBase,
+        experience: fav.experience,
+        publishedAt: fav.publishedAt
       }
-    },
-    update: {},
-    create: {
-      userId,
-      name: fav.company
-    }
-  });
+    });
 
-  return favorite;
+    // 2. привязать к резюме
+    if (resumeIds.length) {
+      await tx.application.createMany({
+        data: resumeIds.map((resumeId) => ({
+          userId,
+          favoriteId: favorite.id,
+          resumeId
+        })),
+        skipDuplicates: true
+      });
+    }
+
+    return favorite;
+  });
 }
 
 export async function deleteFavorite(userId: number, jobId: string, resumeIds: number[]) {
   const fav = await prisma.favorite.findFirst({
-    where: { userId, jobId }
+    where: { userId, jobId },
+    select: { id: true }
   });
 
   if (!fav) return;
 
-  await prisma.application.deleteMany({
-    where: {
-      userId,
-      favoriteId: fav.id,
-      resumeId: { in: resumeIds }
-    }
-  });
-
-  const applicationsLeft = await prisma.application.count({
-    where: { favoriteId: fav.id }
-  });
-
-  if (applicationsLeft > 0) return;
-
-  await prisma.favorite.delete({
-    where: { id: fav.id }
-  });
-
-  const count = await prisma.favorite.count({
-    where: {
-      userId,
-      company: fav.company
-    }
-  });
-
-  if (count === 0) {
-    await prisma.company.delete({
+  await prisma.$transaction(async (tx) => {
+    await tx.application.deleteMany({
       where: {
-        userId_name: {
-          userId,
-          name: fav.company
-        }
+        userId,
+        favoriteId: fav.id,
+        resumeId: { in: resumeIds }
       }
     });
-  }
+
+    const exists = await tx.application.findFirst({
+      where: { favoriteId: fav.id },
+      select: { id: true }
+    });
+
+    if (!exists) {
+      await tx.favorite.delete({
+        where: { id: fav.id }
+      });
+    }
+  });
+}
+
+export async function clearFavoritesByResumes(userId: number, resumeIds: number[]) {
+  if (!resumeIds.length) return;
+
+  await prisma.$transaction(async (tx) => {
+    const applications = await tx.application.findMany({
+      where: {
+        userId,
+        resumeId: { in: resumeIds }
+      },
+      select: {
+        favoriteId: true
+      }
+    });
+
+    const favoriteIds = [...new Set(applications.map((a) => a.favoriteId))];
+
+    if (!favoriteIds.length) return;
+
+    await tx.application.deleteMany({
+      where: {
+        userId,
+        resumeId: { in: resumeIds }
+      }
+    });
+
+    const stillUsed = await tx.application.findMany({
+      where: {
+        favoriteId: { in: favoriteIds }
+      },
+      select: {
+        favoriteId: true
+      }
+    });
+
+    const stillUsedSet = new Set(stillUsed.map((a) => a.favoriteId));
+
+    const toDelete = favoriteIds.filter((id) => !stillUsedSet.has(id));
+
+    if (toDelete.length) {
+      await tx.favorite.deleteMany({
+        where: {
+          id: { in: toDelete }
+        }
+      });
+    }
+  });
 }
 
 export async function loadFavoriteIds(userId: number) {
@@ -186,23 +212,20 @@ export async function loadFavorites(
   const perPage = Math.min(Number(query.per_page ?? DEFAULT_PER_PAGE), 100);
   const skip = (page - 1) * perPage;
 
+  /* ---------------- filters ---------------- */
+
   const applicationFilter: Prisma.ApplicationWhereInput = {
-    resumeId
+    resumeId,
+    ...(query.status && {
+      statusId: {
+        in: Array.isArray(query.status) ? query.status.map(Number) : [Number(query.status)]
+      }
+    })
   };
-
-  if (query.status) {
-    const statuses = Array.isArray(query.status)
-      ? query.status.map(Number)
-      : [Number(query.status)];
-
-    applicationFilter.statusId = { in: statuses };
-  }
 
   const where: Prisma.FavoriteWhereInput = {
     userId,
-    applications: {
-      some: applicationFilter
-    }
+    applications: { some: applicationFilter }
   };
 
   if (query.text) {
@@ -223,7 +246,6 @@ export async function loadFavorites(
 
   if (hasSalary) {
     const salary = Number(query.salary_from);
-
     const rates = await getCurrencyRates();
 
     const baseSalary = Math.round(convertCurrency(salary, query.currency ?? 'RUR', 'RUR', rates));
@@ -247,40 +269,26 @@ export async function loadFavorites(
     where.experience = { in: exp };
   }
 
-  const orderBy:
-    | Prisma.FavoriteOrderByWithRelationInput
-    | Prisma.FavoriteOrderByWithRelationInput[] = (() => {
+  /* ---------------- sort ---------------- */
+
+  const orderBy: Prisma.FavoriteOrderByWithRelationInput = (() => {
     switch (query.sort) {
       case 'salary_asc':
-        return {
-          salaryBase: {
-            sort: 'asc',
-            nulls: 'first'
-          }
-        };
-
+        return { salaryBase: { sort: 'asc', nulls: 'first' } };
       case 'salary_desc':
-        return {
-          salaryBase: {
-            sort: 'desc',
-            nulls: 'last'
-          }
-        };
-
+        return { salaryBase: { sort: 'desc', nulls: 'last' } };
       case 'published_asc':
         return { publishedAt: 'asc' };
-
       case 'published_desc':
         return { publishedAt: 'desc' };
-
       case 'created_asc':
         return { createdAt: 'asc' };
-
-      case 'created_desc':
       default:
         return { createdAt: 'desc' };
     }
   })();
+
+  /* ---------------- queries ---------------- */
 
   const [favorites, totalFound, totalAll] = await Promise.all([
     prisma.favorite.findMany({
@@ -291,19 +299,27 @@ export async function loadFavorites(
       include: {
         applications: {
           where: { resumeId },
-          select: {
-            statusId: true
-          }
+          select: { statusId: true }
         }
       }
     }),
 
-    prisma.favorite.count({ where }),
+    // ✅ ПРАВИЛЬНЫЙ totalFound
+    prisma.application.count({
+      where: {
+        resumeId,
+        userId,
+        favorite: where
+      }
+    }),
 
-    prisma.favorite.count({
-      where: { userId }
+    // ✅ totalAll (без фильтров)
+    prisma.application.count({
+      where: { resumeId, userId }
     })
   ]);
+
+  /* ---------------- map ---------------- */
 
   const items = favorites.map((f) => {
     const app = f.applications[0];
@@ -336,11 +352,22 @@ export async function loadFavorites(
     }
   };
 
+  /* ---------------- filters ---------------- */
+
   if (page === 1) {
-    const [companies, statuses] = await Promise.all([
-      prisma.company.findMany({
-        where: { userId },
-        orderBy: { name: 'asc' }
+    const [companiesRows, statuses] = await Promise.all([
+      prisma.application.findMany({
+        where: {
+          userId,
+          resumeId
+        },
+        select: {
+          favorite: {
+            select: {
+              company: true
+            }
+          }
+        }
       }),
 
       prisma.status.findMany({
@@ -349,8 +376,10 @@ export async function loadFavorites(
       })
     ]);
 
+    const companies = [...new Set(companiesRows.map((r) => r.favorite.company))].sort();
+
     result.filters = {
-      companies: companies.map((c) => c.name),
+      companies,
       statuses
     };
   }

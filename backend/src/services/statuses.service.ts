@@ -46,7 +46,7 @@ export async function deleteStatus(id: number) {
 
   if (!status) return;
 
-  await prisma.favorite.updateMany({
+  await prisma.application.updateMany({
     where: { statusId: id },
     data: { statusId: null }
   });

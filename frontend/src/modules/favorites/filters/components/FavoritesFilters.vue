@@ -23,20 +23,20 @@ const emit = defineEmits<{
   reset: [];
 }>();
 
-const store = useFavoritesStore();
+const favorites = useFavoritesStore();
 const statuses = useStatusesStore();
 
 const local = reactive<FavoritesFiltersType>({
-  ...store.filters,
-  company: store.filters.company ?? [],
-  status: store.filters.status ?? [],
-  label: store.filters.label ?? []
+  ...favorites.filters,
+  company: favorites.filters.company ?? [],
+  status: favorites.filters.status ?? [],
+  label: favorites.filters.label ?? []
 });
 
 const hasLocalFilters = computed(() => !equalObjects(local, DEFAULT_FILTERS));
 
 watch(
-  () => store.filters,
+  () => favorites.filters,
   (v) => Object.assign(local, v)
 );
 
@@ -60,7 +60,7 @@ function toggleCurrencyLabel(enabled: boolean) {
 
 function reset() {
   Object.assign(local, DEFAULT_FILTERS);
-  store.resetFilters();
+  favorites.resetFilters();
   emit('reset');
 }
 
@@ -97,7 +97,7 @@ function apply() {
     <FilterGroup label="Компания">
       <ToggleGroup v-model="local.company">
         <ToggleGroupCollapse :limit="5">
-          <ToggleGroupItem v-for="company in store.companies" :key="company" :value="company">
+          <ToggleGroupItem v-for="company in favorites.companies" :key="company" :value="company">
             {{ company }}
           </ToggleGroupItem>
         </ToggleGroupCollapse>

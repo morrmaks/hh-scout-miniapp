@@ -3,7 +3,7 @@ import type { Component } from 'vue';
 import { DollarSign, Euro, RussianRuble } from 'lucide-vue-next';
 
 import type {
-  Currency,
+  CurrencyQuery,
   EmploymentForm,
   JobPeriod,
   JobsExperience,
@@ -31,14 +31,14 @@ export const orderByOptions: Option<JobsOrderBy>[] = [
 ];
 
 export const periodOptions: Option<JobPeriod>[] = [
-  { label: 'любой', value: 0 },
-  { label: 'За день', value: 1 },
-  { label: 'За 3 дня', value: 3 },
-  { label: 'За неделю', value: 7 },
-  { label: 'За месяц', value: 30 }
+  { label: 'любой', value: '' },
+  { label: 'За день', value: '1' },
+  { label: 'За 3 дня', value: '3' },
+  { label: 'За неделю', value: '7' },
+  { label: 'За месяц', value: '30' }
 ];
 
-export const currencyOptions: Option<Currency>[] = [
+export const currencyOptions: Option<CurrencyQuery>[] = [
   { label: '', value: 'RUR', icon: RussianRuble },
   { label: '', value: 'USD', icon: DollarSign },
   { label: '', value: 'EUR', icon: Euro }

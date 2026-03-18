@@ -20,7 +20,7 @@ export interface JobFilters {
   order_by?: string;
   page?: number;
   per_page?: number;
-  period?: number;
+  period?: string;
   salary?: number;
   text?: string;
   work_format?: string[];

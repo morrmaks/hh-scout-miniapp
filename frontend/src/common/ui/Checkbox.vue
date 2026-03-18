@@ -32,7 +32,7 @@ const checked = computed({
     <input v-model="checked" type="checkbox" :disabled="disabled" aria-hidden="true" />
 
     <span class="box">
-      <Check v-if="checked" :size="12" />
+      <Check :class="{ hidden: !checked }" :size="12" />
     </span>
 
     <span v-if="label" class="text">
@@ -67,21 +67,29 @@ const checked = computed({
   height: 18px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   background: transparent;
-  color: var(--text);
+  color: white;
+  line-height: 0;
   transition:
-    background-сolor 0.15s,
+    background-color 0.15s,
     border-color 0.15s,
     color 0.15s;
+}
+
+.box :deep(svg) {
+  display: block;
+}
+
+.hidden {
+  opacity: 0;
 }
 
 .checkbox input:checked + .box {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
 }
 
 .text {

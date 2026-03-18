@@ -29,7 +29,7 @@ onMounted(() => {
 
 <template>
   <!-- custom trigger -->
-  <span v-if="asChild" ref="el" class="anchor" @click="dropdown.toggle">
+  <span v-if="asChild" ref="el" class="anchor" @click="!dropdown.disabled && dropdown.toggle()">
     <slot />
   </span>
 
@@ -40,6 +40,7 @@ onMounted(() => {
     variant="outline"
     class="trigger"
     type="button"
+    :disabled="dropdown.disabled"
     :data-state="dropdown.open.value ? 'open' : 'closed'"
     @click="dropdown.toggle"
   >

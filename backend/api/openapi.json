@@ -342,6 +342,42 @@
     },
 
     "/resumes/{id}": {
+      "patch": {
+        "operationId": "updateResume",
+        "tags": ["Resumes"],
+        "summary": "Update resume",
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "number" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResumeUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resume updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resume"
+                }
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "operationId": "deleteResume",
         "tags": ["Resumes"],
@@ -409,7 +445,7 @@
         "summary": "Get favorites with filters",
         "security": [{ "telegramInitData": [] }],
         "parameters": [
-          { "name": "resumeId", "in": "query", "required": true, "schema": { "type": "number" } },
+          { "name": "resumeId", "in": "query", "schema": { "type": "number" } },
           { "name": "text", "in": "query", "schema": { "type": "string" } },
           { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
           { "name": "per_page", "in": "query", "schema": { "type": "number", "default": 20 } },
@@ -495,6 +531,43 @@
                       "type": "array",
                       "items": { "type": "string" }
                     }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/favorites/clear": {
+      "delete": {
+        "operationId": "clearFavoritesByResumes",
+        "tags": ["Favorites"],
+        "summary": "Clear favorites for selected resumes",
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [
+          {
+            "name": "resumeIds",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "type": "number" }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favorites cleared",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
                   }
                 }
               }
@@ -756,8 +829,8 @@
       },
 
       "JobPeriod": {
-        "type": "number",
-        "enum": [0, 1, 3, 7, 30]
+        "type": "string",
+        "enum": ["0", "1", "3", "7", "30"]
       },
       "Job": {
         "type": "object",
@@ -806,6 +879,13 @@
       "ResumeCreate": {
         "type": "object",
         "required": ["name"],
+        "properties": {
+          "name": { "type": "string" }
+        }
+      },
+
+      "ResumeUpdate": {
+        "type": "object",
         "properties": {
           "name": { "type": "string" }
         }

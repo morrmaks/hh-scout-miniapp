@@ -9,7 +9,7 @@ import Badge from '@/common/ui/Badge.vue';
 import Button from '@/common/ui/Button.vue';
 import Card from '@/common/ui/Card.vue';
 import { formatDate } from '@/common/utils/date';
-import { FavoritesToggleButton } from '@/modules/favorites';
+import { FavoritesToggleButtons } from '@/modules/favorites';
 
 import { useViewedJobs } from '../composables/useViewedJobs';
 
@@ -74,7 +74,7 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
 
         <a :href="job.url" target="_blank">
           <Button variant="link" size="xs">
-            <ExternalLink :size="12" />
+            <ExternalLink :size="12" :stroke-width="3" />
           </Button>
         </a>
       </div>
@@ -129,7 +129,7 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
         <ArrowLeft :size="16" />
       </Button>
 
-      <FavoritesToggleButton class="favorite" :job-id="job.id" />
+      <FavoritesToggleButtons class="favorite" :job-id="job.id" />
 
       <Button variant="ghost" :disabled="disableNext" @click="$emit('next')">
         <ArrowRight :size="16" />

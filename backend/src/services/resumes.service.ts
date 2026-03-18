@@ -20,23 +20,58 @@ export async function createResume(userId: number, name: string) {
   });
 }
 
-export async function deleteResume(userId: number, resumeId: number) {
+export async function updateResume(userId: number, resumeId: number, name?: string) {
   const resume = await prisma.resume.findFirst({
     where: {
       id: resumeId,
       userId
-    },
+    }
+  });
+
+  if (!resume) throw new Error('Resume not found');
+
+  const data: { name?: string } = {};
+
+  if (name !== undefined) {
+    const trimmed = name.trim();
+    if (!trimmed) throw new Error('Resume name is required');
+
+    data.name = trimmed;
+  }
+
+  const resumeUpdated = await prisma.resume.update({
+    where: { id: resumeId },
+    data
+  });
+
+  return { id: resumeUpdated.id, name: resumeUpdated.name };
+}
+
+export async function deleteResume(userId: number, resumeId: number) {
+  const resume = await prisma.resume.findFirst({
+    where: { id: resumeId, userId },
     select: { id: true }
   });
 
   if (!resume) throw new Error('Resume not found');
 
-  await prisma.application.deleteMany({
-    where: { resumeId }
-  });
+  await prisma.$transaction(async (tx) => {
+    await tx.application.deleteMany({
+      where: { resumeId }
+    });
 
-  await prisma.resume.delete({
-    where: { id: resumeId }
+    await tx.favorite.deleteMany({
+      where: {
+        userId,
+        applications: {
+          none: {}
+        }
+      }
+    });
+
+    await tx.resume.delete({
+      where: { id: resumeId }
+    });
   });
 
   return true;

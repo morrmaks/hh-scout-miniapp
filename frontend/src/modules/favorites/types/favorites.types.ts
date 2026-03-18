@@ -4,7 +4,7 @@ export type FavoritesQuery = GetFavoritesData['query'];
 
 export type FavoritesFiltersType = Omit<
   GetFavoritesData['query'],
-  'page' | 'per_page' | 'sort' | 'text' | 'userId'
+  'page' | 'per_page' | 'resumeId' | 'sort' | 'text' | 'userId'
 >;
 
 export type FavoritesFiltersKeys = keyof FavoritesFiltersType;

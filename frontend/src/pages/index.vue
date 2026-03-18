@@ -18,9 +18,7 @@ const areasStore = useAreasStore();
 
 const searchState = computed(() => {
   if (!store.lastSearchQuery) return store.initialized ? 'idle' : 'initial';
-
   if (store.loading) return store.initialized ? 'refreshing' : 'loading';
-
   return store.found ? 'results' : 'empty';
 });
 
@@ -47,17 +45,7 @@ onMounted(() => {
 
     <div v-if="searchState === 'initial'" class="search-idle">Начните искать вакансии</div>
 
-    <div v-else-if="searchState === 'idle'" class="search-idle">
-      <p>нет запроса → нет вакансии</p>
-      <p>нет вакансии → нет отклика</p>
-      <p>нет отклика → нет собеса</p>
-      <p>нет собеса → нет оффера</p>
-      <p>нет оффера → нет работы</p>
-      <p>нет работы → нет денег</p>
-      <p>нет денег → нет нет</p>
-      <p>нет нет нет нет</p>
-      <p>Введите запрос, пожалуйста</p>
-    </div>
+    <div v-else-if="searchState === 'idle'" class="search-idle">Введите запрос, пожалуйста</div>
 
     <div v-else-if="searchState === 'empty'" class="search-empty">Ничего не найдено</div>
 

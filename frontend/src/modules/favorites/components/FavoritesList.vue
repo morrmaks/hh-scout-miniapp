@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { useIntersectionObserver } from '@vueuse/core';
-import { onMounted, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+
+import { useResumesStore } from '@/modules/resumes';
 
 import { useFavoritesStore } from '../store/favorites.store';
 import FavoriteListItem from './FavoritesListItem.vue';
 import FavoritesListSkeleton from './FavoritesListSkeleton.vue';
 
+const resumes = useResumesStore();
 const favorites = useFavoritesStore();
 
 const sentinel = ref<HTMLElement | null>(null);
@@ -15,23 +18,32 @@ function toggle() {
   expanded.value = !expanded.value;
 }
 
+const deps = computed(() => ({
+  resumeId: resumes.activeResumeId,
+  filters: favorites.filters,
+  sort: favorites.sort,
+  query: favorites.query,
+  invalidated: favorites.invalidated
+}));
+
+watch(
+  deps,
+  () => {
+    favorites.fetchFavorites();
+  },
+  { immediate: true, deep: true }
+);
+
 useIntersectionObserver(
   sentinel,
   ([entry]) => {
     if (!entry?.isIntersecting) return;
-
     if (favorites.loading || favorites.loadingMore || !favorites.hasMore) return;
 
     favorites.loadMore();
   },
-  {
-    rootMargin: '200px'
-  }
+  { rootMargin: '200px' }
 );
-
-onMounted(() => {
-  favorites.fetchFavorites();
-});
 </script>
 
 <template>

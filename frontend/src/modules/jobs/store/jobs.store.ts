@@ -202,6 +202,8 @@ export const useJobsStore = defineStore('jobs', () => {
   }
 
   function resetFilters() {
+    if (equalObjects(filters.value, DEFAULT_FILTERS)) return;
+
     filters.value = { ...DEFAULT_FILTERS };
 
     resetNavigation();
