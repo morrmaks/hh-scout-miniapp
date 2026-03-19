@@ -1,4 +1,7 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+echo "Running frontend hook..."
+cd frontend && .husky/pre-commit || exit 1
+cd ..
 
-npx lint-staged
+echo "Running backend hook..."
+cd backend && .husky/pre-commit || exit 1
+cd ..

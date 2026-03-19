@@ -20,17 +20,6 @@
     "format": "npm run format -w frontend && npm run format -w backend"
   },
   "devDependencies": {
-    "husky": "^9.1.7",
-    "lint-staged": "^16.3.2"
-  },
-"lint-staged": {
-  "frontend/**/*.{ts,tsx,vue}": [
-    "npm run lint:fix -w frontend",
-    "npm run format -w frontend"
-  ],
-  "backend/**/*.{ts,js}": [
-    "npm run lint:fix -w backend",
-    "npm run format -w backend"
-  ]
-}
+    "husky": "^9.1.7"
+  }
 }

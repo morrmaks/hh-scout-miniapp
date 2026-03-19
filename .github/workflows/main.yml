@@ -2,14 +2,14 @@ name: CI
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test-lint-build:
+  lint-build:
     runs-on: ubuntu-latest
 
     strategy:
