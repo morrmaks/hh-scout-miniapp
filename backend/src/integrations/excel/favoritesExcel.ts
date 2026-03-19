@@ -1,5 +1,5 @@
 import type { Favorite, Status } from '@prisma/client';
-import type { Buffer } from 'node:buffer';
+import { Buffer } from 'node:buffer';
 
 import ExcelJS from 'exceljs';
 
@@ -332,5 +332,5 @@ export async function generateFavoritesExcel(favorites: FavoriteWithStatus[], st
 
   const buffer = await workbook.xlsx.writeBuffer();
 
-  return buffer as Buffer;
+  return Buffer.from(buffer);
 }
