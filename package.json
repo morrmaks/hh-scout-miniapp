@@ -12,6 +12,8 @@
     "backend"
   ],
   "scripts": {
+    "dev": "npm run dev -w backend & npm run dev -w frontend",
+    "dev:ngrok": "npm run dev -w backend & npm run dev:ngrok -w frontend",
     "prepare": "husky",
     "lint": "npm run lint -w frontend && npm run lint -w backend",
     "lint:fix": "npm run lint:fix -w frontend && npm run lint:fix -w backend",

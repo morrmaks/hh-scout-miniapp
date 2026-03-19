@@ -6,6 +6,7 @@ import type { Favorite, FavoritesSort, Status } from '@/common/api/generated';
 import { useTelegramStore } from '@/app/integrations/telegram';
 import {
   deleteFavoriteByJobId,
+  deleteFavoritesClear,
   getFavorites,
   getFavoritesExport,
   getFavoritesIds,
@@ -28,8 +29,6 @@ export const useFavoritesStore = defineStore('favorites', () => {
   const userId = computed(() => telegram.user?.id ?? null);
   const activeResumeId = computed(() => resumes.activeResumeId);
 
-  /* ---------------- state ---------------- */
-
   const items = ref<Favorite[]>([]);
   const ids = ref<Set<string>>(new Set());
 
@@ -47,12 +46,11 @@ export const useFavoritesStore = defineStore('favorites', () => {
   const totalFound = ref(0);
   const totalAll = ref(0);
 
+  const clearing = ref(false);
   const loading = ref(false);
   const loadingMore = ref(false);
   const invalidated = ref(true);
   const initialized = ref(false);
-
-  /* ---------------- computed ---------------- */
 
   const showSkeleton = computed(() => loading.value && !initialized.value);
   const contentDisabled = computed(() => loading.value && initialized.value);
@@ -77,8 +75,6 @@ export const useFavoritesStore = defineStore('favorites', () => {
     return `Найдено ${totalFound.value} из ${totalAll.value} вакансий`;
   });
 
-  /* ---------------- helpers ---------------- */
-
   function resetState() {
     page.value = 1;
     pages.value = 0;
@@ -87,8 +83,6 @@ export const useFavoritesStore = defineStore('favorites', () => {
   function invalidate() {
     invalidated.value = true;
   }
-
-  /* ---------------- API ---------------- */
 
   async function fetchIds() {
     if (!userId.value) return;
@@ -165,8 +159,6 @@ export const useFavoritesStore = defineStore('favorites', () => {
       loadingMore.value = false;
     }
   }
-
-  /* ---------------- mutations ---------------- */
 
   async function saveFavorite(jobId: string, resumeIds: number[]) {
     if (!userId.value || !resumeIds.length) return;
@@ -259,6 +251,58 @@ export const useFavoritesStore = defineStore('favorites', () => {
     toast.success('Excel файл отправлен в чат');
   }
 
+  async function clearFavorites(resumeIds: number[]) {
+    if (!userId.value || !resumeIds.length || clearing.value) return;
+    clearing.value = true;
+
+    const isActiveAffected = activeResumeId.value
+      ? resumeIds.includes(activeResumeId.value)
+      : false;
+
+    const prevItems = [...items.value];
+    const prevIds = new Set(ids.value);
+    const prevTotalAll = totalAll.value;
+    const prevTotalFound = totalFound.value;
+
+    try {
+      await optimistic({
+        scope: 'favorites',
+        key: 'clear',
+
+        apply() {
+          if (!isActiveAffected) return;
+
+          items.value = [];
+          totalAll.value = 0;
+          totalFound.value = 0;
+        },
+
+        rollback() {
+          items.value = prevItems;
+          ids.value = prevIds;
+          totalAll.value = prevTotalAll;
+          totalFound.value = prevTotalFound;
+
+          toast.error('Не удалось очистить избранное');
+        },
+
+        async run() {
+          await deleteFavoritesClear({
+            query: { resumeIds }
+          });
+        }
+      });
+
+      toast.success('Избранное очищено');
+
+      await fetchIds();
+
+      if (!isActiveAffected) invalidate();
+    } finally {
+      clearing.value = false;
+    }
+  }
+
   async function setStatus(jobId: string, statusId: number | null) {
     if (!userId.value || !activeResumeId.value) return;
 
@@ -320,6 +364,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
     pages,
     sort,
 
+    clearing,
     loading,
     loadingMore,
     initialized,
@@ -340,6 +385,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
     saveFavorite,
     deleteFavorite,
     toggleFavorite,
+    clearFavorites,
 
     setStatus,
     setQuery,

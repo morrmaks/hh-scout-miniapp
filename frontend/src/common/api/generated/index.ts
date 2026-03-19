@@ -1,5 +1,6 @@
 export * from './requests/Areas/getAreas.gen';
 export * from './requests/Favorites/deleteFavoriteByJobId.gen';
+export * from './requests/Favorites/deleteFavoritesClear.gen';
 export * from './requests/Favorites/getFavorites.gen';
 export * from './requests/Favorites/getFavoritesExport.gen';
 export * from './requests/Favorites/getFavoritesIds.gen';
@@ -10,6 +11,7 @@ export * from './requests/Jobs/getJobs.gen';
 export * from './requests/Jobs/getJobsPrefetch.gen';
 export * from './requests/Resumes/deleteResumeById.gen';
 export * from './requests/Resumes/getResumes.gen';
+export * from './requests/Resumes/patchResumeById.gen';
 export * from './requests/Resumes/postResumes.gen';
 export * from './requests/Statuses/deleteStatuseById.gen';
 export * from './requests/Statuses/getStatuses.gen';

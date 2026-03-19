@@ -1,2 +1,2 @@
 export * from './helpers';
-export { recalcFavoriteSalaries } from './jobs/recalcFavoriteSalaries.job';
+export { prisma } from './prisma';

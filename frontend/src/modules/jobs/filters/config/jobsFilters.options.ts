@@ -31,7 +31,6 @@ export const orderByOptions: Option<JobsOrderBy>[] = [
 ];
 
 export const periodOptions: Option<JobPeriod>[] = [
-  { label: 'любой', value: '' },
   { label: 'За день', value: '1' },
   { label: 'За 3 дня', value: '3' },
   { label: 'За неделю', value: '7' },

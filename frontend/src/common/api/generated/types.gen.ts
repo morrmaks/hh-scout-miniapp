@@ -24,7 +24,7 @@ export type JobCurrency =
 
 export type JobLabel = 'with_salary';
 
-export type JobPeriod = 0 | 1 | 3 | 30 | 7;
+export type JobPeriod = '0' | '1' | '3' | '30' | '7';
 
 export interface Job {
   city?: string | null;
@@ -52,6 +52,10 @@ export interface Resume {
 
 export interface ResumeCreate {
   name: string;
+}
+
+export interface ResumeUpdate {
+  name?: string;
 }
 
 export interface Favorite {
@@ -292,11 +296,29 @@ export interface DeleteResumeResponses {
 
 export type DeleteResumeResponse = DeleteResumeResponses[keyof DeleteResumeResponses];
 
+export interface UpdateResumeData {
+  body: ResumeUpdate;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: '/resumes/{id}';
+}
+
+export interface UpdateResumeResponses {
+  /**
+   * Resume updated
+   */
+  200: Resume;
+}
+
+export type UpdateResumeResponse = UpdateResumeResponses[keyof UpdateResumeResponses];
+
 export interface GetFavoritesData {
   body?: never;
   path?: never;
-  query: {
-    resumeId: number;
+  query?: {
+    resumeId?: number;
     text?: string;
     page?: number;
     per_page?: number;
@@ -355,6 +377,27 @@ export interface GetFavoriteIdsResponses {
 }
 
 export type GetFavoriteIdsResponse = GetFavoriteIdsResponses[keyof GetFavoriteIdsResponses];
+
+export interface ClearFavoritesByResumesData {
+  body?: never;
+  path?: never;
+  query: {
+    resumeIds: Array<number>;
+  };
+  url: '/favorites/clear';
+}
+
+export interface ClearFavoritesByResumesResponses {
+  /**
+   * Favorites cleared
+   */
+  200: {
+    success?: boolean;
+  };
+}
+
+export type ClearFavoritesByResumesResponse =
+  ClearFavoritesByResumesResponses[keyof ClearFavoritesByResumesResponses];
 
 export interface ExportFavoritesExcelData {
   body?: never;

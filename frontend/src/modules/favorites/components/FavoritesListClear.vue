@@ -4,10 +4,11 @@ import { computed, ref } from 'vue';
 import Button from '@/common/ui/Button.vue';
 import Checkbox from '@/common/ui/Checkbox.vue';
 import { Dialog, DialogContent, DialogTrigger } from '@/common/ui/Dialog';
-// import { useFavoritesStore } from '../store/favorites.store'
 import { useResumesStore } from '@/modules/resumes';
 
-// const favorites = useFavoritesStore()
+import { useFavoritesStore } from '../store/favorites.store';
+
+const favorites = useFavoritesStore();
 const resumes = useResumesStore();
 
 const deleteAll = ref(false);
@@ -24,12 +25,10 @@ const resumeIds = computed(() => {
 
 /* ---------------- actions ---------------- */
 
-function handleDelete(close: () => void) {
+async function handleDelete(close: () => void) {
   if (!resumeIds.value.length) return;
 
-  // favorites.items.forEach(item => {
-  //   favorites.deleteFavorite(item.jobId, resumeIds.value)
-  // })
+  await favorites.clearFavorites(resumeIds.value);
 
   close();
 }
@@ -37,9 +36,10 @@ function handleDelete(close: () => void) {
 
 <template>
   <Dialog>
-    <DialogTrigger as-child>
+    <!-- <DialogTrigger as-child>
       <Button variant="ghost" class="clear-button"> Очистить избранное </Button>
-    </DialogTrigger>
+    </DialogTrigger> -->
+    <DialogTrigger as-child> Очистить избранное </DialogTrigger>
 
     <DialogContent v-slot="{ close }">
       <div class="dialog">
@@ -50,7 +50,13 @@ function handleDelete(close: () => void) {
         <div class="actions">
           <Button variant="ghost" @click="close"> Отмена </Button>
 
-          <Button variant="destructive" @click="handleDelete(close)"> Очистить </Button>
+          <Button
+            variant="destructive"
+            :disabled="!resumeIds.length || favorites.clearing"
+            @click="handleDelete(close)"
+          >
+            {{ favorites.clearing ? 'Очищается' : 'Очистить' }}
+          </Button>
         </div>
       </div>
     </DialogContent>

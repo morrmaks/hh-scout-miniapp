@@ -5,11 +5,13 @@ import { dropdownKey } from './dropdown.context';
 
 interface Props {
   asChild?: boolean;
+  closeOnSelect?: boolean;
   variant?: 'destructive' | 'ghost' | 'success';
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  variant: 'ghost'
+  variant: 'ghost',
+  closeOnSelect: false
 });
 
 defineSlots<{
@@ -19,12 +21,17 @@ defineSlots<{
 const dropdown = inject(dropdownKey)!;
 
 const classes = computed(() => ['item', `item-${props.variant}`]);
+
+function handleClick() {
+  if (!props.closeOnSelect) return;
+  dropdown.close();
+}
 </script>
 
 <template>
   <slot v-if="asChild" :close="dropdown.close" />
 
-  <div v-else :class="classes" @click="dropdown.close">
+  <div v-else :class="classes" @click="handleClick">
     <slot :close="dropdown.close" />
   </div>
 </template>

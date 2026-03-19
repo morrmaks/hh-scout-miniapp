@@ -830,7 +830,7 @@
 
       "JobPeriod": {
         "type": "string",
-        "enum": ["0", "1", "3", "7", "30"]
+        "enum": ["1", "3", "7", "30"]
       },
       "Job": {
         "type": "object",

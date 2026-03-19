@@ -18,13 +18,15 @@ const favorites = useFavoritesStore();
       </Button>
     </DropdownTrigger>
     <DropdownContent>
-      <DropdownItem variant="success" class="favorites-export" @click="favorites.exportExcel">
+      <DropdownItem
+        variant="success"
+        :close-on-select="true"
+        class="favorites-export"
+        @click="favorites.exportExcel"
+      >
         Экспорт в XLCX
       </DropdownItem>
       <DropdownItem variant="destructive" class="favorites-clean">
-        Очистить избранное
-      </DropdownItem>
-      <DropdownItem as-child>
         <FavoritesListClear />
       </DropdownItem>
     </DropdownContent>

@@ -14,5 +14,8 @@ router.use('/favorites', telegramAuthMiddleware, favoritesRouter);
 router.use('/resumes', telegramAuthMiddleware, resumesRouter);
 router.use('/areas', areasRouter);
 router.use('/statuses', telegramAuthMiddleware, statusesRouter);
+router.get('/health', (_, res) => {
+  res.json({ status: 'ok' });
+});
 
 export { router };

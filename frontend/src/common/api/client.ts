@@ -4,7 +4,7 @@ import { API_URL } from '@/app/config/api';
 import { getTelegramInitData } from '@/app/integrations/telegram';
 
 const instance = fetches.create({
-  baseURL: API_URL
+  baseURL: API_URL ?? ''
 });
 
 instance.interceptors.request.use((config) => {

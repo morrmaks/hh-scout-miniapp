@@ -3,7 +3,9 @@ import { computed, ref, watch } from 'vue';
 
 import type { Resume } from '@/common/api/generated';
 
-import { deleteResumeById, getResumes, postResumes } from '@/common/api/generated';
+import { deleteResumeById, getResumes, patchResumeById, postResumes } from '@/common/api/generated';
+import { optimistic } from '@/common/lib/optimistic';
+import { toast } from '@/modules/toast';
 
 import { useActiveResume } from '../composables/useActiveResume';
 import { useDefaultSaveResumes } from '../composables/useDefaultSaveResumes';
@@ -54,13 +56,35 @@ export const useResumesStore = defineStore('resumes', () => {
   }
 
   async function removeResume(id: number) {
+    const index = items.value.findIndex((r) => r.id === id);
+    if (index === -1) return;
+
+    const removed = items.value[index];
     const wasActive = activeResumeId.value === id;
 
-    await deleteResumeById({ path: { id } });
+    const prevDefaults = [...defaultSaveResumeIds.value];
 
-    items.value = items.value.filter((r) => r.id !== id);
+    await optimistic({
+      scope: 'resumes',
+      key: String(id),
 
-    defaultSaveResumeIds.value = defaultSaveResumeIds.value.filter((r) => r !== id);
+      apply() {
+        items.value.splice(index, 1);
+        defaultSaveResumeIds.value = defaultSaveResumeIds.value.filter((r) => r !== id);
+      },
+
+      rollback() {
+        if (removed) items.value.splice(index, 0, removed);
+
+        defaultSaveResumeIds.value = prevDefaults;
+
+        toast.error('Не удалось удалить резюме');
+      },
+
+      async run() {
+        await deleteResumeById({ path: { id } });
+      }
+    });
 
     if (wasActive) activeResumeId.value = items.value[0]?.id ?? null;
 
@@ -68,12 +92,34 @@ export const useResumesStore = defineStore('resumes', () => {
   }
 
   async function updateResume(id: number, name: string) {
-    // 🔴 пока заглушка
-    // потом заменишь на API
+    const value = name.trim();
+    if (!value) return;
+
     const item = items.value.find((r) => r.id === id);
     if (!item) return;
 
-    item.name = name;
+    const prevName = item.name;
+
+    await optimistic({
+      scope: 'resumes',
+      key: String(id),
+
+      apply() {
+        item.name = value;
+      },
+
+      rollback() {
+        item.name = prevName;
+        toast.error('Не удалось обновить резюме');
+      },
+
+      async run() {
+        await patchResumeById({
+          path: { id },
+          body: { name: value }
+        });
+      }
+    });
   }
 
   /* ---------------- ui actions ---------------- */

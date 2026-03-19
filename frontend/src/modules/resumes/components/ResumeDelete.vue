@@ -14,8 +14,8 @@ const favorites = useFavoritesStore();
 const resumes = useResumesStore();
 
 async function remove() {
-  const { wasActive } = await resumes.removeResume(props.resumeId);
-  if (wasActive) favorites.invalidate();
+  const data = await resumes.removeResume(props.resumeId);
+  if (data?.wasActive) favorites.invalidate();
 
   close();
 }

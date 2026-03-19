@@ -1,8 +1,8 @@
 import cron from 'node-cron';
 
-import { recalcFavoriteSalaries } from '../db';
+import { recalcFavoriteSalaries } from '/db';
 
-cron.schedule('0 3 1 * *', async () => {
+cron.schedule('0 * * * *', async () => {
   console.log('Starting salary recalculation');
 
   try {
