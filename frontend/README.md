@@ -41,11 +41,13 @@ npm run dev:ngrok
 ## 2. Поднять туннель (любой)
 
 ### ngrok
+
 ```bash
 ngrok http 5173
 ```
 
 ### или cloudflared
+
 ```bash
 cloudflared tunnel --url http://localhost:5173
 ```
