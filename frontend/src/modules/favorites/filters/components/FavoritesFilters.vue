@@ -46,7 +46,7 @@ function toggleSalaryLabel(enabled: boolean) {
   if (enabled) labels.add('with_salary');
   else labels.delete('with_salary');
 
-  local.label = Array.from(labels);
+  local.label = [...labels];
 }
 
 function toggleCurrencyLabel(enabled: boolean) {
@@ -55,7 +55,7 @@ function toggleCurrencyLabel(enabled: boolean) {
   if (enabled) labels.add('same_currency');
   else labels.delete('same_currency');
 
-  local.label = Array.from(labels);
+  local.label = [...labels];
 }
 
 function reset() {

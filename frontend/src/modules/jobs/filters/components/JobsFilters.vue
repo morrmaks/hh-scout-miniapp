@@ -56,7 +56,7 @@ function toggleSalaryLabel(enabled: boolean) {
   if (enabled) labels.add('with_salary');
   else labels.delete('with_salary');
 
-  local.label = Array.from(labels);
+  local.label = [...labels];
 }
 
 const areasStore = useAreasStore();

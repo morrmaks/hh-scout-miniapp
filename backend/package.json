@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
     "prepare": "husky",
     "precommit": "pretty-quick --staged"
   },
@@ -30,6 +31,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@siberiacancode/eslint": "^2.16.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/he": "^1.2.3",

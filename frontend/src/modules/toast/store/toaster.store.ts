@@ -35,12 +35,12 @@ export const useToasterStore = () => {
     );
 
     if (samePosition.length > 3) {
-      const oldest = samePosition[samePosition.length - 1];
+      const oldest = samePosition.at(-1);
       if (oldest) close(oldest.id);
     }
 
     if (item.duration) {
-      setTimeout(() => close(item.id), item.duration);
+      setTimeout(close, item.duration, item.id);
     }
   };
 

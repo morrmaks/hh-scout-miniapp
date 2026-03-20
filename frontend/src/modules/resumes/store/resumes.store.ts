@@ -134,7 +134,7 @@ export const useResumesStore = defineStore('resumes', () => {
     if (set.has(id)) set.delete(id);
     else set.add(id);
 
-    defaultSaveResumeIds.value = Array.from(set);
+    defaultSaveResumeIds.value = [...set];
   }
 
   function setDefaultSaveResumes(ids: number[]) {

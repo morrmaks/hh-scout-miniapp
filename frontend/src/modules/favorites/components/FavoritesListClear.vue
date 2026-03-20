@@ -36,9 +36,6 @@ async function handleDelete(close: () => void) {
 
 <template>
   <Dialog>
-    <!-- <DialogTrigger as-child>
-      <Button variant="ghost" class="clear-button"> Очистить избранное </Button>
-    </DialogTrigger> -->
     <DialogTrigger as-child> Очистить избранное </DialogTrigger>
 
     <DialogContent v-slot="{ close }">

@@ -1,7 +1,7 @@
 import type { Favorite, Status } from '@prisma/client';
-import { Buffer } from 'node:buffer';
 
 import ExcelJS from 'exceljs';
+import { Buffer } from 'node:buffer';
 
 import { STATUS_COLOR_MAP } from './statusColors';
 

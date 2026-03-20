@@ -1,3 +1,5 @@
+const SCROLL_REGEX = /auto|scroll/;
+
 export function getScrollParents(el: HTMLElement | null): HTMLElement[] {
   const parents: HTMLElement[] = [];
 
@@ -8,7 +10,7 @@ export function getScrollParents(el: HTMLElement | null): HTMLElement[] {
 
     const overflow = style.overflow + style.overflowY + style.overflowX;
 
-    if (/auto|scroll/.test(overflow)) {
+    if (SCROLL_REGEX.test(overflow)) {
       parents.push(parent);
     }
 

@@ -56,7 +56,7 @@ function toggle(value: T) {
   if (next.has(value)) next.delete(value);
   else next.add(value);
 
-  emit('update:modelValue', Array.from(next));
+  emit('update:modelValue', [...next]);
 }
 
 const context: ToggleGroupContext<T> = {
