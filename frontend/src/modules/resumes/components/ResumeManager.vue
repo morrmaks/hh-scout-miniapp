@@ -79,7 +79,9 @@ function handleBlur(id: number, initial: string) {
         </div>
       </div>
 
-      <div v-if="!resumes.items.length" class="empty">Нет резюме</div>
+      <div v-if="!resumes.items.length" class="empty">
+        Нет резюме
+      </div>
     </Card>
   </div>
 </template>

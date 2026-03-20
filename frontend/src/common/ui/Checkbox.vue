@@ -29,7 +29,7 @@ const checked = computed({
 
 <template>
   <label class="checkbox" :class="{ disabled }" v-bind="attrs">
-    <input v-model="checked" type="checkbox" :disabled="disabled" aria-hidden="true" />
+    <input v-model="checked" type="checkbox" :disabled="disabled" aria-hidden="true">
 
     <span class="box">
       <Check :class="{ hidden: !checked }" :size="12" />
