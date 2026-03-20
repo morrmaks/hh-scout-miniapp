@@ -1,15 +1,31 @@
-import { createApp } from 'vue'
+import { createApp } from 'vue';
 
-import App from './App.vue'
-import router from './router/router'
-import { pinia } from './providers/pinia'
+import App from './App.vue';
+import { setLoaderProgress, startAppLoader, stopAppLoader } from './bootstrap/appLoader';
+import { prefetchRoutes } from './bootstrap/prefetchRoutes';
+import { setupProviders } from './providers/providers';
+import { router } from './router/router';
 
-import './styles/reset.css'
-import './styles/global.css'
+async function bootstrap() {
+  startAppLoader();
 
-const app = createApp(App)
+  const app = createApp(App);
 
-app.use(router)
-app.use(pinia)
+  app.use(router);
 
-app.mount('#app')
+  await setupProviders(app);
+
+  setLoaderProgress(35);
+
+  await router.isReady();
+
+  await prefetchRoutes(router);
+
+  setLoaderProgress(90);
+
+  app.mount('#app');
+
+  stopAppLoader();
+}
+
+bootstrap();

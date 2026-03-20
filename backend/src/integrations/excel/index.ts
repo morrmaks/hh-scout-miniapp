@@ -1,0 +1,1 @@
+export { generateFavoritesExcel } from './favoritesExcel';

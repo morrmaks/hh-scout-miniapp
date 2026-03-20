@@ -1,10 +1,10 @@
-type CacheEntry<V> = {
-  value: V
-  expires: number
+interface CacheEntry<V> {
+  expires: number;
+  value: V;
 }
 
 export class LRU<K, V> {
-  private cache = new Map<K, CacheEntry<V>>()
+  private cache = new Map<K, CacheEntry<V>>();
 
   constructor(
     private max = 500,
@@ -12,47 +12,44 @@ export class LRU<K, V> {
   ) {}
 
   get(key: K): V | undefined {
-    const entry = this.cache.get(key)
+    const entry = this.cache.get(key);
 
-    if (!entry) return
+    if (!entry) return;
 
     if (Date.now() > entry.expires) {
-      this.cache.delete(key)
-      return
+      this.cache.delete(key);
+      return;
     }
 
-    this.cache.delete(key)
-    this.cache.set(key, entry)
+    this.cache.delete(key);
+    this.cache.set(key, entry);
 
-    return entry.value
+    return entry.value;
   }
 
   set(key: K, value: V) {
-    if (this.cache.has(key))
-      this.cache.delete(key)
+    if (this.cache.has(key)) this.cache.delete(key);
 
     this.cache.set(key, {
       value,
       expires: Date.now() + this.ttl
-    })
+    });
 
     if (this.cache.size > this.max) {
-      const firstKey = this.cache.keys().next().value
-      if (firstKey !== undefined)
-        this.cache.delete(firstKey)
+      const firstKey = this.cache.keys().next().value;
+      if (firstKey !== undefined) this.cache.delete(firstKey);
     }
   }
 
   cleanup() {
-    const now = Date.now()
+    const now = Date.now();
 
     for (const [key, entry] of this.cache) {
-      if (entry.expires < now)
-        this.cache.delete(key)
+      if (entry.expires < now) this.cache.delete(key);
     }
   }
 
   size() {
-    return this.cache.size
+    return this.cache.size;
   }
 }

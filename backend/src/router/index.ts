@@ -1,12 +1,21 @@
-import express from "express";
-import jobsRouter from "./jobsRouter";
-import favoritesRouter from "./favoritesRouter";
-import positionRouter from "./positionRouter";
+import express from 'express';
+
+import { telegramAuthMiddleware } from '../middleware/telegramAuth.middleware';
+import areasRouter from './areas.router';
+import favoritesRouter from './favorites.router';
+import jobsRouter from './jobs.router';
+import resumesRouter from './resumes.router';
+import statusesRouter from './statuses.router';
 
 const router = express.Router();
 
-router.use("/jobs", jobsRouter)
-router.use("/favorites", favoritesRouter)
-router.use("/position", positionRouter)
+router.use('/jobs', jobsRouter);
+router.use('/favorites', telegramAuthMiddleware, favoritesRouter);
+router.use('/resumes', telegramAuthMiddleware, resumesRouter);
+router.use('/areas', areasRouter);
+router.use('/statuses', telegramAuthMiddleware, statusesRouter);
+router.get('/health', (_, res) => {
+  res.json({ status: 'ok' });
+});
 
-export { router }
+export { router };

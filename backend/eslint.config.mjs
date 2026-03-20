@@ -3,7 +3,7 @@ import { eslint } from '@siberiacancode/eslint';
 export default eslint({
   typescript: true,
   rules: {
-    'node/prefer-global/process': ['error', 'always'],
-    'node/prefer-global/buffer': ['error', 'always']
+    'e18e/prefer-spread-syntax': 'off',
+    'e18e/prefer-array-to-sorted': 'off'
   }
 });

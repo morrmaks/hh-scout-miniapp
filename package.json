@@ -4,7 +4,7 @@
   "description": "",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "private": true,
   "workspaces": [
@@ -12,26 +12,14 @@
     "backend"
   ],
   "scripts": {
+    "dev": "npm run dev -w backend & npm run dev -w frontend",
+    "dev:ngrok": "npm run dev -w backend & npm run dev:ngrok -w frontend",
+    "prepare": "husky",
     "lint": "npm run lint -w frontend && npm run lint -w backend",
     "lint:fix": "npm run lint:fix -w frontend && npm run lint:fix -w backend",
     "format": "npm run format -w frontend && npm run format -w backend"
   },
   "devDependencies": {
-    "husky": "^9.1.7",
-    "lint-staged": "^16.3.2"
-  },
-  "lint-staged": {
-    "frontend/**/*.{ts,tsx,vue}": [
-      "npm run lint:fix -w frontend"
-    ],
-    "frontend/**/*.{ts,tsx,vue,json,css,md}": [
-      "npm run format -w frontend"
-    ],
-    "backend/**/*.{ts,js}": [
-      "npm run lint:fix -w backend"
-    ],
-    "backend/**/*.{ts,js,json,md}": [
-      "npm run format -w backend"
-    ]
+    "husky": "^9.1.7"
   }
 }

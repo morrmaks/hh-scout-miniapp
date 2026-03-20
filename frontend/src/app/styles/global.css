@@ -1,10 +1,50 @@
+@import './reset.css';
+@import './theme.css';
+@import './appLoader.css';
+@import './layout.css';
+
 body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background: #0f0f0f;
-  color: #ffffff;
+  min-width: 320px;
+  background: transparent;
+  color: var(--text);
+
+  font-family:
+    'Ubuntu',
+    system-ui,
+    -apple-system,
+    sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: '';
+
+  position: fixed;
+  inset: 0;
+
+  background: var(--page-gradient), var(--bg);
+
+  z-index: -1;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+p {
+  line-height: 1.6;
 }
 
 button {
-  font: inherit;
-  cursor: pointer;
+  font-family: inherit;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
 }

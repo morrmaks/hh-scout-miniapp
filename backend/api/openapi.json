@@ -1,0 +1,1051 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "HH Scout API",
+    "version": "1.0.0",
+    "description": "API for HH Scout Miniapp"
+  },
+
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+
+  "tags": [
+    { "name": "Jobs" },
+    { "name": "Favorites" },
+    { "name": "Areas" },
+    { "name": "Statuses" }
+  ],
+
+  "paths": {
+    "/jobs": {
+      "get": {
+        "operationId": "searchJobs",
+        "tags": ["Jobs"],
+        "summary": "Search jobs",
+        "parameters": [
+          { "name": "text", "in": "query", "schema": { "type": "string" } },
+
+          { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
+
+          { "name": "per_page", "in": "query", "schema": { "type": "number", "default": 100 } },
+
+          { "name": "index", "in": "query", "schema": { "type": "number", "default": 0 } },
+
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/JobsOrderBy" }
+          },
+
+          { "name": "salary", "in": "query", "schema": { "type": "number" } },
+
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/CurrencyQuery" }
+          },
+
+          {
+            "name": "experience",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/JobsExperience"
+              }
+            }
+          },
+
+          {
+            "name": "employment_form",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/EmploymentForm" }
+            }
+          },
+
+          {
+            "name": "work_format",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/WorkFormat" }
+            }
+          },
+
+          {
+            "name": "area",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
+          {
+            "name": "label",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/JobLabel" }
+            }
+          },
+
+          {
+            "name": "period",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/JobPeriod" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/jobs/prefetch": {
+      "get": {
+        "operationId": "prefetchJobs",
+        "tags": ["Jobs"],
+        "summary": "Prefetch next jobs",
+        "parameters": [
+          { "name": "text", "in": "query", "schema": { "type": "string" } },
+
+          { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
+
+          { "name": "per_page", "in": "query", "schema": { "type": "number", "default": 100 } },
+
+          { "name": "index", "in": "query", "schema": { "type": "number", "default": 0 } },
+
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/JobsOrderBy" }
+          },
+
+          { "name": "salary", "in": "query", "schema": { "type": "number" } },
+
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/CurrencyQuery" }
+          },
+
+          {
+            "name": "experience",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/JobsExperience"
+              }
+            }
+          },
+          {
+            "name": "employment_form",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/EmploymentForm" }
+            }
+          },
+
+          {
+            "name": "work_format",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/WorkFormat" }
+            }
+          },
+
+          {
+            "name": "area",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+
+          {
+            "name": "label",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/JobLabel" }
+            }
+          },
+
+          {
+            "name": "period",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/JobPeriod" }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Prefetched jobs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Job"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/jobs/{id}": {
+      "get": {
+        "operationId": "getJobById",
+        "tags": ["Jobs"],
+        "summary": "Get job by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/areas": {
+      "get": {
+        "operationId": "getAreas",
+        "tags": ["Areas"],
+        "summary": "Get list of regions",
+        "responses": {
+          "200": {
+            "description": "List of areas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Area"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/resumes": {
+      "get": {
+        "operationId": "getResumes",
+        "tags": ["Resumes"],
+        "summary": "Get user resumes",
+        "security": [{ "telegramInitData": [] }],
+        "responses": {
+          "200": {
+            "description": "List of resumes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Resume" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createResume",
+        "tags": ["Resumes"],
+        "summary": "Create resume",
+        "security": [{ "telegramInitData": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResumeCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resume created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resume"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/resumes/{id}": {
+      "patch": {
+        "operationId": "updateResume",
+        "tags": ["Resumes"],
+        "summary": "Update resume",
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "number" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResumeUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resume updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resume"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteResume",
+        "tags": ["Resumes"],
+        "summary": "Delete resume",
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "number" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resume deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/favorites": {
+      "post": {
+        "operationId": "saveFavorite",
+        "tags": ["Favorites"],
+        "summary": "Save favorite job",
+        "security": [{ "telegramInitData": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FavoriteCreate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Favorite saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getFavorites",
+        "tags": ["Favorites"],
+        "summary": "Get favorites with filters",
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [
+          { "name": "resumeId", "in": "query", "schema": { "type": "number" } },
+          { "name": "text", "in": "query", "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "schema": { "type": "number", "default": 1 } },
+          { "name": "per_page", "in": "query", "schema": { "type": "number", "default": 20 } },
+          { "name": "salary_from", "in": "query", "schema": { "type": "number" } },
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/CurrencyQuery" }
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": { "type": "array", "items": { "type": "number" } }
+          },
+          {
+            "name": "label",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/FavoritesLabel" }
+            }
+          },
+          {
+            "name": "experience",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/JobsExperience"
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/FavoritesSort"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favorites list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FavoritesResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/favorites/ids": {
+      "get": {
+        "operationId": "getFavoriteIds",
+        "tags": ["Favorites"],
+        "summary": "Get all favorite job ids",
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of favorite job ids",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ids": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/favorites/clear": {
+      "delete": {
+        "operationId": "clearFavoritesByResumes",
+        "tags": ["Favorites"],
+        "summary": "Clear favorites for selected resumes",
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [
+          {
+            "name": "resumeIds",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "type": "number" }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favorites cleared",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/favorites/export": {
+      "get": {
+        "operationId": "exportFavoritesExcel",
+        "tags": ["Favorites"],
+        "summary": "Export favorites to Excel",
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [
+          {
+            "name": "resumeId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number" },
+            "description": "Export favorites only for a specific resume"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Excel sent to Telegram chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/favorites/{jobId}": {
+      "delete": {
+        "operationId": "deleteFavorite",
+        "tags": ["Favorites"],
+        "summary": "Remove job from selected resumes",
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "resumeIds",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": { "type": "number" }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favorite removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/favorites/{jobId}/status": {
+      "patch": {
+        "operationId": "setFavoriteStatus",
+        "tags": ["Favorites"],
+        "summary": "Change favorite status",
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [
+          { "name": "jobId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["resumeId"],
+                "properties": {
+                  "resumeId": { "type": "number" },
+                  "statusId": { "type": "number", "nullable": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/statuses": {
+      "get": {
+        "operationId": "getStatuses",
+        "tags": ["Statuses"],
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of statuses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Status" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createStatus",
+        "tags": ["Statuses"],
+        "security": [{ "telegramInitData": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/StatusCreate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Status" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/statuses/{id}": {
+      "patch": {
+        "operationId": "updateStatus",
+        "tags": ["Statuses"],
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "number" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/StatusUpdate" }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Status updated" } }
+      },
+      "delete": {
+        "operationId": "deleteStatus",
+        "tags": ["Statuses"],
+        "security": [{ "telegramInitData": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "number" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "components": {
+    "securitySchemes": {
+      "telegramInitData": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-telegram-init-data"
+      }
+    },
+    "schemas": {
+      "JobsOrderBy": {
+        "type": "string",
+        "enum": ["relevance", "publication_time", "salary_asc", "salary_desc"]
+      },
+
+      "JobsExperience": {
+        "type": "string",
+        "enum": ["noExperience", "between1And3", "between3And6", "moreThan6"]
+      },
+
+      "EmploymentForm": {
+        "type": "string",
+        "enum": ["FULL", "PART", "PROJECT", "FLY_IN_FLY_OUT", "SIDE_JOB"]
+      },
+
+      "WorkFormat": {
+        "type": "string",
+        "enum": ["REMOTE", "FIELD_WORK", "HYBRID", "ON_SITE"]
+      },
+
+      "CurrencyQuery": {
+        "type": "string",
+        "enum": ["RUR", "USD", "EUR"]
+      },
+
+      "JobCurrency": {
+        "type": "string",
+        "enum": ["RUR", "USD", "EUR", "UAH", "KZT", "KGS", "GEL", "AZN", "UZS", "BYN"]
+      },
+
+      "JobLabel": {
+        "type": "string",
+        "enum": ["with_salary"]
+      },
+
+      "JobPeriod": {
+        "type": "string",
+        "enum": ["1", "3", "7", "30"]
+      },
+      "Job": {
+        "type": "object",
+        "required": ["id", "title", "company", "url", "description"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "company": { "type": "string" },
+          "url": { "type": "string" },
+          "description": { "type": "string" },
+          "publishedAt": { "type": "string" },
+          "salaryFrom": { "type": "number", "nullable": true },
+          "salaryTo": { "type": "number", "nullable": true },
+          "currency": { "$ref": "#/components/schemas/JobCurrency", "nullable": true },
+          "experience": { "type": "string", "nullable": true },
+          "employmentForm": { "type": "string", "nullable": true },
+          "workFormat": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "workSchedule": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "workingHours": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "city": { "type": "string", "nullable": true },
+          "skills": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+
+      "Resume": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "number" },
+          "name": { "type": "string" }
+        }
+      },
+
+      "ResumeCreate": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" }
+        }
+      },
+
+      "ResumeUpdate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }
+        }
+      },
+
+      "Favorite": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number" },
+          "userId": { "type": "number" },
+          "jobId": { "type": "string" },
+          "title": { "type": "string" },
+          "company": { "type": "string" },
+          "salaryFrom": { "type": "number", "nullable": true },
+          "salaryTo": { "type": "number", "nullable": true },
+          "currency": { "$ref": "#/components/schemas/JobCurrency", "nullable": true },
+          "experience": { "type": "string", "nullable": true },
+          "publishedAt": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string" },
+          "statusId": { "type": "number", "nullable": true },
+          "url": { "type": "string" }
+        }
+      },
+
+      "FavoritesLabel": {
+        "type": "string",
+        "enum": ["with_salary", "same_currency"]
+      },
+
+      "FavoritesSort": {
+        "type": "string",
+        "enum": [
+          "created_asc",
+          "created_desc",
+          "published_asc",
+          "published_desc",
+          "salary_asc",
+          "salary_desc"
+        ]
+      },
+
+      "StatusColor": {
+        "type": "string",
+        "enum": [
+          "blue",
+          "purple",
+          "orange",
+          "green",
+          "red",
+          "yellow",
+          "pink",
+          "teal",
+          "indigo",
+          "gray"
+        ]
+      },
+
+      "Status": {
+        "type": "object",
+        "required": ["id", "name", "color"],
+        "properties": {
+          "id": { "type": "number" },
+          "name": { "type": "string" },
+          "color": { "$ref": "#/components/schemas/StatusColor" }
+        }
+      },
+      "StatusCreate": {
+        "type": "object",
+        "required": ["name", "color"],
+        "properties": {
+          "name": { "type": "string" },
+          "color": { "$ref": "#/components/schemas/StatusColor" }
+        }
+      },
+
+      "StatusUpdate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "color": { "$ref": "#/components/schemas/StatusColor" }
+        }
+      },
+
+      "FavoritesResponse": {
+        "type": "object",
+        "required": ["items", "meta"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Favorite" }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "totalAll": { "type": "number" },
+              "totalFound": { "type": "number" },
+              "page": { "type": "number" },
+              "pages": { "type": "number" }
+            }
+          },
+          "filters": {
+            "type": "object",
+            "properties": {
+              "companies": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "statuses": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Status" }
+              }
+            }
+          }
+        }
+      },
+
+      "FavoriteCreate": {
+        "type": "object",
+        "required": ["jobId", "resumeIds"],
+        "properties": {
+          "jobId": { "type": "string" },
+          "resumeIds": {
+            "type": "array",
+            "items": { "type": "number" },
+            "description": "List of resume IDs this favorite should be linked to"
+          }
+        }
+      },
+
+      "SearchResult": {
+        "type": "object",
+        "required": ["items", "page", "pages", "found", "perPage", "pageItems"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Job"
+            }
+          },
+
+          "page": { "type": "number" },
+
+          "pages": { "type": "number" },
+
+          "found": { "type": "number" },
+
+          "perPage": { "type": "number" },
+
+          "pageItems": { "type": "number" }
+        }
+      },
+
+      "Area": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" }
+        }
+      }
+    }
+  }
+}
