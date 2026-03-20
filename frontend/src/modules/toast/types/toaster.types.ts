@@ -15,6 +15,7 @@ export type ToastPosition =
 export interface Toast {
   duration?: number;
   id: number;
+  isLoading?: boolean;
   message: string;
   position?: ToastPosition;
   state?: 'closing' | 'open';

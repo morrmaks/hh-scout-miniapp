@@ -1,8 +1,8 @@
-import process from 'node:process';
+import { env } from '@/config/env';
 
 const BASE = 'https://api.exchangerate.host';
 
-const ACCESS_KEY = process.env.EXCHANGERATE_ACCESS_KEY;
+const ACCESS_KEY = env.EXCHANGERATE_ACCESS_KEY;
 
 export async function fetchCurrencyRates<T>(
   path: string,
