@@ -41,6 +41,9 @@ jobs:
       - name: Install frontend deps
         run: cd frontend && npm ci
 
+      - name: Generate API
+        run: cd frontend && npm run api:generate
+
       - name: Frontend lint
         run: cd frontend && npm run lint
 

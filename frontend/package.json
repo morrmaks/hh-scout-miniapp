@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@siberiacancode/fetches": "^1.14.1",
+    "@telegram-apps/init-data-node": "^2.0.10",
     "@telegram-apps/sdk": "^3.11.8",
     "@twa-dev/sdk": "^8.0.2",
     "@vueuse/core": "^14.2.1",
