@@ -3,6 +3,7 @@ import { CircleCheck, OctagonX, TriangleAlert, X } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 
 import Button from '@/common/ui/Button.vue';
+import Spinner from '@/common/ui/Spinner.vue';
 
 import type { Toast } from '../types/toaster.types';
 
@@ -38,6 +39,8 @@ const direction = computed(() => {
 });
 
 const icon = computed(() => {
+  if (props.toast.isLoading) return 'loader';
+
   switch (props.toast.variant) {
     case 'success':
       return CircleCheck;
@@ -83,7 +86,15 @@ onMounted(() => {
       </Button>
 
       <div class="content">
-        <component :is="icon" v-if="icon" class="icon" :size="16" />
+        <Spinner
+          v-if="icon === 'loader'"
+          class="spinner"
+          :size="16"
+          variant="circle"
+          :stroke-width="3"
+        />
+
+        <component :is="icon" v-else-if="icon" class="icon" :size="16" />
 
         <div class="text">
           <div v-if="toast.title" class="title">
@@ -222,6 +233,11 @@ onMounted(() => {
   display: flex;
   gap: 10px;
   align-items: flex-start;
+}
+
+.spinner {
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .icon {

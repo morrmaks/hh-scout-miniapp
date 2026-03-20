@@ -7,11 +7,19 @@ const toasts = ref<Toast[]>([]);
 let id = 0;
 
 export const useToasterStore = () => {
+  const timers = new Map<number, ReturnType<typeof setTimeout>>();
+
   const close = (id: number) => {
     const toast = toasts.value.find((t) => t.id === id);
     if (!toast || toast.state === 'closing') return;
 
     toast.state = 'closing';
+
+    const timer = timers.get(id);
+    if (timer) {
+      clearTimeout(timer);
+      timers.delete(id);
+    }
 
     setTimeout(() => {
       toasts.value = toasts.value.filter((t) => t.id !== id);
@@ -28,6 +36,11 @@ export const useToasterStore = () => {
       ...toast
     };
 
+    if (item.duration) {
+      const timer = setTimeout(close, item.duration, item.id);
+      timers.set(item.id, timer);
+    }
+
     toasts.value.unshift(item);
 
     const samePosition = toasts.value.filter(
@@ -42,11 +55,31 @@ export const useToasterStore = () => {
     if (item.duration) {
       setTimeout(close, item.duration, item.id);
     }
+
+    return item.id;
+  };
+
+  const update = (id: number, patch: Partial<Toast>) => {
+    const toast = toasts.value.find((t) => t.id === id);
+    if (!toast) return;
+
+    Object.assign(toast, patch);
+
+    if (patch.duration !== undefined) {
+      const old = timers.get(id);
+      if (old) clearTimeout(old);
+
+      if (patch.duration) {
+        const timer = setTimeout(close, patch.duration, id);
+        timers.set(id, timer);
+      }
+    }
   };
 
   return {
     toasts,
     add,
-    close
+    close,
+    update
   };
 };

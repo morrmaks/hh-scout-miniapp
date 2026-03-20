@@ -242,13 +242,23 @@ export const useFavoritesStore = defineStore('favorites', () => {
   }
 
   async function exportExcel() {
-    if (!userId.value || !activeResumeId.value) return;
+    const resumeId = activeResumeId.value;
+    const user = userId.value;
 
-    await getFavoritesExport({
-      query: { resumeId: activeResumeId.value }
-    });
+    if (!user || !resumeId) return;
 
-    toast.success('Excel файл отправлен в чат');
+    await toast.promise(
+      () =>
+        getFavoritesExport({
+          query: { resumeId }
+        }),
+      {
+        loading: 'Экспортируем Excel...',
+        success: 'Excel файл отправлен в чат',
+        error: 'Ошибка при экспорте',
+        position: 'top-center'
+      }
+    );
   }
 
   async function clearFavorites(resumeIds: number[]) {
