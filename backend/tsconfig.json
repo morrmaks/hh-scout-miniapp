@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "baseUrl": "./",
+    "rootDir": "./",
+    "module": "commonjs",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]
     },
     "strict": true,
-    "outDir": "dist",
+    "outDir": "./dist",
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
-  }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

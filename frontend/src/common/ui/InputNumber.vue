@@ -53,7 +53,7 @@ const value = computed({
     :step="step"
     :disabled="disabled"
     v-bind="attrs"
-  >
+  />
 </template>
 
 <style scoped>
