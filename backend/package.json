@@ -1,10 +1,9 @@
 {
   "name": "hh-scout-backend",
-  "type": "module",
   "scripts": {
     "dev": "tsx src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
+    "build": "tsc && tsc-alias",
+    "start": "node dist/src/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
@@ -40,6 +39,7 @@
     "husky": "^9.1.7",
     "pretty-quick": "^4.2.2",
     "prisma": "^7.5.0",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.7.0",
     "typescript": "^5.0.0"
   }

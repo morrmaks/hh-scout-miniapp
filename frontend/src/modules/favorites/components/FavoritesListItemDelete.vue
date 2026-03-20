@@ -46,20 +46,14 @@ function handleDelete(close: () => void) {
 
     <DialogContent v-slot="{ close }">
       <div class="dialog">
-        <div class="title">
-          Удалить вакансию?
-        </div>
+        <div class="title">Удалить вакансию?</div>
 
         <Checkbox v-model="deleteAll" label="Удалить из всех резюме" />
 
         <div class="actions">
-          <Button variant="ghost" @click="close">
-            Отмена
-          </Button>
+          <Button variant="ghost" @click="close"> Отмена </Button>
 
-          <Button variant="destructive" @click="handleDelete(close)">
-            Удалить
-          </Button>
+          <Button variant="destructive" @click="handleDelete(close)"> Удалить </Button>
         </div>
       </div>
     </DialogContent>

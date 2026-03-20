@@ -10,504 +10,533 @@ export type WorkFormat = 'REMOTE' | 'FIELD_WORK' | 'HYBRID' | 'ON_SITE';
 
 export type CurrencyQuery = 'RUR' | 'USD' | 'EUR';
 
-export type JobCurrency = 'RUR' | 'USD' | 'EUR' | 'UAH' | 'KZT' | 'KGS' | 'GEL' | 'AZN' | 'UZS' | 'BYN';
+export type JobCurrency =
+  | 'RUR'
+  | 'USD'
+  | 'EUR'
+  | 'UAH'
+  | 'KZT'
+  | 'KGS'
+  | 'GEL'
+  | 'AZN'
+  | 'UZS'
+  | 'BYN';
 
 export type JobLabel = 'with_salary';
 
 export type JobPeriod = '1' | '3' | '7' | '30';
 
 export type Job = {
-    id: string;
-    title: string;
-    company: string;
-    url: string;
-    description: string;
-    publishedAt?: string;
-    salaryFrom?: number | null;
-    salaryTo?: number | null;
-    currency?: JobCurrency;
-    experience?: string | null;
-    employmentForm?: string | null;
-    workFormat?: Array<string>;
-    workSchedule?: Array<string>;
-    workingHours?: Array<string>;
-    city?: string | null;
-    skills?: Array<string>;
+  id: string;
+  title: string;
+  company: string;
+  url: string;
+  description: string;
+  publishedAt?: string;
+  salaryFrom?: number | null;
+  salaryTo?: number | null;
+  currency?: JobCurrency;
+  experience?: string | null;
+  employmentForm?: string | null;
+  workFormat?: Array<string>;
+  workSchedule?: Array<string>;
+  workingHours?: Array<string>;
+  city?: string | null;
+  skills?: Array<string>;
 };
 
 export type Resume = {
-    id: number;
-    name: string;
+  id: number;
+  name: string;
 };
 
 export type ResumeCreate = {
-    name: string;
+  name: string;
 };
 
 export type ResumeUpdate = {
-    name?: string;
+  name?: string;
 };
 
 export type Favorite = {
-    id?: number;
-    userId?: number;
-    jobId?: string;
-    title?: string;
-    company?: string;
-    salaryFrom?: number | null;
-    salaryTo?: number | null;
-    currency?: JobCurrency;
-    experience?: string | null;
-    publishedAt?: string | null;
-    createdAt?: string;
-    statusId?: number | null;
-    url?: string;
+  id?: number;
+  userId?: number;
+  jobId?: string;
+  title?: string;
+  company?: string;
+  salaryFrom?: number | null;
+  salaryTo?: number | null;
+  currency?: JobCurrency;
+  experience?: string | null;
+  publishedAt?: string | null;
+  createdAt?: string;
+  statusId?: number | null;
+  url?: string;
 };
 
 export type FavoritesLabel = 'with_salary' | 'same_currency';
 
-export type FavoritesSort = 'created_asc' | 'created_desc' | 'published_asc' | 'published_desc' | 'salary_asc' | 'salary_desc';
+export type FavoritesSort =
+  | 'created_asc'
+  | 'created_desc'
+  | 'published_asc'
+  | 'published_desc'
+  | 'salary_asc'
+  | 'salary_desc';
 
-export type StatusColor = 'blue' | 'purple' | 'orange' | 'green' | 'red' | 'yellow' | 'pink' | 'teal' | 'indigo' | 'gray';
+export type StatusColor =
+  | 'blue'
+  | 'purple'
+  | 'orange'
+  | 'green'
+  | 'red'
+  | 'yellow'
+  | 'pink'
+  | 'teal'
+  | 'indigo'
+  | 'gray';
 
 export type Status = {
-    id: number;
-    name: string;
-    color: StatusColor;
+  id: number;
+  name: string;
+  color: StatusColor;
 };
 
 export type StatusCreate = {
-    name: string;
-    color: StatusColor;
+  name: string;
+  color: StatusColor;
 };
 
 export type StatusUpdate = {
-    name?: string;
-    color?: StatusColor;
+  name?: string;
+  color?: StatusColor;
 };
 
 export type FavoritesResponse = {
-    items: Array<Favorite>;
-    meta: {
-        totalAll?: number;
-        totalFound?: number;
-        page?: number;
-        pages?: number;
-    };
-    filters?: {
-        companies?: Array<string>;
-        statuses?: Array<Status>;
-    };
+  items: Array<Favorite>;
+  meta: {
+    totalAll?: number;
+    totalFound?: number;
+    page?: number;
+    pages?: number;
+  };
+  filters?: {
+    companies?: Array<string>;
+    statuses?: Array<Status>;
+  };
 };
 
 export type FavoriteCreate = {
-    jobId: string;
-    /**
-     * List of resume IDs this favorite should be linked to
-     */
-    resumeIds: Array<number>;
+  jobId: string;
+  /**
+   * List of resume IDs this favorite should be linked to
+   */
+  resumeIds: Array<number>;
 };
 
 export type SearchResult = {
-    items: Array<Job>;
-    page: number;
-    pages: number;
-    found: number;
-    perPage: number;
-    pageItems: number;
+  items: Array<Job>;
+  page: number;
+  pages: number;
+  found: number;
+  perPage: number;
+  pageItems: number;
 };
 
 export type Area = {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 };
 
 export type SearchJobsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        text?: string;
-        page?: number;
-        per_page?: number;
-        index?: number;
-        order_by?: JobsOrderBy;
-        salary?: number;
-        currency?: CurrencyQuery;
-        experience?: Array<JobsExperience>;
-        employment_form?: Array<EmploymentForm>;
-        work_format?: Array<WorkFormat>;
-        area?: Array<string>;
-        label?: Array<JobLabel>;
-        period?: JobPeriod;
-    };
-    url: '/jobs';
+  body?: never;
+  path?: never;
+  query?: {
+    text?: string;
+    page?: number;
+    per_page?: number;
+    index?: number;
+    order_by?: JobsOrderBy;
+    salary?: number;
+    currency?: CurrencyQuery;
+    experience?: Array<JobsExperience>;
+    employment_form?: Array<EmploymentForm>;
+    work_format?: Array<WorkFormat>;
+    area?: Array<string>;
+    label?: Array<JobLabel>;
+    period?: JobPeriod;
+  };
+  url: '/jobs';
 };
 
 export type SearchJobsResponses = {
-    /**
-     * Search result
-     */
-    200: SearchResult;
+  /**
+   * Search result
+   */
+  200: SearchResult;
 };
 
 export type SearchJobsResponse = SearchJobsResponses[keyof SearchJobsResponses];
 
 export type PrefetchJobsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        text?: string;
-        page?: number;
-        per_page?: number;
-        index?: number;
-        order_by?: JobsOrderBy;
-        salary?: number;
-        currency?: CurrencyQuery;
-        experience?: Array<JobsExperience>;
-        employment_form?: Array<EmploymentForm>;
-        work_format?: Array<WorkFormat>;
-        area?: Array<string>;
-        label?: Array<JobLabel>;
-        period?: JobPeriod;
-    };
-    url: '/jobs/prefetch';
+  body?: never;
+  path?: never;
+  query?: {
+    text?: string;
+    page?: number;
+    per_page?: number;
+    index?: number;
+    order_by?: JobsOrderBy;
+    salary?: number;
+    currency?: CurrencyQuery;
+    experience?: Array<JobsExperience>;
+    employment_form?: Array<EmploymentForm>;
+    work_format?: Array<WorkFormat>;
+    area?: Array<string>;
+    label?: Array<JobLabel>;
+    period?: JobPeriod;
+  };
+  url: '/jobs/prefetch';
 };
 
 export type PrefetchJobsResponses = {
-    /**
-     * Prefetched jobs
-     */
-    200: {
-        items?: Array<Job>;
-    };
+  /**
+   * Prefetched jobs
+   */
+  200: {
+    items?: Array<Job>;
+  };
 };
 
 export type PrefetchJobsResponse = PrefetchJobsResponses[keyof PrefetchJobsResponses];
 
 export type GetJobByIdData = {
-    body?: never;
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/jobs/{id}';
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/jobs/{id}';
 };
 
 export type GetJobByIdResponses = {
-    /**
-     * Job
-     */
-    200: Job;
+  /**
+   * Job
+   */
+  200: Job;
 };
 
 export type GetJobByIdResponse = GetJobByIdResponses[keyof GetJobByIdResponses];
 
 export type GetAreasData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/areas';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/areas';
 };
 
 export type GetAreasResponses = {
-    /**
-     * List of areas
-     */
-    200: Array<Area>;
+  /**
+   * List of areas
+   */
+  200: Array<Area>;
 };
 
 export type GetAreasResponse = GetAreasResponses[keyof GetAreasResponses];
 
 export type GetResumesData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/resumes';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/resumes';
 };
 
 export type GetResumesResponses = {
-    /**
-     * List of resumes
-     */
-    200: Array<Resume>;
+  /**
+   * List of resumes
+   */
+  200: Array<Resume>;
 };
 
 export type GetResumesResponse = GetResumesResponses[keyof GetResumesResponses];
 
 export type CreateResumeData = {
-    body: ResumeCreate;
-    path?: never;
-    query?: never;
-    url: '/resumes';
+  body: ResumeCreate;
+  path?: never;
+  query?: never;
+  url: '/resumes';
 };
 
 export type CreateResumeResponses = {
-    /**
-     * Resume created
-     */
-    200: Resume;
+  /**
+   * Resume created
+   */
+  200: Resume;
 };
 
 export type CreateResumeResponse = CreateResumeResponses[keyof CreateResumeResponses];
 
 export type DeleteResumeData = {
-    body?: never;
-    path: {
-        id: number;
-    };
-    query?: never;
-    url: '/resumes/{id}';
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: '/resumes/{id}';
 };
 
 export type DeleteResumeResponses = {
-    /**
-     * Resume deleted
-     */
-    200: {
-        success?: boolean;
-    };
+  /**
+   * Resume deleted
+   */
+  200: {
+    success?: boolean;
+  };
 };
 
 export type DeleteResumeResponse = DeleteResumeResponses[keyof DeleteResumeResponses];
 
 export type UpdateResumeData = {
-    body: ResumeUpdate;
-    path: {
-        id: number;
-    };
-    query?: never;
-    url: '/resumes/{id}';
+  body: ResumeUpdate;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: '/resumes/{id}';
 };
 
 export type UpdateResumeResponses = {
-    /**
-     * Resume updated
-     */
-    200: Resume;
+  /**
+   * Resume updated
+   */
+  200: Resume;
 };
 
 export type UpdateResumeResponse = UpdateResumeResponses[keyof UpdateResumeResponses];
 
 export type GetFavoritesData = {
-    body?: never;
-    path?: never;
-    query?: {
-        resumeId?: number;
-        text?: string;
-        page?: number;
-        per_page?: number;
-        salary_from?: number;
-        currency?: CurrencyQuery;
-        company?: Array<string>;
-        status?: Array<number>;
-        label?: Array<FavoritesLabel>;
-        experience?: Array<JobsExperience>;
-        sort?: FavoritesSort;
-    };
-    url: '/favorites';
+  body?: never;
+  path?: never;
+  query?: {
+    resumeId?: number;
+    text?: string;
+    page?: number;
+    per_page?: number;
+    salary_from?: number;
+    currency?: CurrencyQuery;
+    company?: Array<string>;
+    status?: Array<number>;
+    label?: Array<FavoritesLabel>;
+    experience?: Array<JobsExperience>;
+    sort?: FavoritesSort;
+  };
+  url: '/favorites';
 };
 
 export type GetFavoritesResponses = {
-    /**
-     * Favorites list
-     */
-    200: FavoritesResponse;
+  /**
+   * Favorites list
+   */
+  200: FavoritesResponse;
 };
 
 export type GetFavoritesResponse = GetFavoritesResponses[keyof GetFavoritesResponses];
 
 export type SaveFavoriteData = {
-    body: FavoriteCreate;
-    path?: never;
-    query?: never;
-    url: '/favorites';
+  body: FavoriteCreate;
+  path?: never;
+  query?: never;
+  url: '/favorites';
 };
 
 export type SaveFavoriteResponses = {
-    /**
-     * Favorite saved
-     */
-    200: {
-        success?: boolean;
-    };
+  /**
+   * Favorite saved
+   */
+  200: {
+    success?: boolean;
+  };
 };
 
 export type SaveFavoriteResponse = SaveFavoriteResponses[keyof SaveFavoriteResponses];
 
 export type GetFavoriteIdsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/favorites/ids';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/favorites/ids';
 };
 
 export type GetFavoriteIdsResponses = {
-    /**
-     * List of favorite job ids
-     */
-    200: {
-        ids?: Array<string>;
-    };
+  /**
+   * List of favorite job ids
+   */
+  200: {
+    ids?: Array<string>;
+  };
 };
 
 export type GetFavoriteIdsResponse = GetFavoriteIdsResponses[keyof GetFavoriteIdsResponses];
 
 export type ClearFavoritesByResumesData = {
-    body?: never;
-    path?: never;
-    query: {
-        resumeIds: Array<number>;
-    };
-    url: '/favorites/clear';
+  body?: never;
+  path?: never;
+  query: {
+    resumeIds: Array<number>;
+  };
+  url: '/favorites/clear';
 };
 
 export type ClearFavoritesByResumesResponses = {
-    /**
-     * Favorites cleared
-     */
-    200: {
-        success?: boolean;
-    };
+  /**
+   * Favorites cleared
+   */
+  200: {
+    success?: boolean;
+  };
 };
 
-export type ClearFavoritesByResumesResponse = ClearFavoritesByResumesResponses[keyof ClearFavoritesByResumesResponses];
+export type ClearFavoritesByResumesResponse =
+  ClearFavoritesByResumesResponses[keyof ClearFavoritesByResumesResponses];
 
 export type ExportFavoritesExcelData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Export favorites only for a specific resume
-         */
-        resumeId: number;
-    };
-    url: '/favorites/export';
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Export favorites only for a specific resume
+     */
+    resumeId: number;
+  };
+  url: '/favorites/export';
 };
 
 export type ExportFavoritesExcelResponses = {
-    /**
-     * Excel sent to Telegram chat
-     */
-    200: {
-        success?: boolean;
-    };
+  /**
+   * Excel sent to Telegram chat
+   */
+  200: {
+    success?: boolean;
+  };
 };
 
-export type ExportFavoritesExcelResponse = ExportFavoritesExcelResponses[keyof ExportFavoritesExcelResponses];
+export type ExportFavoritesExcelResponse =
+  ExportFavoritesExcelResponses[keyof ExportFavoritesExcelResponses];
 
 export type DeleteFavoriteData = {
-    body?: never;
-    path: {
-        jobId: string;
-    };
-    query: {
-        resumeIds: Array<number>;
-    };
-    url: '/favorites/{jobId}';
+  body?: never;
+  path: {
+    jobId: string;
+  };
+  query: {
+    resumeIds: Array<number>;
+  };
+  url: '/favorites/{jobId}';
 };
 
 export type DeleteFavoriteResponses = {
-    /**
-     * Favorite removed
-     */
-    200: {
-        success?: boolean;
-    };
+  /**
+   * Favorite removed
+   */
+  200: {
+    success?: boolean;
+  };
 };
 
 export type DeleteFavoriteResponse = DeleteFavoriteResponses[keyof DeleteFavoriteResponses];
 
 export type SetFavoriteStatusData = {
-    body: {
-        resumeId: number;
-        statusId?: number | null;
-    };
-    path: {
-        jobId: string;
-    };
-    query?: never;
-    url: '/favorites/{jobId}/status';
+  body: {
+    resumeId: number;
+    statusId?: number | null;
+  };
+  path: {
+    jobId: string;
+  };
+  query?: never;
+  url: '/favorites/{jobId}/status';
 };
 
 export type SetFavoriteStatusResponses = {
-    /**
-     * Status updated
-     */
-    200: {
-        success?: boolean;
-    };
+  /**
+   * Status updated
+   */
+  200: {
+    success?: boolean;
+  };
 };
 
-export type SetFavoriteStatusResponse = SetFavoriteStatusResponses[keyof SetFavoriteStatusResponses];
+export type SetFavoriteStatusResponse =
+  SetFavoriteStatusResponses[keyof SetFavoriteStatusResponses];
 
 export type GetStatusesData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/statuses';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/statuses';
 };
 
 export type GetStatusesResponses = {
-    /**
-     * List of statuses
-     */
-    200: Array<Status>;
+  /**
+   * List of statuses
+   */
+  200: Array<Status>;
 };
 
 export type GetStatusesResponse = GetStatusesResponses[keyof GetStatusesResponses];
 
 export type CreateStatusData = {
-    body: StatusCreate;
-    path?: never;
-    query?: never;
-    url: '/statuses';
+  body: StatusCreate;
+  path?: never;
+  query?: never;
+  url: '/statuses';
 };
 
 export type CreateStatusResponses = {
-    /**
-     * Status created
-     */
-    200: Status;
+  /**
+   * Status created
+   */
+  200: Status;
 };
 
 export type CreateStatusResponse = CreateStatusResponses[keyof CreateStatusResponses];
 
 export type DeleteStatusData = {
-    body?: never;
-    path: {
-        id: number;
-    };
-    query?: never;
-    url: '/statuses/{id}';
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: '/statuses/{id}';
 };
 
 export type DeleteStatusResponses = {
-    /**
-     * Status deleted
-     */
-    200: {
-        success?: boolean;
-    };
+  /**
+   * Status deleted
+   */
+  200: {
+    success?: boolean;
+  };
 };
 
 export type DeleteStatusResponse = DeleteStatusResponses[keyof DeleteStatusResponses];
 
 export type UpdateStatusData = {
-    body: StatusUpdate;
-    path: {
-        id: number;
-    };
-    query?: never;
-    url: '/statuses/{id}';
+  body: StatusUpdate;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: '/statuses/{id}';
 };
 
 export type UpdateStatusResponses = {
-    /**
-     * Status updated
-     */
-    200: unknown;
+  /**
+   * Status updated
+   */
+  200: unknown;
 };
 
 export type ClientOptions = {
-    baseUrl: 'http://localhost:3000' | (string & {});
+  baseUrl: 'http://localhost:3000' | (string & {});
 };
