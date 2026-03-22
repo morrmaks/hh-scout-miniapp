@@ -80,7 +80,7 @@ jobs:
               --network hh-scout-net \
               -e "DATABASE_URL=$DATABASE_URL" \
               morrmaks/hh-scout-backend:$TAG \
-              npm run prisma:deploy
+              printenv DATABASE_URL
             echo "✅ Migrations done"
 
             # запуск контейнеров
