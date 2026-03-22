@@ -1,6 +1,8 @@
 node_modules
 dist
+.vscode
 build
 .env
 .DS_Store
 *.tsbuild
+docker-compose.local.yml

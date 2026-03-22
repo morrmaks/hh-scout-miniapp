@@ -31,7 +31,7 @@ async function remove() {
 
     <DialogContent v-slot="{ close }">
       <div class="dialog">
-        <div class="title">Удалить вакансию?</div>
+        <div class="title">Удалить резюме?</div>
 
         <div class="actions">
           <Button variant="ghost" @click="close"> Отмена </Button>

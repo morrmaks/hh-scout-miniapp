@@ -24,7 +24,7 @@ const favorites = useFavoritesStore();
         class="favorites-export"
         @click="favorites.exportExcel"
       >
-        Экспорт в XLCX
+        Экспорт XLCX
       </DropdownItem>
       <DropdownItem variant="destructive" class="favorites-clean">
         <FavoritesListClear />

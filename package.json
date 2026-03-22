@@ -1,23 +1,12 @@
 {
   "name": "hh-scout-miniapp",
   "version": "1.0.0",
+  "main": "index.js",
   "description": "",
   "license": "ISC",
-  "author": "",
-  "type": "module",
-  "main": "index.js",
-  "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
+  "author": "Maksim Morozov",
   "scripts": {
-    "dev": "npm run dev -w backend & npm run dev -w frontend",
-    "dev:ngrok": "npm run dev -w backend & npm run dev:ngrok -w frontend",
-    "prepare": "husky",
-    "lint": "npm run lint -w frontend && npm run lint -w backend",
-    "lint:fix": "npm run lint:fix -w frontend && npm run lint:fix -w backend",
-    "format": "npm run format -w frontend && npm run format -w backend"
+    "prepare": "husky"
   },
   "devDependencies": {
     "husky": "^9.1.7"

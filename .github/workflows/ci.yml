@@ -12,9 +12,8 @@ jobs:
   lint-build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [20.x]
+    env:
+      HUSKY: 0
 
     steps:
       - uses: actions/checkout@v4
@@ -22,14 +21,21 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24
+          cache: "npm"
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
 
-      # backend
+      # ---------- BACKEND ----------
       - name: Install backend deps
         run: cd backend && npm ci
 
       - name: Prisma generate
-        run: cd backend && npm run prisma:generate
+        run: cd backend && npx prisma generate
+
+      - name: Backend typecheck
+        run: cd backend && npm run typecheck
 
       - name: Backend build
         run: cd backend && npm run build
@@ -37,18 +43,18 @@ jobs:
       - name: Backend lint
         run: cd backend && npm run lint
 
-      # frontend
+      # ---------- FRONTEND ----------
       - name: Install frontend deps
         run: cd frontend && npm ci
 
       - name: Generate API
         run: cd frontend && npm run api:generate
 
-      - name: Frontend lint
-        run: cd frontend && npm run lint
-
       - name: Frontend typecheck
         run: cd frontend && npm run typecheck
+
+      - name: Frontend lint
+        run: cd frontend && npm run lint
 
       - name: Frontend build
         run: cd frontend && npm run build
