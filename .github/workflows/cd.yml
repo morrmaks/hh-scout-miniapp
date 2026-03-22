@@ -79,9 +79,12 @@ jobs:
 
             # миграции ДО запуска новых контейнеров
             echo "🗄  Running migrations..."
-            docker compose --env-file .env.deploy run --rm \
-              -e DATABASE_URL="$(grep DATABASE_URL /root/hh-scout-backend/.env | cut -d= -f2-)" \
-              backend npm run prisma:deploy
+            DB_URL=$(grep DATABASE_URL /root/hh-scout-backend/.env | cut -d= -f2-)
+            docker run --rm \
+              --network hh-scout-net \
+              -e DATABASE_URL="$DB_URL" \
+              morrmaks/hh-scout-backend:$TAG \
+              npm run prisma:deploy
             echo "✅ Migrations done"
 
             # запуск контейнеров
