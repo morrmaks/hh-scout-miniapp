@@ -1,0 +1,34 @@
+# Dependencies
+node_modules
+
+# Build artifacts
+dist
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.production
+.env.development
+
+# Development files
+.git
+.gitignore
+README.md
+*.md
+
+# Tests
+.loki
+cypress
+tests
+*.test.*
+*.spec.*
+*.snap
+
+# Logs
+*.log
+npm-debug.log*
+
+
+# IDE
+.vscode
+.idea

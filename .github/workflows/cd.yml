@@ -1,0 +1,112 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # --------------------------------------------------------
+  # 1. BUILD & PUSH IMAGES
+  # --------------------------------------------------------
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build & push frontend
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            -t ${{ secrets.DOCKER_USERNAME }}/hh-scout-frontend:${{ github.sha }} \
+            -t ${{ secrets.DOCKER_USERNAME }}/hh-scout-frontend:latest \
+            --push \
+            ./frontend
+
+      - name: Build & push backend
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            -t ${{ secrets.DOCKER_USERNAME }}/hh-scout-backend:${{ github.sha }} \
+            -t ${{ secrets.DOCKER_USERNAME }}/hh-scout-backend:latest \
+            --push \
+            ./backend
+
+  # --------------------------------------------------------
+  # 2. DEPLOY
+  # --------------------------------------------------------
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            set -e
+            cd /root/hh-scout
+
+            TAG=${{ github.sha }}
+            echo "📦 Deploying version: $TAG"
+
+            # сохраняем текущий тег для возможного отката
+            if [ -f .env.deploy ]; then
+              cp .env.deploy .env.deploy.backup
+            fi
+
+            echo "TAG=$TAG" > .env.deploy
+
+            # логин в DockerHub
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+            # pull новых образов
+            docker compose --env-file .env.deploy pull
+
+            # миграции ДО запуска новых контейнеров
+            echo "🗄  Running migrations..."
+            docker compose --env-file .env.deploy run --rm backend npm run prisma:deploy
+            echo "✅ Migrations done"
+
+            # запуск контейнеров
+            docker compose --env-file .env.deploy up -d --remove-orphans
+
+            # healthcheck
+            echo "⏳ Waiting for backend..."
+            for i in {1..20}; do
+              if curl -sf http://localhost:3000/api/health > /dev/null; then
+                echo "✅ Backend is healthy"
+                echo "🎉 Deployed: $TAG"
+                exit 0
+              fi
+              echo "  waiting... ($i/20)"
+              sleep 3
+            done
+
+            # healthcheck не прошёл — откат контейнеров (БД не откатываем)
+            echo "❌ Deploy failed, rolling back containers..."
+
+            if [ -f .env.deploy.backup ]; then
+              cp .env.deploy.backup .env.deploy
+              docker compose --env-file .env.deploy up -d --remove-orphans
+              echo "⏪ Containers rolled back to previous version"
+              echo "⚠️  Note: DB migrations were NOT rolled back"
+            else
+              echo "⚠️  No backup found, cannot rollback"
+            fi
+
+            exit 1

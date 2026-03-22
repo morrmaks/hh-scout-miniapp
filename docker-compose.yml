@@ -1,0 +1,42 @@
+services:
+  backend:
+    image: morrmaks/hh-scout-backend:${TAG:-latest}
+    container_name: hh-scout-backend
+
+    env_file:
+      - /root/hh-scout-backend/.env
+
+    networks:
+      - hh-scout-net
+
+    ports:
+      - "3000:3000"
+
+    restart: always
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    image: morrmaks/hh-scout-frontend:${TAG:-latest}
+    container_name: hh-scout-frontend
+
+    networks:
+      - hh-scout-net
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      backend:
+        condition: service_healthy
+
+    restart: always
+
+networks:
+  hh-scout-net:
+    external: true
