@@ -79,7 +79,9 @@ jobs:
 
             # миграции ДО запуска новых контейнеров
             echo "🗄  Running migrations..."
-            docker compose --env-file .env.deploy run --rm backend npm run prisma:deploy
+            docker compose --env-file .env.deploy run --rm \
+              --env-file /root/hh-scout-backend/.env \
+              backend npm run prisma:deploy
             echo "✅ Migrations done"
 
             # запуск контейнеров
