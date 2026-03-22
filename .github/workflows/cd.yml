@@ -80,7 +80,7 @@ jobs:
             # миграции ДО запуска новых контейнеров
             echo "🗄  Running migrations..."
             docker compose --env-file .env.deploy run --rm \
-              --env-file /root/hh-scout-backend/.env \
+              -e DATABASE_URL="$(grep DATABASE_URL /root/hh-scout-backend/.env | cut -d= -f2-)" \
               backend npm run prisma:deploy
             echo "✅ Migrations done"
 
