@@ -234,10 +234,6 @@ export const useJobsStore = defineStore('jobs', () => {
     });
   }
 
-
-
-
-
   async function restore() {
     const route = useRoute();
 

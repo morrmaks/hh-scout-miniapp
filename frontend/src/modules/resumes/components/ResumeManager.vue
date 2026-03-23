@@ -69,7 +69,7 @@ function handleBlur(id: number, initial: string) {
             @blur="handleBlur(r.id, r.name)"
             @keydown.enter="save(r.id, r.name)"
           />
-  
+
           <div class="actions">
             <Button
               v-if="isChanged(r.id, r.name)"
@@ -80,14 +80,12 @@ function handleBlur(id: number, initial: string) {
             >
               <Check :size="14" />
             </Button>
-  
+
             <ResumeDelete :resume-id="r.id" />
           </div>
         </div>
-  
-        <div v-if="!resumes.items.length" class="empty">
-          Нет резюме
-        </div>
+
+        <div v-if="!resumes.items.length" class="empty">Нет резюме</div>
       </template>
     </Card>
   </div>

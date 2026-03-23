@@ -52,7 +52,7 @@ const onEnter = () => {
     :disabled="disabled"
     v-bind="attrs"
     @keydown.enter.prevent="onEnter"
-  >
+  />
 </template>
 
 <style scoped>

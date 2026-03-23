@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import Spinner from '@/common/ui/Spinner.vue';
-import {
-  FavoritesFiltersRow,
-  FavoritesList,
-  FavoritesSearch,
-} from '@/modules/favorites';
+import { FavoritesFiltersRow, FavoritesList, FavoritesSearch } from '@/modules/favorites';
 import { ResumeCreateLink, useResumesStore } from '@/modules/resumes';
 
 const resumes = useResumesStore();

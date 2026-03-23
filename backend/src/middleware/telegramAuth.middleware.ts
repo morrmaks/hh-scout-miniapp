@@ -1,10 +1,10 @@
 import type { NextFunction, Request, Response } from 'express';
 
 import { parse, validate } from '@telegram-apps/init-data-node';
-import process from 'node:process';
+
+import { env } from '@/config/env';
 
 import 'dotenv/config';
-import { env } from '@/config/env';
 
 const BOT_TOKEN = env.BOT_TOKEN;
 

@@ -138,7 +138,7 @@ export const useStatusesStore = defineStore('statuses', () => {
     [userId, () => resumes.hasResumes],
     async ([id, hasResumes]) => {
       if (!id || !hasResumes || initialized.value) return;
-  
+
       initialized.value = true;
       await fetchStatuses();
     },
