@@ -20,7 +20,7 @@ router.post('/', async (req, res, next) => {
 
     const { jobId, resumeIds } = req.body;
 
-    await saveFavorite(Number(userId), String(jobId), resumeIds.map(Number));
+    await saveFavorite(userId, String(jobId), resumeIds.map(Number));
 
     res.json({ success: true });
   } catch (err) {
@@ -31,7 +31,7 @@ router.post('/', async (req, res, next) => {
 // получить список избранного
 router.get('/', async (req, res, next) => {
   try {
-    const userId = Number(req.telegramUser!.id);
+    const userId = req.telegramUser!.id;
 
     const resumeId = Number(req.query.resumeId);
 
@@ -48,7 +48,7 @@ router.get('/ids', async (req, res, next) => {
   try {
     const userId = req.telegramUser!.id;
 
-    const ids = await loadFavoriteIds(Number(userId));
+    const ids = await loadFavoriteIds(userId);
 
     res.json({ ids });
   } catch (err) {
@@ -58,7 +58,7 @@ router.get('/ids', async (req, res, next) => {
 
 router.delete('/clear', async (req, res, next) => {
   try {
-    const userId = Number(req.telegramUser!.id);
+    const userId = req.telegramUser!.id;
 
     const resumeIdsRaw = req.query.resumeIds;
 
@@ -81,7 +81,7 @@ router.get('/export', async (req, res, next) => {
 
     const resumeId = Number(req.query.resumeId);
 
-    const buffer = await exportExcel(Number(userId), resumeId);
+    const buffer = await exportExcel(userId, resumeId);
 
     await bot.sendDocument(
       userId,
@@ -102,7 +102,7 @@ router.get('/export', async (req, res, next) => {
 // удалить из избранного для резюме
 router.delete('/:jobId', async (req, res, next) => {
   try {
-    const userId = Number(req.telegramUser!.id);
+    const userId = req.telegramUser!.id;
     const jobId = req.params.jobId;
     const resumeIdsRaw = req.query.resumeIds;
 
@@ -128,7 +128,7 @@ router.patch('/:jobId/status', async (req, res, next) => {
     const { resumeId, statusId } = req.body;
 
     await setFavoriteStatus(
-      Number(userId),
+      userId,
       jobId,
       Number(resumeId),
       statusId !== null ? Number(statusId) : null

@@ -53,7 +53,7 @@ const value = computed({
     :step="step"
     :disabled="disabled"
     v-bind="attrs"
-  />
+  >
 </template>
 
 <style scoped>
@@ -95,5 +95,11 @@ const value = computed({
 .input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .input {
+    font-size: 16px;
+  }
 }
 </style>

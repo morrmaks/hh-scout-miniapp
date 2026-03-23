@@ -7,12 +7,12 @@ import Input from '@/common/ui/Input.vue';
 
 import { useFavoritesStore } from '../store/favorites.store';
 
-const store = useFavoritesStore();
+const favorites = useFavoritesStore();
 
-const query = ref(store.query);
+const query = ref(favorites.query);
 
 function submit() {
-  store.setQuery(query.value);
+  favorites.setQuery(query.value);
 }
 </script>
 

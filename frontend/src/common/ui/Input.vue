@@ -52,7 +52,7 @@ const onEnter = () => {
     :disabled="disabled"
     v-bind="attrs"
     @keydown.enter.prevent="onEnter"
-  />
+  >
 </template>
 
 <style scoped>
@@ -84,5 +84,11 @@ const onEnter = () => {
 .input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .input {
+    font-size: 16px;
+  }
 }
 </style>

@@ -1,21 +1,21 @@
 <script setup lang="ts">
+import Spinner from '@/common/ui/Spinner.vue';
 import {
   FavoritesFiltersRow,
   FavoritesList,
   FavoritesSearch,
-  useStatusesStore
 } from '@/modules/favorites';
 import { ResumeCreateLink, useResumesStore } from '@/modules/resumes';
 
-const statuses = useStatusesStore();
 const resumes = useResumesStore();
-
-statuses.init();
 </script>
 
 <template>
   <div class="favorites-page">
-    <div v-if="!resumes.hasResumes" class="favorites-empty">
+    <div v-if="resumes.isLoading" class="favorites-spinner">
+      <Spinner variant="bars" stroke-width="4" />
+    </div>
+    <div v-else-if="!resumes.hasResumes" class="favorites-empty">
       <ResumeCreateLink class="empty-title" label="Создайте резюме" />
       <p class="empty-subtitle">
         Избранные вакансии сохраняются в конкретные резюме. Создайте его, чтобы добавлять вакансии и
@@ -36,6 +36,12 @@ statuses.init();
   flex-direction: column;
 
   gap: 16px;
+}
+
+.favorites-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .favorites-empty {

@@ -11,6 +11,7 @@ import { useActiveResume } from '../composables/useActiveResume';
 import { useDefaultSaveResumes } from '../composables/useDefaultSaveResumes';
 
 export const useResumesStore = defineStore('resumes', () => {
+  const isLoading = ref(false)
   const items = ref<Resume[]>([]);
   const activeResumeId = ref<number | null>(null);
   const defaultSaveResumeIds = ref<number[]>([]);
@@ -25,20 +26,26 @@ export const useResumesStore = defineStore('resumes', () => {
   const hasResumes = computed(() => items.value.length > 0);
 
   async function init() {
-    const [{ data }, active, defaults] = await Promise.all([
-      getResumes(),
-      activeResumeDb.restore(),
-      defaultSaveDb.restore()
-    ]);
+    isLoading.value = true
 
-    items.value = data;
-
-    if (active && data.some((r) => r.id === active)) activeResumeId.value = active;
-    else if (data.length) activeResumeId.value = data[0]?.id ?? null;
-
-    if (defaults)
-      defaultSaveResumeIds.value = defaults.filter((id) => data.some((r) => r.id === id));
-    else if (data.length && data[0]?.id) defaultSaveResumeIds.value = [data[0].id];
+    try {
+      const [{ data }, active, defaults] = await Promise.all([
+        getResumes(),
+        activeResumeDb.restore(),
+        defaultSaveDb.restore()
+      ]);
+  
+      items.value = data;
+  
+      if (active && data.some((r) => r.id === active)) activeResumeId.value = active;
+      else if (data.length) activeResumeId.value = data[0]?.id ?? null;
+  
+      if (defaults)
+        defaultSaveResumeIds.value = defaults.filter((id) => data.some((r) => r.id === id));
+      else if (data.length && data[0]?.id) defaultSaveResumeIds.value = [data[0].id];
+    } finally {
+      isLoading.value = false
+    }
   }
 
   async function createResume(name: string) {
@@ -151,6 +158,7 @@ export const useResumesStore = defineStore('resumes', () => {
 
   return {
     /* state */
+    isLoading,
     items,
     activeResumeId,
     defaultSaveResumeIds,

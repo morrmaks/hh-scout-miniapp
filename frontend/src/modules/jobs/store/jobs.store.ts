@@ -230,9 +230,13 @@ export const useJobsStore = defineStore('jobs', () => {
     save(query.value, page.value, index.value, orderBy.value, perPage.value, filters.value);
 
     router.replace({
-      query: buildUrlQuery(apiQuery.value)
+      query: buildUrlQuery({ ...apiQuery.value, index: index.value })
     });
   }
+
+
+
+
 
   async function restore() {
     const route = useRoute();

@@ -1,0 +1,11 @@
+-- AlterTable
+ALTER TABLE "Application" ALTER COLUMN "userId" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Favorite" ALTER COLUMN "userId" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Resume" ALTER COLUMN "userId" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Status" ALTER COLUMN "userId" SET DATA TYPE TEXT;

@@ -11,6 +11,7 @@ import {
   postStatuses
 } from '@/common/api/generated';
 import { optimistic } from '@/common/lib/optimistic';
+import { useResumesStore } from '@/modules/resumes';
 
 type StatusWithMeta = Status & {
   pending?: boolean;
@@ -18,6 +19,7 @@ type StatusWithMeta = Status & {
 
 export const useStatusesStore = defineStore('statuses', () => {
   const telegram = useTelegramStore();
+  const resumes = useResumesStore();
   const userId = computed(() => telegram.user?.id ?? null);
 
   const statuses = ref<StatusWithMeta[]>([]);
@@ -26,16 +28,7 @@ export const useStatusesStore = defineStore('statuses', () => {
 
   const byId = computed(() => Object.fromEntries(statuses.value.map((s) => [s.id, s])));
 
-  async function init() {
-    if (initialized.value) return;
-    initialized.value = true;
-
-    await fetchStatuses();
-  }
-
   async function fetchStatuses() {
-    if (!userId.value || initialized.value) return;
-
     loading.value = true;
 
     try {
@@ -142,10 +135,12 @@ export const useStatusesStore = defineStore('statuses', () => {
   }
 
   watch(
-    userId,
-    (id) => {
-      if (!id) return;
-      fetchStatuses();
+    [userId, () => resumes.hasResumes],
+    async ([id, hasResumes]) => {
+      if (!id || !hasResumes || initialized.value) return;
+  
+      initialized.value = true;
+      await fetchStatuses();
     },
     { immediate: true }
   );
@@ -155,7 +150,6 @@ export const useStatusesStore = defineStore('statuses', () => {
     byId,
     loading,
 
-    init,
     createStatus,
     updateStatus,
     deleteStatus

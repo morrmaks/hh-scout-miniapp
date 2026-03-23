@@ -131,7 +131,9 @@ function apply() {
       <X :size="14" />
       Сбросить
     </Button>
-    <Button class="applyButton" @click="apply"> Применить фильтры </Button>
+    <Button class="applyButton" @click="apply">
+      Применить фильтры
+    </Button>
   </div>
 </template>
 

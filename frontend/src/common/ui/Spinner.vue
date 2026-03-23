@@ -29,10 +29,6 @@ const icon = computed(() => {
   return null;
 });
 
-/**
- * 🔥 компенсация толщины для viewBox 50
- * (чтобы совпадало с lucide)
- */
 const normalizedStroke = computed(() => {
   if (typeof props.strokeWidth !== 'number') return props.strokeWidth;
   return props.strokeWidth * 1.8;
@@ -40,7 +36,6 @@ const normalizedStroke = computed(() => {
 </script>
 
 <template>
-  <!-- ✅ DEFAULT -->
   <svg
     v-if="variant === 'default'"
     class="spinner"
@@ -61,7 +56,6 @@ const normalizedStroke = computed(() => {
     />
   </svg>
 
-  <!-- ✅ LUCIDE -->
   <component
     :is="icon"
     v-else-if="isLucide"
@@ -84,7 +78,6 @@ const normalizedStroke = computed(() => {
   animation: rotate var(--duration) linear infinite;
 }
 
-/* 🔥 оригинальная плавная анимация */
 .path {
   stroke: currentColor;
   stroke-linecap: round;

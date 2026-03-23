@@ -9,11 +9,11 @@ import { useFavoritesStore } from '../../store/favorites.store';
 import { sortOptions } from '../config/favoritesFilters.options';
 import FavoritesFiltersDrawer from './FavoritesFiltersDrawer.vue';
 
-const store = useFavoritesStore();
+const favorites = useFavoritesStore();
 
 const sort = computed({
-  get: () => store.sort,
-  set: store.setSort
+  get: () => favorites.sort,
+  set: favorites.setSort
 });
 </script>
 

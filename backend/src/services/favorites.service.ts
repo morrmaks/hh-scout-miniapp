@@ -16,34 +16,7 @@ import { getJobById } from './jobs.service';
 
 const DEFAULT_PER_PAGE = 20;
 
-export const DEFAULT_STATUSES = [
-  { name: 'Отклик', color: 'blue' },
-  { name: 'Собеседование', color: 'purple' },
-  { name: 'Тестовое', color: 'orange' },
-  { name: 'Оффер', color: 'green' },
-  { name: 'Отказ', color: 'red' }
-];
-
-async function ensureDefaultStatuses(userId: number) {
-  const exists = await prisma.status.findFirst({
-    where: { userId },
-    select: { id: true }
-  });
-
-  if (exists) return;
-
-  await prisma.status.createMany({
-    data: DEFAULT_STATUSES.map((s) => ({
-      userId,
-      name: s.name,
-      color: s.color
-    }))
-  });
-}
-
-export async function saveFavorite(userId: number, jobId: string, resumeIds: number[]) {
-  await ensureDefaultStatuses(userId);
-
+export async function saveFavorite(userId: string, jobId: string, resumeIds: number[]) {
   const job = await getJobById(jobId);
   const fav = toFavoriteJob(job);
 
@@ -106,7 +79,7 @@ export async function saveFavorite(userId: number, jobId: string, resumeIds: num
   });
 }
 
-export async function deleteFavorite(userId: number, jobId: string, resumeIds: number[]) {
+export async function deleteFavorite(userId: string, jobId: string, resumeIds: number[]) {
   const fav = await prisma.favorite.findFirst({
     where: { userId, jobId },
     select: { id: true }
@@ -136,7 +109,7 @@ export async function deleteFavorite(userId: number, jobId: string, resumeIds: n
   });
 }
 
-export async function clearFavoritesByResumes(userId: number, resumeIds: number[]) {
+export async function clearFavoritesByResumes(userId: string, resumeIds: number[]) {
   if (!resumeIds.length) return;
 
   await prisma.$transaction(async (tx) => {
@@ -184,7 +157,7 @@ export async function clearFavoritesByResumes(userId: number, resumeIds: number[
   });
 }
 
-export async function loadFavoriteIds(userId: number) {
+export async function loadFavoriteIds(userId: string) {
   const rows = await prisma.favorite.findMany({
     where: { userId },
     select: { jobId: true }
@@ -194,7 +167,7 @@ export async function loadFavoriteIds(userId: number) {
 }
 
 export async function loadFavorites(
-  userId: number,
+  userId: string,
   resumeId: number,
   query: LoadFavoritesQuery
 ): Promise<FavoritesResponse> {
@@ -388,7 +361,7 @@ export async function loadFavorites(
 }
 
 export async function setFavoriteStatus(
-  userId: number,
+  userId: string,
   jobId: string,
   resumeId: number,
   statusId: number | null
@@ -411,7 +384,7 @@ export async function setFavoriteStatus(
   });
 }
 
-export async function exportExcel(userId: number, resumeId: number) {
+export async function exportExcel(userId: string, resumeId: number) {
   const [favorites, statuses] = await Promise.all([
     prisma.favorite.findMany({
       where: {

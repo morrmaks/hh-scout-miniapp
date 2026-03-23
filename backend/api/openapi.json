@@ -895,7 +895,7 @@
         "type": "object",
         "properties": {
           "id": { "type": "number" },
-          "userId": { "type": "number" },
+          "userId": { "type": "string" },
           "jobId": { "type": "string" },
           "title": { "type": "string" },
           "company": { "type": "string" },
