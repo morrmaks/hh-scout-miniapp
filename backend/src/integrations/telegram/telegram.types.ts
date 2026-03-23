@@ -1,3 +1,5 @@
 import type { User } from '@telegram-apps/init-data-node';
 
-export type TelegramUser = User;
+export type TelegramUser = Omit<User, 'id'> & {
+  id: string;
+};

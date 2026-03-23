@@ -10,7 +10,7 @@ import type { FavoritesFiltersType } from '../../types/favorites.types';
 import { useFavoritesStore } from '../../store/favorites.store';
 import FavoritesFilters from './FavoritesFilters.vue';
 
-const store = useFavoritesStore();
+const favorites = useFavoritesStore();
 
 const open = ref(false);
 
@@ -19,7 +19,7 @@ function reset() {
 }
 
 function apply(filters: FavoritesFiltersType) {
-  store.setFilters(filters);
+  favorites.setFilters(filters);
   open.value = false;
 }
 </script>

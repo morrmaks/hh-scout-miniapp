@@ -1,13 +1,13 @@
 import { prisma } from '../db/prisma';
 
-export async function getStatuses(userId: number) {
+export async function getStatuses(userId: string) {
   return prisma.status.findMany({
     where: { userId },
     orderBy: { id: 'asc' }
   });
 }
 
-export async function createStatus(userId: number, name: string, color: string) {
+export async function createStatus(userId: string, name: string, color: string) {
   if (!name?.trim()) {
     throw new Error('Status name is required');
   }

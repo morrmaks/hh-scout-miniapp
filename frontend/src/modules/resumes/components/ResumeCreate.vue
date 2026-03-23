@@ -46,7 +46,7 @@ async function handleCreate() {
       v-model="name"
       placeholder="Создайте резюме"
       :autofocus="autoFocus"
-      class="input"
+      class="resume-create-input"
       @keydown.enter="handleCreate"
     />
 
@@ -63,5 +63,9 @@ async function handleCreate() {
   align-items: center;
   gap: 8px;
   width: 100%;
+}
+
+.resume-create-input {
+  min-width: 0;
 }
 </style>

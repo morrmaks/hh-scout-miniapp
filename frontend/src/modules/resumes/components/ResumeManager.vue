@@ -9,6 +9,7 @@ import Input from '@/common/ui/Input.vue';
 import { useResumesStore } from '../store/resumes.store';
 import ResumeCreate from './ResumeCreate.vue';
 import ResumeDelete from './ResumeDelete.vue';
+import ResumeSkeletonItem from './ResumeSkeletonItem.vue';
 
 const resumes = useResumesStore();
 
@@ -55,31 +56,37 @@ function handleBlur(id: number, initial: string) {
     <Card class="list">
       <ResumeCreate />
 
-      <div v-for="r in resumes.items" :key="r.id" class="item">
-        <Input
-          :model-value="getValue(r.id, r.name)"
-          class="input"
-          @update:model-value="setValue(r.id, $event)"
-          @blur="handleBlur(r.id, r.name)"
-          @keydown.enter="save(r.id, r.name)"
-        />
+      <template v-if="resumes.isLoading">
+        <ResumeSkeletonItem v-for="i in 3" :key="i" />
+      </template>
 
-        <div class="actions">
-          <Button
-            v-if="isChanged(r.id, r.name)"
-            size="xs"
-            variant="ghost"
-            @pointerdown="onActionPointerDown"
-            @click="save(r.id, r.name)"
-          >
-            <Check :size="14" />
-          </Button>
+      <template v-else>
+        <div v-for="r in resumes.items" :key="r.id" class="item">
+          <Input
+            :model-value="getValue(r.id, r.name)"
+            class="input"
+            @update:model-value="setValue(r.id, $event)"
+            @blur="handleBlur(r.id, r.name)"
+            @keydown.enter="save(r.id, r.name)"
+          />
 
-          <ResumeDelete :resume-id="r.id" />
+          <div class="actions">
+            <Button
+              v-if="isChanged(r.id, r.name)"
+              size="xs"
+              variant="link"
+              @pointerdown="onActionPointerDown"
+              @click="save(r.id, r.name)"
+            >
+              <Check :size="14" />
+            </Button>
+
+            <ResumeDelete :resume-id="r.id" />
+          </div>
         </div>
-      </div>
 
-      <div v-if="!resumes.items.length" class="empty">Нет резюме</div>
+        <div v-if="!resumes.items.length" class="empty">Нет резюме</div>
+      </template>
     </Card>
   </div>
 </template>
@@ -101,6 +108,10 @@ function handleBlur(id: number, initial: string) {
   --card-padding: 8px;
 }
 
+.list--fade-bottom {
+  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent);
+  mask-image: linear-gradient(to bottom, black 60%, transparent);
+}
 /* item */
 
 .item {

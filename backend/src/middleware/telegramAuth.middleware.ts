@@ -1,11 +1,12 @@
 import type { NextFunction, Request, Response } from 'express';
 
 import { parse, validate } from '@telegram-apps/init-data-node';
-import process from 'node:process';
+
+import { env } from '@/config/env';
 
 import 'dotenv/config';
 
-const BOT_TOKEN = process.env.BOT_TOKEN!;
+const BOT_TOKEN = env.BOT_TOKEN;
 
 export function telegramAuthMiddleware(req: Request, res: Response, next: NextFunction) {
   try {
@@ -23,7 +24,10 @@ export function telegramAuthMiddleware(req: Request, res: Response, next: NextFu
       return res.status(401).json({ error: 'Telegram user not found' });
     }
 
-    req.telegramUser = data.user;
+    req.telegramUser = {
+      ...data.user,
+      id: String(data.user.id)
+    };
 
     next();
   } catch {

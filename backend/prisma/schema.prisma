@@ -29,7 +29,7 @@ model SystemJob {
 model Status {
   id       Int @id @default(autoincrement())
 
-  userId   Int
+  userId String
   name     String
   color    String
 
@@ -40,7 +40,7 @@ model Status {
 
 model Favorite {
   id     Int @id @default(autoincrement())
-  userId Int
+  userId String
   jobId  String
 
   title   String
@@ -66,7 +66,7 @@ model Favorite {
 
 model Resume {
   id      Int @id @default(autoincrement())
-  userId  Int
+  userId String
   name    String
 
   applications Application[]
@@ -77,7 +77,7 @@ model Resume {
 model Application {
   id Int @id @default(autoincrement())
 
-  userId Int
+  userId String
 
   favoriteId Int
   resumeId   Int

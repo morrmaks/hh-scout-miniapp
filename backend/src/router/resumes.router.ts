@@ -9,7 +9,7 @@ router.get('/', async (req, res, next) => {
   try {
     const userId = req.telegramUser!.id;
 
-    const resumes = await loadResumes(Number(userId));
+    const resumes = await loadResumes(userId);
 
     res.json(resumes);
   } catch (err) {
@@ -24,7 +24,7 @@ router.post('/', async (req, res, next) => {
 
     const { name } = req.body;
 
-    const resume = await createResume(Number(userId), String(name));
+    const resume = await createResume(userId, String(name));
 
     res.json(resume);
   } catch (err) {
@@ -40,7 +40,7 @@ router.patch('/:id', async (req, res, next) => {
 
     const { name } = req.body;
 
-    const resume = await updateResume(Number(userId), id, name);
+    const resume = await updateResume(userId, id, name);
 
     res.json(resume);
   } catch (err) {
@@ -55,7 +55,7 @@ router.delete('/:id', async (req, res, next) => {
 
     const id = Number(req.params.id);
 
-    await deleteResume(Number(userId), id);
+    await deleteResume(userId, id);
 
     res.json({ success: true });
   } catch (err) {

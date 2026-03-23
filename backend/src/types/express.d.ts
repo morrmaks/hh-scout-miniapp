@@ -1,4 +1,4 @@
-import type { TelegramUser } from './telegram.types';
+import type { TelegramUser } from '../integrations/telegram';
 
 declare global {
   namespace Express {
