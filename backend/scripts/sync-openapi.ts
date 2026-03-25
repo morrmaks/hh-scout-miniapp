@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
-import path from 'path';
-import fs from 'fs';
+import fs from 'node:fs';
+import path from 'node:path';
 import process from 'node:process';
 
 dotenv.config({ path: path.join(__dirname, '../.env'), override: true });

@@ -1,4 +1,5 @@
 import express from 'express';
+
 import { getSuggestKeywords } from '../integrations/hh/hh.service';
 
 const router = express.Router();
