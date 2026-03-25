@@ -41,7 +41,7 @@ export function useFloatingPosition(
     const triggerRect = trigger.getBoundingClientRect();
     const contentRect = content.getBoundingClientRect();
 
-    const contentWidth = contentRect.width;
+    const contentWidth = content.scrollWidth;
     const contentHeight = contentRect.height;
 
     /* ---------------- vertical ---------------- */
@@ -62,60 +62,49 @@ export function useFloatingPosition(
 
     top.value = placeTop ? triggerRect.top - contentHeight - gap : triggerRect.bottom + gap;
 
-    /* ---------------- horizontal ---------------- */
+    const triggerWidth = triggerRect.width;
+
+    minWidth.value = triggerWidth;
+
+    const width = Math.max(contentWidth, triggerWidth);
 
     const triggerCenter = triggerRect.left + triggerRect.width / 2;
-
     let x = triggerCenter - contentWidth / 2;
 
     const minX = padding;
-    const maxX = windowWidth.value - contentWidth - padding;
+    const maxX = windowWidth.value - width - padding;
 
     x = Math.max(minX, Math.min(x, maxX));
 
     left.value = x;
 
-    /* ---------------- arrow ---------------- */
-
-    const rawArrow = triggerCenter - x;
-
-    arrowLeft.value = Math.max(8, Math.min(contentWidth - 8, rawArrow));
-
-    /* ---------------- misc ---------------- */
-
-    minWidth.value = triggerRect.width;
+    const rawArrow = triggerCenter - left.value;
+    arrowLeft.value = Math.max(8, Math.min(width - 8, rawArrow));
   }
-
-  /* ---------------- reactive update ---------------- */
 
   watchEffect(() => {
     if (!open.value) return;
     update();
   });
 
-  /* ---------------- resize content ---------------- */
-
   useResizeObserver(contentRef, () => {
     if (open.value) update();
   });
-
-  /* ---------------- scroll / viewport ---------------- */
 
   if (window.visualViewport) {
     useEventListener(window.visualViewport, 'resize', update);
     useEventListener(window.visualViewport, 'scroll', update);
   }
 
-  /* fallback */
   useEventListener(window, 'scroll', update, { passive: true });
 
   return {
     top,
     left,
-    arrowLeft,
     maxHeight,
     minWidth,
     placement,
+    arrowLeft,
     update
   };
 }

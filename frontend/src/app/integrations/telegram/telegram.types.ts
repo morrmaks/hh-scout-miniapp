@@ -11,7 +11,17 @@ export interface TelegramThemeParams {
   text_color?: string;
 }
 
+export interface TelegramBackButton {
+  hide: () => void;
+  onClick: (cb: () => void) => void;
+  show: () => void;
+}
+
+export type TelegramEvent = (string & {}) | 'themeChanged';
+
 export interface TelegramWebApp {
+  BackButton: TelegramBackButton;
+
   colorScheme: 'dark' | 'light';
 
   initData?: string;
@@ -23,11 +33,10 @@ export interface TelegramWebApp {
   themeParams?: TelegramThemeParams;
 
   expand: () => void;
-  onEvent: (event: 'themeChanged', cb: () => void) => void;
+  onEvent: (event: TelegramEvent, cb: () => void) => void;
+
   ready: () => void;
 }
-
-export {};
 
 declare global {
   interface Window {

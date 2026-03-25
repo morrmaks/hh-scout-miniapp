@@ -43,13 +43,15 @@ onMounted(async () => {
 
 <template>
   <div class="editor">
-    <input v-model="name" class="input" :style="style" @keydown.enter.prevent="save" />
+    <input v-model="name" class="input" :style="style" @keydown.enter.prevent="save">
 
     <Transition name="panel">
       <div v-if="showPanel" class="panel">
         <StatusColorPicker v-model="color" />
 
-        <Button size="sm" variant="ghost" class="save-button" @click="save"> Сохранить </Button>
+        <Button size="sm" variant="ghost" class="save-button" @click="save">
+          Сохранить
+        </Button>
       </div>
     </Transition>
   </div>

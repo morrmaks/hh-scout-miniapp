@@ -1,33 +1,24 @@
 <script setup lang="ts">
-import { ArrowLeft } from 'lucide-vue-next';
 import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 
-import Button from '../Button.vue';
+import { ROUTES } from '@/common/constants/routes';
+import { ResumeSelector, useResumesStore } from '@/modules/resumes';
+
+const resumes = useResumesStore();
 
 const route = useRoute();
-const router = useRouter();
 
 const title = computed(() => route.meta.title ?? '');
-
-const canGoBack = computed(() => route.path !== '/');
-
-function back() {
-  if (window.history.length > 1) router.back();
-  else router.replace('/');
-}
 </script>
 
 <template>
   <header class="header">
     <div class="container header-content">
-      <Button v-if="canGoBack" variant="link" @click="back">
-        <ArrowLeft :size="20" />
-      </Button>
-
-      <h1 class="title">
+      <h1 class="header-title">
         {{ title }}
       </h1>
+      <ResumeSelector v-if="route.path === ROUTES.FAVORITES && resumes.items.length" />
     </div>
   </header>
 </template>
@@ -39,13 +30,12 @@ function back() {
 
 .header-content {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   padding: 20px 16px 12px;
 }
 
-/* кнопка назад */
-
-.title {
+.header-title {
   display: flex;
   align-items: center;
   height: 48px;
@@ -58,7 +48,7 @@ function back() {
     padding: 16px 16px 8px;
   }
 
-  .title {
+  .header-title {
     height: 36px;
     font-size: 20px;
   }

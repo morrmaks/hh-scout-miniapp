@@ -24,7 +24,6 @@ export function useViewedJobs() {
 
   function markViewed(id: string) {
     if (viewed.value.has(id)) return;
-
     viewed.value.add(id);
     save();
   }

@@ -7,6 +7,12 @@ export function cleanObject<T extends object>(obj: T): Partial<T> {
   ) as Partial<T>;
 }
 
+export const typedEntries = <T extends Record<string, unknown>>(
+  obj: T
+): [keyof T, T[keyof T]][] => {
+  return Object.entries(obj) as [keyof T, T[keyof T]][];
+};
+
 export function equalObjects<T extends Record<string, unknown>>(a: T, b: T) {
   const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
 

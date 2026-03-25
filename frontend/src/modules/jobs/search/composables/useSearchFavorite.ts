@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 import { dbGet, dbSet } from '@/common/lib/indexedDb';
 
-const KEY = 'jobs-search-history';
+const KEY = 'jobs-search-favorite';
 const LIMIT = 8;
 
 const history = ref<string[]>([]);
@@ -27,7 +27,7 @@ async function ensure() {
   await init();
 }
 
-export function useSearchHistory() {
+export function useSearchFavorite() {
   init();
 
   async function add(query: string) {

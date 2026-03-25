@@ -36,16 +36,22 @@ async function handleDelete(close: () => void) {
 
 <template>
   <Dialog>
-    <DialogTrigger as-child> Очистить избранное </DialogTrigger>
+    <DialogTrigger as-child>
+      Очистить избранное
+    </DialogTrigger>
 
     <DialogContent v-slot="{ close }">
       <div class="dialog">
-        <div class="title">Очистить избранное?</div>
+        <div class="title">
+          Очистить избранное?
+        </div>
 
         <Checkbox v-model="deleteAll" label="Очистить все резюме" />
 
         <div class="actions">
-          <Button variant="ghost" @click="close"> Отмена </Button>
+          <Button variant="ghost" @click="close">
+            Отмена
+          </Button>
 
           <Button
             variant="destructive"

@@ -116,7 +116,9 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
         <Badge v-for="skill in visibleSkills" :key="skill">
           {{ skill }}
         </Badge>
-        <Badge v-if="hiddenSkillsCount"> +{{ hiddenSkillsCount }} </Badge>
+        <Badge v-if="hiddenSkillsCount">
+          +{{ hiddenSkillsCount }}
+        </Badge>
       </div>
     </div>
 

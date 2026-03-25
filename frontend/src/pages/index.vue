@@ -7,7 +7,7 @@ import {
   JobsPagination,
   JobsPaginationSkeleton,
   JobsSearch,
-  JobsSearchHistory,
+  JobsSearchFavorite,
   JobsViewer,
   JobsViewerSkeleton,
   useJobsStore
@@ -38,16 +38,21 @@ onMounted(() => {
 <template>
   <div class="main-page">
     <JobsSearch />
-
-    <JobsSearchHistory @select="store.setQuery" />
+    <JobsSearchFavorite @select="store.setQuery" />
 
     <JobsFiltersRow />
 
-    <div v-if="searchState === 'initial'" class="search-idle">Начните искать вакансии</div>
+    <div v-if="searchState === 'initial'" class="search-idle">
+      Начните искать вакансии
+    </div>
 
-    <div v-else-if="searchState === 'idle'" class="search-idle">Введите запрос, пожалуйста</div>
+    <div v-else-if="searchState === 'idle'" class="search-idle">
+      Введите запрос, пожалуйста
+    </div>
 
-    <div v-else-if="searchState === 'empty'" class="search-empty">Ничего не найдено</div>
+    <div v-else-if="searchState === 'empty'" class="search-empty">
+      Ничего не найдено
+    </div>
 
     <div v-else-if="searchState === 'results' || searchState === 'refreshing'" class="search-found">
       {{ foundText }}

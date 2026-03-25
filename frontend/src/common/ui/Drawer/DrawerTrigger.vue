@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { inject } from 'vue';
+import { inject, useAttrs } from 'vue';
 
 import { DrawerContextKey } from './drawer.context';
 
+defineOptions({ inheritAttrs: false });
+defineProps<{ asChild?: boolean }>();
 const ctx = inject(DrawerContextKey);
+if (!ctx) throw new Error('DrawerTrigger must be used inside Drawer');
 
-if (!ctx) {
-  throw new Error('DrawerTrigger must be used inside Drawer');
-}
+const attrs = useAttrs();
 
 function onClick() {
   ctx?.toggle();
@@ -15,7 +16,13 @@ function onClick() {
 </script>
 
 <template>
-  <div @click="onClick">
+  <span class="anchor" v-bind="attrs" @click="onClick">
     <slot />
-  </div>
+  </span>
 </template>
+
+<style scoped>
+.anchor {
+  display: inline-block;
+}
+</style>

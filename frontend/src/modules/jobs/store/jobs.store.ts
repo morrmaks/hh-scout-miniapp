@@ -13,13 +13,15 @@ import { useJobsPosition } from '../composables/useJobsPosition';
 import { useViewedJobs } from '../composables/useViewedJobs';
 import { DEFAULT_FILTERS } from '../filters';
 import { buildApiQuery, buildUrlQuery, resolveSearchState } from '../lib/search';
+import { useSearchHistory } from '../search';
 
-const STEP = 10;
-const PREFETCH_TRIGGER = 7;
+const STEP = 20;
+const PREFETCH_TRIGGER = 14;
 
 export const useJobsStore = defineStore('jobs', () => {
   const router = useRouter();
 
+  const history = useSearchHistory();
   const { markViewed } = useViewedJobs();
   const { save, restore: restorePosition } = useJobsPosition();
 
@@ -177,12 +179,14 @@ export const useJobsStore = defineStore('jobs', () => {
     resetNavigation();
     await fetchJobs();
     commitNavigation();
+    pushToHistory();
   }
 
   function setSort(value: JobsOrderBy) {
     orderBy.value = value;
     fetchJobs();
     commitNavigation();
+    pushToHistory();
   }
 
   function setPerPage(value: number) {
@@ -199,6 +203,7 @@ export const useJobsStore = defineStore('jobs', () => {
     resetNavigation();
     fetchJobs();
     commitNavigation();
+    pushToHistory();
   }
 
   function resetFilters() {
@@ -209,6 +214,7 @@ export const useJobsStore = defineStore('jobs', () => {
     resetNavigation();
     fetchJobs();
     commitNavigation();
+    pushToHistory();
   }
 
   async function setPage(p: number) {
@@ -231,6 +237,33 @@ export const useJobsStore = defineStore('jobs', () => {
 
     router.replace({
       query: buildUrlQuery({ ...apiQuery.value, index: index.value })
+    });
+  }
+
+  async function applySearch(params: {
+    query: string;
+    filters: JobsFiltersType;
+    orderBy: JobsOrderBy;
+  }) {
+    query.value = params.query;
+    lastSearchQuery.value = params.query;
+
+    filters.value = { ...DEFAULT_FILTERS, ...params.filters };
+    orderBy.value = params.orderBy;
+
+    resetNavigation();
+    await fetchJobs();
+    commitNavigation();
+  }
+
+  function pushToHistory() {
+    if (!query.value.trim()) return;
+
+    history.add({
+      query: query.value,
+      filters: filters.value,
+      orderBy: orderBy.value,
+      timestamp: Date.now()
     });
   }
 
@@ -288,6 +321,7 @@ export const useJobsStore = defineStore('jobs', () => {
     prevJob,
 
     restore,
+    applySearch,
     commitNavigation
   };
 });

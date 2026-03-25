@@ -1,14 +1,24 @@
 <script setup lang="ts">
 import { useEventListener, useScrollLock } from '@vueuse/core';
+import { X } from 'lucide-vue-next';
 import { inject, ref, watch } from 'vue';
 
+import Button from '../Button.vue';
 import { DrawerContextKey } from './drawer.context';
+
+interface Props {
+  fullscreen?: boolean;
+  maxHeight?: string;
+  scroll?: 'content' | 'inner';
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  scroll: 'content'
+});
 
 const ctx = inject(DrawerContextKey);
 
-if (!ctx) {
-  throw new Error('DrawerContent must be used inside Drawer');
-}
+if (!ctx) throw new Error('DrawerContent must be used inside Drawer');
 
 const bodyScrollLock = useScrollLock(document.body);
 
@@ -16,6 +26,7 @@ const visible = ref(false);
 const state = ref<'closed' | 'open'>('closed');
 
 const drawerRef = ref<HTMLElement | null>(null);
+const scrollBodyRef = ref<HTMLElement | null>(null);
 
 const startY = ref(0);
 const dragging = ref(false);
@@ -31,7 +42,6 @@ watch(
 
     if (open) {
       visible.value = true;
-
       requestAnimationFrame(() => {
         state.value = 'open';
       });
@@ -49,7 +59,6 @@ function close() {
 function setTransform(y: number) {
   const el = drawerRef.value;
   if (!el) return;
-
   el.style.transform = `translate3d(0, ${y}px, 0)`;
 }
 
@@ -105,17 +114,27 @@ useEventListener(window, 'keydown', (e) => {
 
       <div
         ref="drawerRef"
-        class="drawer"
         data-drawer
         data-direction="bottom"
+        class="drawer"
+        :class="{ 'drawer-fullscreen': props.fullscreen }"
         :data-state="state"
+        :style="!props.fullscreen && props.maxHeight ? { maxHeight: props.maxHeight } : {}"
         @animationend="onAnimationEnd"
       >
         <div class="handle-area" @pointerdown="onPointerDown">
           <div class="handle" />
+
+          <Button variant="link" class="close-button" @click="close" @pointerdown.stop>
+            <X :size="16" />
+          </Button>
         </div>
 
-        <slot />
+        <div v-if="props.scroll === 'inner'" ref="scrollBodyRef" class="scroll-body">
+          <slot />
+        </div>
+
+        <slot v-else />
       </div>
     </template>
   </Teleport>
@@ -131,17 +150,25 @@ useEventListener(window, 'keydown', (e) => {
   border-radius: 20px 20px 0 0;
 
   max-height: 80vh;
-  overflow-y: auto;
+  overflow-y: hidden;
+
+  display: flex;
+  flex-direction: column;
 
   padding: 0 20px 20px;
 
-  touch-action: auto;
+  touch-action: pan-y;
   will-change: transform;
   overscroll-behavior: contain;
   transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 
   animation-duration: 0.25s;
   animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.drawer-fullscreen {
+  max-height: 100vh;
+  height: 100vh;
 }
 
 .drawer.dragging {
@@ -155,6 +182,14 @@ useEventListener(window, 'keydown', (e) => {
 
 .drawer[data-state='closed'] {
   animation-name: slideToBottom;
+}
+
+.scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .overlay {
@@ -177,10 +212,20 @@ useEventListener(window, 'keydown', (e) => {
 }
 
 .handle-area {
+  position: relative;
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 20px 0 12px;
   touch-action: none;
+  flex-shrink: 0;
+}
+
+.close-button {
+  position: absolute;
+  right: 0;
+  top: 40%;
+  padding: 0;
 }
 
 .handle {
