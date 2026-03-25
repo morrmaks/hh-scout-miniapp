@@ -1,4 +1,4 @@
-import { getEnv } from '@/utils/env';
+import { getDevEnv, getEnv } from '@/utils/env';
 
 import 'dotenv/config';
 
@@ -9,6 +9,6 @@ export const env = {
   DATABASE_URL: getEnv('DATABASE_URL'),
   EXCHANGERATE_ACCESS_KEY: getEnv('EXCHANGERATE_ACCESS_KEY'),
   BOT_TOKEN: getEnv('BOT_TOKEN'),
-  GIST_ID: getEnv('GIST_ID', { optional: true }),
-  GITHUB_TOKEN: getEnv('GITHUB_TOKEN', { optional: true })
+  GIST_ID: getDevEnv('GIST_ID'),
+  GITHUB_TOKEN: getDevEnv('GITHUB_TOKEN')
 };
