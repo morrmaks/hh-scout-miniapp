@@ -35,11 +35,13 @@ function create() {
       class="input"
       :style="style"
       @keydown.enter.prevent="create"
-    />
+    >
 
     <StatusColorPicker v-model="color" />
 
-    <Button size="sm" variant="ghost" class="save-button" @click="create"> Сохранить </Button>
+    <Button size="sm" variant="ghost" class="save-button" @click="create">
+      Сохранить
+    </Button>
   </div>
 </template>
 

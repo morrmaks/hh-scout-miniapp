@@ -1,5 +1,15 @@
 <script setup lang="ts">
+import { X } from 'lucide-vue-next';
 import { computed, ref, useAttrs } from 'vue';
+
+import Button from './Button.vue';
+
+interface Props {
+  disabled?: boolean;
+  modelValue?: string;
+  placeholder?: string;
+  type?: string;
+}
 
 defineOptions({ inheritAttrs: false });
 
@@ -15,13 +25,6 @@ const emit = defineEmits<{
   enter: [];
 }>();
 
-interface Props {
-  disabled?: boolean;
-  modelValue?: string;
-  placeholder?: string;
-  type?: string;
-}
-
 const attrs = useAttrs();
 
 const inputRef = ref<HTMLInputElement | null>(null);
@@ -31,10 +34,19 @@ const value = computed({
   set: (v: string) => emit('update:modelValue', v)
 });
 
+const showClear = computed(() => !!value.value && !props.disabled);
+
 defineExpose({
   focus: () => inputRef.value?.focus(),
   blur: () => inputRef.value?.blur()
 });
+
+function clear() {
+  value.value = '';
+  requestAnimationFrame(() => {
+    inputRef.value?.focus();
+  });
+}
 
 const onEnter = () => {
   emit('enter');
@@ -43,25 +55,41 @@ const onEnter = () => {
 </script>
 
 <template>
-  <input
-    ref="inputRef"
-    v-model="value"
-    class="input"
-    :type="type"
-    :placeholder="placeholder"
-    :disabled="disabled"
-    v-bind="attrs"
-    @keydown.enter.prevent="onEnter"
-  />
+  <div class="input-wrap">
+    <input
+      ref="inputRef"
+      v-model="value"
+      class="input"
+      :type="type"
+      :placeholder="placeholder"
+      :disabled="disabled"
+      v-bind="attrs"
+      @keydown.enter.prevent="onEnter"
+    >
+
+    <!-- 🔥 крестик -->
+    <Button v-if="showClear" variant="link" class="clear-btn" @mousedown.prevent="clear">
+      <X :size="16" />
+    </Button>
+  </div>
 </template>
 
 <style scoped>
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+}
+
 .input {
+  min-width: 0;
   flex: 1;
   background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: 10px 32px 10px 14px;
   font-size: 14px;
   color: var(--text);
   transition:
@@ -84,6 +112,13 @@ const onEnter = () => {
 .input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 @media (hover: none) and (pointer: coarse) {

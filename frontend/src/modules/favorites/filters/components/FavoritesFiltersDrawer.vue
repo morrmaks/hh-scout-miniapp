@@ -31,7 +31,7 @@ function apply(filters: FavoritesFiltersType) {
       </Button>
     </DrawerTrigger>
 
-    <DrawerContent>
+    <DrawerContent scroll="inner">
       <FavoritesFilters @apply="apply" @reset="reset" />
     </DrawerContent>
   </Drawer>

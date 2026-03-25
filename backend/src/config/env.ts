@@ -8,5 +8,7 @@ export const env = {
   CORS_ORIGIN: getEnv('CORS_ORIGIN'),
   DATABASE_URL: getEnv('DATABASE_URL'),
   EXCHANGERATE_ACCESS_KEY: getEnv('EXCHANGERATE_ACCESS_KEY'),
-  BOT_TOKEN: getEnv('BOT_TOKEN')
+  BOT_TOKEN: getEnv('BOT_TOKEN'),
+  GIST_ID: getEnv('GIST_ID'),
+  GITHUB_TOKEN: getEnv('GITHUB_TOKEN')
 };

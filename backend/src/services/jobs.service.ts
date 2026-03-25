@@ -8,8 +8,8 @@ import { getVacancies, getVacancyById } from '../integrations/hh';
 import { enqueue } from '../queue/queue';
 import { buildSearchJobsKey } from '../utils/buildSearchKey';
 
-const STEP = 10;
-const PREFETCH_TRIGGER = 7;
+const STEP = 20;
+const PREFETCH_TRIGGER = 14;
 
 function calcRestoreLimit(index: number) {
   const base = Math.ceil((index + 1) / STEP) * STEP;
@@ -78,9 +78,7 @@ export async function getJobs(filters: JobFilters): Promise<SearchResultDTO> {
     searchSessions.set(searchKey, newSession);
 
     const raw = data.items;
-
     const limit = typeof index === 'number' ? Math.min(calcRestoreLimit(index), raw.length) : STEP;
-
     const slice = raw.slice(0, limit);
 
     const jobs = await loadVacancies(slice);

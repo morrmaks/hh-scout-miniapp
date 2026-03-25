@@ -7,6 +7,14 @@ import { useLockScrollParents } from '@/common/composables/useLockScrollParents'
 
 import { dropdownKey } from './dropdown.context';
 
+interface Props {
+  fit?: 'content' | 'trigger';
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  fit: 'content'
+});
+
 const dropdown = inject(dropdownKey)!;
 
 const { top, left, maxHeight, minWidth, update } = useFloatingPosition(
@@ -66,7 +74,11 @@ useEventListener(window, 'scroll', update, { passive: true });
       :style="{
         top: `${top}px`,
         left: `${left}px`,
-        minWidth: minWidth ? `${minWidth}px` : undefined,
+
+        width: props.fit === 'trigger' && minWidth ? `${minWidth}px` : undefined,
+
+        minWidth: props.fit === 'content' && minWidth ? `${minWidth}px` : undefined,
+
         maxHeight: maxHeight ? `${maxHeight}px` : undefined
       }"
       @animationend="onAnimationEnd"
@@ -105,19 +117,13 @@ useEventListener(window, 'scroll', update, { passive: true });
   animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* open */
-
 .dropdown-content[data-state='open'] {
   animation-name: dropdownIn;
 }
 
-/* close */
-
 .dropdown-content[data-state='closed'] {
   animation-name: dropdownOut;
 }
-
-/* animations */
 
 @keyframes dropdownIn {
   from {

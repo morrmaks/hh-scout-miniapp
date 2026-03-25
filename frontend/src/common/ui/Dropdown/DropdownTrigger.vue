@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronDown } from 'lucide-vue-next';
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, useAttrs } from 'vue';
 
 import Button from '../Button.vue';
 import { dropdownKey } from './dropdown.context';
@@ -9,9 +9,10 @@ interface Props {
   asChild?: boolean;
 }
 
+defineOptions({ inheritAttrs: false });
 defineProps<Props>();
-
 const dropdown = inject(dropdownKey)!;
+const attrs = useAttrs();
 
 const el = ref<HTMLElement | null>(null);
 
@@ -28,12 +29,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- custom trigger -->
-  <span v-if="asChild" ref="el" class="anchor" @click="!dropdown.disabled && dropdown.toggle()">
+  <span
+    v-if="asChild"
+    ref="el"
+    class="anchor"
+    v-bind="attrs"
+    :data-state="dropdown.open.value ? 'open' : 'closed'"
+    @click="!dropdown.disabled && !dropdown.open.value && dropdown.toggle()"
+  >
     <slot />
   </span>
 
-  <!-- default trigger -->
   <Button
     v-else
     ref="el"
@@ -48,7 +54,7 @@ onMounted(() => {
       <slot />
     </span>
 
-    <ChevronDown class="chevron" :size="14" />
+    <ChevronDown class="dropdown-trigger-chevron" :size="14" />
   </Button>
 </template>
 
@@ -65,15 +71,19 @@ onMounted(() => {
   gap: 6px;
 }
 
-.chevron {
+.dropdown-trigger-chevron {
   transition: transform 0.2s ease;
 }
 
-.trigger[data-state='open'] .chevron {
+.trigger[data-state='open'] .dropdown-trigger-chevron {
   transform: rotate(180deg);
 }
 
 .anchor {
   display: inline-block;
+}
+
+.anchor[data-state='open'] :deep(.dropdown-trigger-chevron) {
+  transform: rotate(180deg);
 }
 </style>

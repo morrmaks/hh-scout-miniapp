@@ -6,6 +6,7 @@ import favoritesRouter from './favorites.router';
 import jobsRouter from './jobs.router';
 import resumesRouter from './resumes.router';
 import statusesRouter from './statuses.router';
+import suggestsRouter from './suggests.router';
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.use('/favorites', telegramAuthMiddleware, favoritesRouter);
 router.use('/resumes', telegramAuthMiddleware, resumesRouter);
 router.use('/areas', areasRouter);
 router.use('/statuses', telegramAuthMiddleware, statusesRouter);
+router.use('/suggests', suggestsRouter);
 router.get('/health', (_, res) => {
   res.json({ status: 'ok' });
 });

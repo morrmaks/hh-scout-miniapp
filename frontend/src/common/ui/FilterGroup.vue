@@ -28,6 +28,7 @@ defineProps<Props>();
 
 .label {
   font-size: 13px;
+  font-weight: 500;
   color: var(--text-muted);
 }
 

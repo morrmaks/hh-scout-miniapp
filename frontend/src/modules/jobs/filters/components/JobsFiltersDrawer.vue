@@ -26,13 +26,13 @@ function apply(filters: JobsFiltersType) {
 
 <template>
   <Drawer v-model:open="open">
-    <DrawerTrigger>
+    <DrawerTrigger style="display: flex; align-self: stretch; height: auto">
       <Button variant="outline" class="toggle-button">
         <SlidersHorizontal :size="14" />
       </Button>
     </DrawerTrigger>
 
-    <DrawerContent>
+    <DrawerContent scroll="inner">
       <JobsFilters @apply="apply" @reset="reset" />
     </DrawerContent>
   </Drawer>
@@ -40,6 +40,11 @@ function apply(filters: JobsFiltersType) {
 
 <style scoped>
 .toggle-button {
-  padding: 9px 14px;
+  padding: 8px 14px;
+  height: 100%;
+}
+
+.toggle-button svg {
+  height: 16px;
 }
 </style>

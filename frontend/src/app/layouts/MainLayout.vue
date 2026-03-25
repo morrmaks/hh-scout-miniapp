@@ -3,6 +3,7 @@ import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { usePageTransition } from '@/common/composables/usePageTransition';
+import { useTelegramNavigation } from '@/common/composables/useTelegramNavigation';
 import BottomNav from '@/common/ui/layout-parts/BottomNav.vue';
 import Header from '@/common/ui/layout-parts/Header.vue';
 import { useFavoritesStore } from '@/modules/favorites';
@@ -12,6 +13,7 @@ import { ToastContainer } from '@/modules/toast';
 const route = useRoute();
 const resumes = useResumesStore();
 const favorites = useFavoritesStore();
+useTelegramNavigation();
 
 const { transitionName, appear } = usePageTransition();
 

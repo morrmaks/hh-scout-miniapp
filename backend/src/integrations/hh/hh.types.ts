@@ -85,3 +85,7 @@ export interface HHArea {
   id: string;
   name: string;
 }
+
+export interface HHSuggest {
+  items: { text: string }[];
+}

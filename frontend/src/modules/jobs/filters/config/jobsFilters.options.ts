@@ -1,7 +1,5 @@
 import type { Component } from 'vue';
 
-import { DollarSign, Euro, RussianRuble } from 'lucide-vue-next';
-
 import type {
   CurrencyQuery,
   EmploymentForm,
@@ -11,56 +9,68 @@ import type {
   WorkFormat
 } from '@/common/api/generated';
 
+import type { PerPageKeys } from './filters.config';
+
+import {
+  CURRENCY_CONFIG,
+  EMPLOYMENT_CONFIG,
+  EXPERIENCE_CONFIG,
+  ORDER_CONFIG,
+  PER_PAGE_CONFIG,
+  PERIOD_CONFIG,
+  WORK_FORMAT_CONFIG
+} from './filters.config';
+
 interface Option<T extends number | string> {
   icon?: Component;
   label: string;
   value: T;
 }
 
-export const perPageOptions: Option<number>[] = [
-  { label: '20 вакансий', value: 20 },
-  { label: '50 вакансий', value: 50 },
-  { label: '100 вакансий', value: 100 }
+export const perPageOptions: Option<PerPageKeys>[] = [
+  { value: 20, label: PER_PAGE_CONFIG[20] },
+  { value: 50, label: PER_PAGE_CONFIG[50] },
+  { value: 100, label: PER_PAGE_CONFIG[100] }
 ];
 
 export const orderByOptions: Option<JobsOrderBy>[] = [
-  { label: 'По соответствию', value: 'relevance' },
-  { label: 'По дате', value: 'publication_time' },
-  { label: 'Низкая зарплата', value: 'salary_asc' },
-  { label: 'Высокая зарплата', value: 'salary_desc' }
+  { value: 'relevance', label: ORDER_CONFIG.relevance },
+  { value: 'publication_time', label: ORDER_CONFIG.publication_time },
+  { value: 'salary_asc', label: ORDER_CONFIG.salary_asc },
+  { value: 'salary_desc', label: ORDER_CONFIG.salary_desc }
 ];
 
 export const periodOptions: Option<JobPeriod>[] = [
-  { label: 'За день', value: '1' },
-  { label: 'За 3 дня', value: '3' },
-  { label: 'За неделю', value: '7' },
-  { label: 'За месяц', value: '30' }
+  { value: '1', label: PERIOD_CONFIG['1'] },
+  { value: '3', label: PERIOD_CONFIG['3'] },
+  { value: '7', label: PERIOD_CONFIG['7'] },
+  { value: '30', label: PERIOD_CONFIG['30'] }
 ];
 
 export const currencyOptions: Option<CurrencyQuery>[] = [
-  { label: '', value: 'RUR', icon: RussianRuble },
-  { label: '', value: 'USD', icon: DollarSign },
-  { label: '', value: 'EUR', icon: Euro }
+  { value: 'RUR', label: '', icon: CURRENCY_CONFIG.RUR.icon },
+  { value: 'USD', label: '', icon: CURRENCY_CONFIG.USD.icon },
+  { value: 'EUR', label: '', icon: CURRENCY_CONFIG.EUR.icon }
 ];
 
 export const experienceOptions: Option<JobsExperience>[] = [
-  { label: 'Без опыта', value: 'noExperience' },
-  { label: '1-3 года', value: 'between1And3' },
-  { label: '3-6 лет', value: 'between3And6' },
-  { label: '6+ лет', value: 'moreThan6' }
+  { value: 'noExperience', label: EXPERIENCE_CONFIG.noExperience },
+  { value: 'between1And3', label: EXPERIENCE_CONFIG.between1And3 },
+  { value: 'between3And6', label: EXPERIENCE_CONFIG.between3And6 },
+  { value: 'moreThan6', label: EXPERIENCE_CONFIG.moreThan6 }
 ];
 
 export const employmentOptions: Option<EmploymentForm>[] = [
-  { label: 'Полная занятость', value: 'FULL' },
-  { label: 'Частичная занятость', value: 'PART' },
-  { label: 'Проект', value: 'PROJECT' },
-  { label: 'Вахта', value: 'FLY_IN_FLY_OUT' },
-  { label: 'Подработка', value: 'SIDE_JOB' }
+  { value: 'FULL', label: EMPLOYMENT_CONFIG.FULL },
+  { value: 'PART', label: EMPLOYMENT_CONFIG.PART },
+  { value: 'PROJECT', label: EMPLOYMENT_CONFIG.PROJECT },
+  { value: 'FLY_IN_FLY_OUT', label: EMPLOYMENT_CONFIG.FLY_IN_FLY_OUT },
+  { value: 'SIDE_JOB', label: EMPLOYMENT_CONFIG.SIDE_JOB }
 ];
 
 export const workFormatOptions: Option<WorkFormat>[] = [
-  { label: 'Удаленно', value: 'REMOTE' },
-  { label: 'Разъездной', value: 'FIELD_WORK' },
-  { label: 'Гибрид', value: 'HYBRID' },
-  { label: 'На месте работодателя', value: 'ON_SITE' }
+  { value: 'REMOTE', label: WORK_FORMAT_CONFIG.REMOTE },
+  { value: 'FIELD_WORK', label: WORK_FORMAT_CONFIG.FIELD_WORK },
+  { value: 'HYBRID', label: WORK_FORMAT_CONFIG.HYBRID },
+  { value: 'ON_SITE', label: WORK_FORMAT_CONFIG.ON_SITE }
 ];

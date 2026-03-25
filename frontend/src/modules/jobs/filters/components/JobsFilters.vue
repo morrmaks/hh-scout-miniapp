@@ -74,7 +74,7 @@ const areasStore = useAreasStore();
     <FilterGroup label="Зарплата от">
       <div class="salary">
         <div class="salaryRow">
-          <InputNumber v-model="local.salary" placeholder="100000" />
+          <InputNumber v-model="local.salary" placeholder="100000" class="salary-input" />
 
           <Select v-model="local.currency" :options="currencyOptions" class="currency" />
         </div>
@@ -130,7 +130,9 @@ const areasStore = useAreasStore();
       Сбросить
     </Button>
 
-    <Button class="applyButton" @click="apply"> Применить фильтры </Button>
+    <Button class="applyButton" @click="apply">
+      Применить фильтры
+    </Button>
   </div>
 </template>
 
@@ -153,6 +155,10 @@ const areasStore = useAreasStore();
   gap: 10px;
 }
 
+.salary-input:focus {
+  box-shadow: none;
+}
+
 .currency {
   display: flex;
   align-items: stretch;
@@ -161,7 +167,7 @@ const areasStore = useAreasStore();
 .footer {
   margin-top: 20px;
   display: flex;
-  justify-content: center;
+  justify-content: end;
   gap: 8px;
 }
 

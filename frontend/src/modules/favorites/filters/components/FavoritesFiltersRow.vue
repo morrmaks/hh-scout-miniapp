@@ -2,7 +2,6 @@
 import { computed } from 'vue';
 
 import Select from '@/common/ui/Select.vue';
-import { ResumeSelector } from '@/modules/resumes';
 
 import FavoritesActionsDropdown from '../../components/FavoritesActionsDropdown.vue';
 import { useFavoritesStore } from '../../store/favorites.store';
@@ -21,7 +20,6 @@ const sort = computed({
   <div class="toolbar">
     <div class="toolbar-filters">
       <FavoritesFiltersDrawer />
-      <ResumeSelector />
       <Select v-model="sort" :options="sortOptions" />
     </div>
 

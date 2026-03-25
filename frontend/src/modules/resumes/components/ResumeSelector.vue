@@ -23,14 +23,13 @@ function select(id: number, close: () => void) {
 <template>
   <Dropdown>
     <DropdownTrigger as-child>
-      <Button variant="outline" class="trigger">
+      <Button variant="link">
         <span v-if="selected">
           {{ selected.name }}
         </span>
 
         <span v-else class="placeholder"> Выберите резюме </span>
-
-        <ChevronDown :size="14" />
+        <ChevronDown :size="14" class="dropdown-trigger-chevron" />
       </Button>
     </DropdownTrigger>
 
@@ -75,5 +74,9 @@ function select(id: number, close: () => void) {
   width: 100%;
   justify-content: flex-start;
   border-radius: 8px;
+}
+
+.dropdown-trigger-chevron {
+  transition: transform 0.2s ease;
 }
 </style>

@@ -5,7 +5,6 @@ import Select from '@/common/ui/Select.vue';
 
 import { useJobsStore } from '../../store/jobs.store';
 import { orderByOptions, perPageOptions } from '../config/jobsFilters.options';
-import JobsFiltersDrawer from './JobsFiltersDrawer.vue';
 
 const store = useJobsStore();
 
@@ -14,8 +13,6 @@ const { orderBy, perPage } = storeToRefs(store);
 
 <template>
   <div class="toolbar">
-    <JobsFiltersDrawer />
-
     <Select
       class="select"
       :model-value="perPage"

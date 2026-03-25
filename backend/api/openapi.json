@@ -20,6 +20,33 @@
   ],
 
   "paths": {
+    "/suggests/keywords": {
+      "get": {
+        "operationId": "getSuggestKeywords",
+        "tags": ["Jobs"],
+        "summary": "Get search keyword suggestions",
+        "parameters": [
+          {
+            "name": "text",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Suggestions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HHSuggest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/jobs": {
       "get": {
         "operationId": "searchJobs",
@@ -793,6 +820,22 @@
       }
     },
     "schemas": {
+      "HHSuggest": {
+        "type": "object",
+        "required": ["items"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["text"],
+              "properties": {
+                "text": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
       "JobsOrderBy": {
         "type": "string",
         "enum": ["relevance", "publication_time", "salary_asc", "salary_desc"]

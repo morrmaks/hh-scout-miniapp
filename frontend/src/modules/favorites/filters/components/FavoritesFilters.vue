@@ -74,9 +74,9 @@ function apply() {
     <FilterGroup label="Зарплата от">
       <div class="salary">
         <div class="salaryRow">
-          <InputNumber v-model="local.salary_from" placeholder="100000" />
+          <InputNumber v-model="local.salary_from" placeholder="125000" class="salary-input" />
 
-          <Select v-model="local.currency" :options="currencyOptions" />
+          <Select v-model="local.currency" :options="currencyOptions" class="currency" />
         </div>
 
         <Checkbox
@@ -95,13 +95,22 @@ function apply() {
     <Separator />
 
     <FilterGroup label="Компания">
-      <ToggleGroup v-model="local.company">
+      <ToggleGroup v-if="favorites.companies.length" v-model="local.company">
         <ToggleGroupCollapse :limit="5">
-          <ToggleGroupItem v-for="company in favorites.companies" :key="company" :value="company">
+          <ToggleGroupItem
+            v-for="company in favorites.companies"
+            :key="company"
+            :value="company"
+            class="company-toggle-item"
+          >
             {{ company }}
           </ToggleGroupItem>
         </ToggleGroupCollapse>
       </ToggleGroup>
+
+      <div v-else class="company-empty">
+        Пусто
+      </div>
     </FilterGroup>
 
     <Separator />
@@ -131,7 +140,9 @@ function apply() {
       <X :size="14" />
       Сбросить
     </Button>
-    <Button class="applyButton" @click="apply"> Применить фильтры </Button>
+    <Button class="applyButton" @click="apply">
+      Применить фильтры
+    </Button>
   </div>
 </template>
 
@@ -152,6 +163,20 @@ function apply() {
   display: grid;
   grid-template-columns: 1fr 70px;
   gap: 10px;
+}
+
+.salary-input:focus {
+  box-shadow: none;
+}
+
+.currency {
+  display: flex;
+  align-items: stretch;
+}
+
+.company-empty {
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 .footer {

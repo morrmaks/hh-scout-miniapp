@@ -98,7 +98,7 @@ function updateStatus(id: number, name: string, color: StatusColor) {
       </button>
     </DrawerTrigger>
 
-    <DrawerContent>
+    <DrawerContent scroll="inner">
       <div class="status-wrapper">
         <div class="list">
           <div v-if="modelValue !== null" class="reset-badge" @click="select(null)">
