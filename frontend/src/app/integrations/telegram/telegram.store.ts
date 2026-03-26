@@ -17,8 +17,7 @@ export const useTelegramStore = defineStore('telegram', () => {
     user.value = getTelegramUser();
 
     tg.ready();
-    // Временно отключаем expand() для теста свайпов
-    // tg.expand();
+    tg.expand();
 
     scheme.value = tg.colorScheme === 'dark' ? 'dark' : 'light';
 
