@@ -13,13 +13,11 @@ import type { SearchController, SearchHistoryItem } from '../types/search.types'
 
 import JobsSearchList from './JobsSearchList.vue';
 
-// ✅ получаем controller через props
 const props = defineProps<SearchController>();
 
 const open = ref(false);
 const inputRef = ref();
 
-// ✅ строка, не ref
 const committedQuery = ref(props.query.value);
 
 /* ---------------- sync ---------------- */
@@ -46,7 +44,7 @@ watch(open, async (v) => {
     await nextTick();
     inputRef.value?.focus();
   } else {
-    props.setQuery(committedQuery.value); // ✅ фикс
+    props.setQuery(committedQuery.value);
   }
 });
 
@@ -127,7 +125,6 @@ function select(v: string) {
   color: var(--text-muted);
 }
 
-/* ScrollFade занимает всё оставшееся место */
 .text-fade-wrap {
   flex: 1;
   min-width: 0;

@@ -5,6 +5,10 @@ import { computed, ref } from 'vue';
 
 import type { Job } from '@/common/api/generated';
 
+import {
+  disableTelegramVerticalSwipes,
+  enableTelegramVerticalSwipes
+} from '@/app/integrations/telegram'
 import Badge from '@/common/ui/Badge.vue';
 import Button from '@/common/ui/Button.vue';
 import Card from '@/common/ui/Card.vue';
@@ -53,6 +57,14 @@ const meta = computed(() => {
     props.job.workingHours?.length && `Часы: ${props.job.workingHours.join(', ')}`
   ].filter((v): v is string => Boolean(v));
 });
+
+function onTouchStart() {
+  disableTelegramVerticalSwipes()
+}
+
+function onTouchEnd() {
+  enableTelegramVerticalSwipes()
+}
 
 useEventListener(window, 'keydown', (e: KeyboardEvent) => {
   const target = e.target as HTMLElement;
@@ -122,7 +134,13 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
       </div>
     </div>
 
-    <article v-if="job.description" class="description">
+    <article 
+      v-if="job.description"
+      class="description"
+      @touchstart="onTouchStart"
+      @touchend="onTouchEnd"
+      @touchcancel="onTouchEnd"
+    >
       {{ job.description }}
     </article>
 

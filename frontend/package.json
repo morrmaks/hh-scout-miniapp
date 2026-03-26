@@ -6,6 +6,7 @@
     "dev": "vite",
     "dev:ngrok": "vite --mode ngrok",
     "build": "vue-tsc -b && vite build",
+    "build:ngrok": "vue-tsc -b && vite build --mode ngrok",
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
