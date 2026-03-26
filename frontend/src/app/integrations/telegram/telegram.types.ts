@@ -32,9 +32,12 @@ export interface TelegramWebApp {
 
   themeParams?: TelegramThemeParams;
 
-  expand: () => void;
-  onEvent: (event: TelegramEvent, cb: () => void) => void;
+  disableVerticalSwipes: () => void
+  enableVerticalSwipes: () => void
 
+  expand: () => void;
+
+  onEvent: (event: TelegramEvent, cb: () => void) => void;
   ready: () => void;
 }
 

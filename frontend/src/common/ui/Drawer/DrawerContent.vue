@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useEventListener, useScrollLock } from '@vueuse/core';
 import { X } from 'lucide-vue-next';
-import { inject, ref, watch } from 'vue';
+import { inject, onUnmounted, ref, watch } from 'vue';
+
+import { disableTelegramVerticalSwipes, enableTelegramVerticalSwipes } from '@/app/integrations/telegram';
 
 import Button from '../Button.vue';
 import { DrawerContextKey } from './drawer.context';
@@ -41,16 +43,24 @@ watch(
     bodyScrollLock.value = open;
 
     if (open) {
+      disableTelegramVerticalSwipes();
+
       visible.value = true;
       requestAnimationFrame(() => {
         state.value = 'open';
       });
     } else {
+      enableTelegramVerticalSwipes();
+
       state.value = 'closed';
     }
   },
   { immediate: true }
 );
+
+onUnmounted(() => {
+  enableTelegramVerticalSwipes();
+});
 
 function close() {
   ctx?.setOpen(false);
